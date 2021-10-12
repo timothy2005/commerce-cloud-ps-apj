@@ -160,6 +160,7 @@
         <extension name='acceleratorwebservicesaddon'/>
         <extension name='cmsoccaddon'/>
         <extension name='ycommercewebservices'/>
+        <extension name='ycommercewebservicestest'/>
         <extension name='yacceleratorcockpits'/>
 
         <!--scpi extensions-->
