@@ -346,6 +346,14 @@
             "name": "api",
             "properties": [
                 {
+                    "key": "xss.filter.header.X-Frame-Options",
+                    "value": ""
+                },
+                {
+                    "key": "tomcat.maxthreads",
+                    "value": "1200"
+                },
+                {
                     "key": "storefrontContextRoot",
                     "value": "/yacceleratorstorefront"
                 }
