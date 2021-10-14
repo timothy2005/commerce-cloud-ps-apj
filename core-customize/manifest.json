@@ -14,11 +14,34 @@
     ],
     "useConfig": {
         "properties": [
-            {
-                "location": "config/local-dev.properties",
-                "persona": "development"
-            }
-        ],
+                    {
+                        "location": "config/environments/local-dev.properties",
+                        "persona": "development"
+                    },
+                    {
+                        "location": "config/environments/local-stage.properties",
+                        "persona": "staging"
+                    },
+                    {
+                        "location": "config/environments/local-prod.properties",
+                        "persona": "production"
+                    },
+                    {
+                        "location": "config/environments/common.properties"
+                    },
+                    {
+                        "aspect": "accstorefront",
+                        "location": "config/environments/accstorefront.properties"
+                    },
+                    {
+                        "aspect": "api",
+                        "location": "config/environments/api.properties"
+                    },
+                    {
+                        "aspect": "backoffice",
+                        "location": "config/environments/backoffice.properties"
+                    }
+                ],
         "extensions": {
             "location": "config/localextensions.xml"
         }
