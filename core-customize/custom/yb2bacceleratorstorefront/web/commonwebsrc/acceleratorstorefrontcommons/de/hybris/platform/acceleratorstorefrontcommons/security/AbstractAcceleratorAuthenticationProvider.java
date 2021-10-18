@@ -48,12 +48,11 @@ public abstract class AbstractAcceleratorAuthenticationProvider extends CoreAuth
 	{
 		final String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
 		final boolean isBruteForceAttack = bruteForceAttackCounter.isAttack(username);
-		UserModel userModel = null;
+		UserModel userModel;
 
-		// throw BadCredentialsException if user does not exist
 		try
 		{
-			userModel = getUserService().getUserForUID(StringUtils.lowerCase(username));
+			userModel = userService.getUserForUID(StringUtils.lowerCase(username));
 		}
 		catch (final UnknownIdentifierException e)
 		{
@@ -65,7 +64,7 @@ public abstract class AbstractAcceleratorAuthenticationProvider extends CoreAuth
 		}
 
 		if (userModel.isLoginDisabled())
-		{
+ 		{
 			LOG.info("Skipping authentication. User's login is disabled");
 			bruteForceAttackCounter.resetUserCounter(userModel.getUid());
 			throw new BadCredentialsException(messages.getMessage(CORE_AUTHENTICATION_PROVIDER_BAD_CREDENTIALS, BAD_CREDENTIALS));
@@ -79,7 +78,7 @@ public abstract class AbstractAcceleratorAuthenticationProvider extends CoreAuth
 			throw new BadCredentialsException(messages.getMessage(CORE_AUTHENTICATION_PROVIDER_BAD_CREDENTIALS, BAD_CREDENTIALS));
 		}
 
-		if (!getUserService().isMemberOfGroup(userModel, getUserService().getUserGroupForUID(Constants.USER.CUSTOMER_USERGROUP)))
+		if (!userService.isMemberOfGroup(userModel, getUserService().getUserGroupForUID(Constants.USER.CUSTOMER_USERGROUP)))
 		{
 			throw new BadCredentialsException(messages.getMessage(CORE_AUTHENTICATION_PROVIDER_BAD_CREDENTIALS, BAD_CREDENTIALS));
 		}

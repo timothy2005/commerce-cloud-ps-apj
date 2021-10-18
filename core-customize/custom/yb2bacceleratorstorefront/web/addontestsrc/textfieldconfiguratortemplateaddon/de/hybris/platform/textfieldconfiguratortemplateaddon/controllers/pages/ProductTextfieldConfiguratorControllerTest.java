@@ -9,13 +9,17 @@
 package de.hybris.platform.textfieldconfiguratortemplateaddon.controllers.pages;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import de.hybris.bootstrap.annotations.UnitTest;
 import de.hybris.platform.acceleratorstorefrontcommons.breadcrumb.impl.ProductBreadcrumbBuilder;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.ConfigureForm;
 import de.hybris.platform.catalog.enums.ConfiguratorType;
+import de.hybris.platform.catalog.enums.ProductInfoStatus;
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
 import de.hybris.platform.cms2.servicelayer.services.CMSPageService;
 import de.hybris.platform.cms2.servicelayer.services.CMSPreviewService;
@@ -37,12 +41,12 @@ import de.hybris.platform.commerceservices.order.CommerceSaveCartException;
 import de.hybris.platform.textfieldconfiguratortemplateaddon.forms.TextFieldConfigurationForm;
 import de.hybris.platform.textfieldconfiguratortemplatefacades.TextFieldFacade;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +55,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -67,6 +72,8 @@ public class ProductTextfieldConfiguratorControllerTest
 	private static final int ENTRY_NUMBER = 4;
 	private static final String ATTRIBUTE_KEY = "key";
 	private static final String ATTRIBUTE_VALUE = "value";
+	private static final String ATTRIBUTE_KEY2 = "key2";
+	private static final String ATTRIBUTE_VALUE2 = "value2";
 
 	@Mock
 	private TextFieldFacade textFieldFacade;
@@ -80,8 +87,7 @@ public class ProductTextfieldConfiguratorControllerTest
 
 	@Mock
 	private Model model;
-	@Mock
-	private @Valid TextFieldConfigurationForm form;
+	private final TextFieldConfigurationForm form = new TextFieldConfigurationForm();
 	@Mock
 	private ConfigureForm configureForm;
 	@Mock
@@ -122,8 +128,8 @@ public class ProductTextfieldConfiguratorControllerTest
 	public void initialize() throws CommerceCartModificationException, CommerceSaveCartException
 	{
 		MockitoAnnotations.initMocks(this);
-		when(form.getQuantity()).thenReturn(QUANTITY);
-		when(form.getConfigurationsKeyValueMap()).thenReturn(valueMap);
+		form.setQuantity(QUANTITY);
+		form.setConfigurationsKeyValueMap(valueMap);
 		when(cartFacade.addToCart(PRODUCT_CODE, QUANTITY)).thenReturn(cartModification);
 		when(cartFacade.getSessionCart()).thenReturn(cart);
 		when(orderFacade.getOrderDetailsForCode(DOCUMENT_CODE)).thenReturn(order);
@@ -138,6 +144,21 @@ public class ProductTextfieldConfiguratorControllerTest
 		cartResultData.setSavedCartData(cart);
 		valueMap.put(ConfiguratorType.TEXTFIELD, textFieldMap);
 		textFieldMap.put(ATTRIBUTE_KEY, ATTRIBUTE_VALUE);
+		textFieldMap.put(ATTRIBUTE_KEY2, ATTRIBUTE_VALUE2);
+		final List<ConfigurationInfoData> configurationInfos = new ArrayList<>();
+		configurationInfos.add(createConfigInfoData(ATTRIBUTE_KEY, ATTRIBUTE_VALUE));
+		configurationInfos.add(createConfigInfoData(ATTRIBUTE_KEY2, ATTRIBUTE_VALUE2));
+		when(productFacade.getConfiguratorSettingsForCode(PRODUCT_CODE)).thenReturn(configurationInfos);
+	}
+
+	protected ConfigurationInfoData createConfigInfoData(final String key, final String value)
+	{
+		final ConfigurationInfoData infoData = new ConfigurationInfoData();
+		infoData.setConfigurationLabel(key);
+		infoData.setConfigurationValue(value);
+		infoData.setConfiguratorType(ConfiguratorType.TEXTFIELD);
+		infoData.setStatus(ProductInfoStatus.SUCCESS);
+		return infoData;
 	}
 
 	@Test
@@ -238,11 +259,57 @@ public class ProductTextfieldConfiguratorControllerTest
 		assertNotNull(entryAfterEnrichment);
 		final List<ConfigurationInfoData> configurationInfos = entryAfterEnrichment.getConfigurationInfos();
 		assertNotNull(configurationInfos);
-		assertEquals(1, configurationInfos.size());
+		assertEquals(2, configurationInfos.size());
 		final ConfigurationInfoData configurationInfoData = configurationInfos.get(0);
-		assertEquals(ATTRIBUTE_KEY, configurationInfoData.getConfigurationLabel());
-		assertEquals(ATTRIBUTE_VALUE, configurationInfoData.getConfigurationValue());
+		assertEquals(ATTRIBUTE_KEY2, configurationInfoData.getConfigurationLabel());
+		assertEquals(ATTRIBUTE_VALUE2, configurationInfoData.getConfigurationValue());
 	}
 
+	@Test
+	public void testGetValidConfigurationLabels()
+	{
+		final Map<String, String> result = classUnderTest.getValidConfigurationLabels(PRODUCT_CODE);
+		assertEquals(2, result.size());
+		assertTrue(result.containsKey(ATTRIBUTE_KEY));
+		assertTrue(result.containsKey(ATTRIBUTE_KEY2));
+	}
+
+	@Test
+	public void testValidateProductConfigurations()
+	{
+		final BindingResult bindingErrors = new BeanPropertyBindingResult(form, "foo");
+		classUnderTest.validateProductConfigurations(form, PRODUCT_CODE, bindingErrors);
+		assertFalse(bindingErrors.hasErrors());
+	}
+
+	@Test
+	public void testValidateProductConfigurationsWithError()
+	{
+		textFieldMap.put("invalidKey", "value");
+		final BindingResult bindingErrors = new BeanPropertyBindingResult(form, "foo");
+		classUnderTest.validateProductConfigurations(form, PRODUCT_CODE, bindingErrors);
+		assertTrue(bindingErrors.hasErrors());
+		assertEquals("configuration.invalid.key", bindingErrors.getAllErrors().get(0).getCode().toString());
+	}
+
+	@Test
+	public void testAddToCartWithInvalidForm()
+	{
+		textFieldMap.put("invalidKey", "value");
+		final BindingResult bindingErrors = new BeanPropertyBindingResult(form, "foo");
+		final String addToCart = classUnderTest.addToCart(PRODUCT_CODE, model, form, bindingErrors, request, redirectModel);
+		assertEquals(REDIRECT_ADD_TO_CART_ERROR, addToCart);
+	}
+
+	@Test
+	public void testUpdateConfigurationInEntryWithInvalidForm() throws CommerceCartModificationException
+	{
+
+		textFieldMap.put("invalidKey", "value");
+		final BindingResult bindingErrors = new BeanPropertyBindingResult(form, "foo");
+		final String updateCart = classUnderTest.updateConfigurationInEntry(ENTRY_NUMBER, model, form, bindingErrors, request,
+				redirectModel);
+		assertNotEquals(REDIRECT_ADD_TO_CART_SUCCESS, updateCart);
+	}
 
 }

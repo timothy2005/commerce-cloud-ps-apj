@@ -52,7 +52,7 @@ public class SapDigitalPaymentAndBillingMethodCheckoutStepController extends Abs
 
 	private static final Logger LOG = Logger.getLogger(SapDigitalPaymentAndBillingMethodCheckoutStepController.class);
 
-	private static final String PAYMENT_BILLING_METHOD = "payment-billing-method";
+	private static final String PAYMENT_METHOD = "payment-method";
 
 	private static final String CART_DATA_ATTR = "cartData";
 
@@ -87,7 +87,7 @@ public class SapDigitalPaymentAndBillingMethodCheckoutStepController extends Abs
 
 	@RequestMapping(value = "/cards/new-card", method = RequestMethod.GET)
 	@RequireHardLogIn
-	@PreValidateCheckoutStep(checkoutStep = PAYMENT_BILLING_METHOD)
+	@PreValidateCheckoutStep(checkoutStep = PAYMENT_METHOD)
 	public String registerNewCard(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException
 	{
 		final CheckoutPciOptionEnum subscriptionPciOption = getCheckoutFlowFacade().getSubscriptionPciOption();
@@ -126,8 +126,11 @@ public class SapDigitalPaymentAndBillingMethodCheckoutStepController extends Abs
 			}
 
 		}
+		else
+		{
+			LOG.error(String.format("Unsupported payment strategy: %s", subscriptionPciOption.toString()));
+		}
 		GlobalMessages.addErrorMessage(model, PAYMENT_DETAILS_ERROR);
-		model.addAttribute("redirectUrl", "checkout/multi/billing-address/add");
 		setupAddPaymentPage(model);
 		return ControllerConstants.Views.Pages.MultiStepCheckout.DigitalPaymentGeneralErrorPage;
 	}
@@ -181,7 +184,7 @@ public class SapDigitalPaymentAndBillingMethodCheckoutStepController extends Abs
 	@Override
 	@RequestMapping(value = "billing-address/add", method = RequestMethod.GET)
 	@RequireHardLogIn
-	@PreValidateCheckoutStep(checkoutStep = PAYMENT_BILLING_METHOD)
+	@PreValidateCheckoutStep(checkoutStep = PAYMENT_METHOD)
 	public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException
 	{
 		getCheckoutFacade().setDeliveryModeIfAvailable();
@@ -224,7 +227,7 @@ public class SapDigitalPaymentAndBillingMethodCheckoutStepController extends Abs
 	@RequestMapping(value = "billing-address/add", method = RequestMethod.POST)
 	@RequireHardLogIn
 	public String addBillingAddress(final Model model, final BillingAddressDetailsForm billingAddressDetailsForm,
-			final BindingResult bindingResult) throws CMSItemNotFoundException
+									final BindingResult bindingResult) throws CMSItemNotFoundException
 	{
 
 		//Copy the address fields.
@@ -402,7 +405,7 @@ public class SapDigitalPaymentAndBillingMethodCheckoutStepController extends Abs
 
 
 	protected boolean checkPaymentSubscription(final Model model, @Valid final PaymentDetailsForm paymentDetailsForm,
-			final CCPaymentInfoData newPaymentSubscription)
+											   final CCPaymentInfoData newPaymentSubscription)
 	{
 		if (newPaymentSubscription != null && StringUtils.isNotBlank(newPaymentSubscription.getSubscriptionId()))
 		{
@@ -454,7 +457,7 @@ public class SapDigitalPaymentAndBillingMethodCheckoutStepController extends Abs
 
 	protected CheckoutStep getCheckoutStep()
 	{
-		return getCheckoutStep(PAYMENT_BILLING_METHOD);
+		return getCheckoutStep(PAYMENT_METHOD);
 	}
 
 	/**

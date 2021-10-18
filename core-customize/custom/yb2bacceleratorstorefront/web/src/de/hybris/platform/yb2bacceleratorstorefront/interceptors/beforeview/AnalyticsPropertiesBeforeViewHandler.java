@@ -7,13 +7,12 @@ import de.hybris.platform.acceleratorservices.config.HostConfigService;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.ThirdPartyConstants;
 import de.hybris.platform.acceleratorstorefrontcommons.interceptors.BeforeViewHandler;
 import de.hybris.platform.core.Registry;
-import de.hybris.platform.servicelayer.i18n.CommonI18NService;
 import de.hybris.platform.util.config.ConfigIntf;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,65 +21,74 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class AnalyticsPropertiesBeforeViewHandler implements BeforeViewHandler
 {
-	@Resource(name = "hostConfigService")
 	private HostConfigService hostConfigService;
 
-	@Resource(name = "commonI18NService")
-	private CommonI18NService commonI18NService;
 	// Listener - listens to changes on the frontend and update the MapCache.
-	private ConfigIntf.ConfigChangeListener cfgChangeListener;
+	private final ConfigIntf.ConfigChangeListener cfgChangeListener = new ConfigChangeListener();
 
-	private static Map<String, String> analyticsPropertiesMapCache = new HashMap<>();
+	private static final Map<String, String> analyticsPropertiesMapCache = new HashMap<>();
 
 	private static final String ANALYTICS_TRACKING_ID = "googleAnalyticsTrackingId";
-	private static final String GOOGLE_PREFIX = "googleAnalyticsTrackingId";
+
+	@PostConstruct
+	public void init()
+	{
+		// register the Change Listener to listen when the config properties are changed in the platform
+		registerConfigChangeListener();
+	}
 
 	@Override
 	public void beforeView(final HttpServletRequest request, final HttpServletResponse response, final ModelAndView modelAndView)
 	{
-		// Create the change listener and register it to listen when the config properties are changed in the platform
-		if (cfgChangeListener == null)
-		{
-			registerConfigChangeLister();
-		}
 		final String serverName = request.getServerName();
 		// Add config properties for google analytics
-		addHostProperty(serverName, modelAndView, ThirdPartyConstants.Google.ANALYTICS_TRACKING_ID, ANALYTICS_TRACKING_ID);
+		addHostProperty(serverName, modelAndView);
 	}
 
-	protected class ConfigChangeListener implements ConfigIntf.ConfigChangeListener
+	protected static class ConfigChangeListener implements ConfigIntf.ConfigChangeListener
 	{
 		@Override
 		public void configChanged(final String key, final String newValue)
 		{
-			// Config Listener listen to changes on the platform config and updates the cache.
-			if (key.startsWith(GOOGLE_PREFIX))
+			// Config Listener listen to changes on the platform config and clears the cache.
+			if (key.startsWith(ThirdPartyConstants.Google.ANALYTICS_TRACKING_ID))
 			{
-				analyticsPropertiesMapCache.remove(key);
-				analyticsPropertiesMapCache.put(key, newValue);
+				analyticsPropertiesMapCache.clear();
 			}
 		}
 	}
 
-	protected void registerConfigChangeLister()
+	protected ConfigIntf.ConfigChangeListener getCfgChangeListener()
 	{
-		final ConfigIntf config = Registry.getMasterTenant().getConfig();
-		cfgChangeListener = new ConfigChangeListener();
-		config.registerConfigChangeListener(cfgChangeListener);
+		return cfgChangeListener;
 	}
 
-	protected void addHostProperty(final String serverName, final ModelAndView modelAndView, final String configKey,
-			final String modelKey)
+	protected void registerConfigChangeListener()
+	{
+		final ConfigIntf config = Registry.getMasterTenant().getConfig();
+		config.registerConfigChangeListener(getCfgChangeListener());
+	}
+
+	protected void addHostProperty(final String serverName, final ModelAndView modelAndView)
 	{
 		/*
 		 * Changes made to cache the google analytics properties files in a HashMap. The first time the pages are accessed
 		 * the values are read from the properties file & written on to a cache and the next time onwards it is accessed
 		 * from the cache.
 		 */
-		if (analyticsPropertiesMapCache.get(configKey) == null)
-		{
-			analyticsPropertiesMapCache.put(configKey, hostConfigService.getProperty(configKey, serverName));
-		}
-		modelAndView.addObject(modelKey, analyticsPropertiesMapCache.get(configKey));
+		final String fullConfigKey = ThirdPartyConstants.Google.ANALYTICS_TRACKING_ID + "." + serverName;
+		final String propertyForHost = analyticsPropertiesMapCache
+				.computeIfAbsent(fullConfigKey, k -> getHostConfigService().getProperty(ThirdPartyConstants.Google.ANALYTICS_TRACKING_ID, serverName));
+		modelAndView.addObject(AnalyticsPropertiesBeforeViewHandler.ANALYTICS_TRACKING_ID, propertyForHost);
+	}
+
+	public void setHostConfigService(final HostConfigService hostConfigService)
+	{
+		this.hostConfigService = hostConfigService;
+	}
+
+	protected HostConfigService getHostConfigService()
+	{
+		return hostConfigService;
 	}
 }

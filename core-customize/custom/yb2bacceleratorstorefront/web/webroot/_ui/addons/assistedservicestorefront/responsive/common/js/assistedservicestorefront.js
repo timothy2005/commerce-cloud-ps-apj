@@ -344,9 +344,9 @@ function addCloseBtnHandler() {
         $("#_asm").remove();
         var url = ACC.config.encodedContextPath + "/assisted-service/quit";
         $.post(url, function (data) {
-            var oldurl = window.location.href;
-            var newurl = oldurl.replace("&asm=true", "").replace("?asm=true&", "?").replace("?asm=true", "");
-            window.location.replace(newurl);
+            var params = new URLSearchParams(window.location.search);
+            params.delete('asm');
+            window.location.search = params;
         });
     });
 }

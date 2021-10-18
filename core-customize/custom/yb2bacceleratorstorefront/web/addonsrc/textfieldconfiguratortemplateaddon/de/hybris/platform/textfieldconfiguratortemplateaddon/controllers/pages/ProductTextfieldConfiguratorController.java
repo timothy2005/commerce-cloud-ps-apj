@@ -42,6 +42,7 @@ import de.hybris.platform.textfieldconfiguratortemplatefacades.TextFieldFacade;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +57,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -129,8 +132,7 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 	 * Accepts HTTP-POST requests and delegates to
 	 * {@link ProductTextfieldConfiguratorController#productConfigurator(String, Model, ConfigureForm)}
 	 */
-	@RequestMapping(value = "/**/p/{productCode}/configuratorPage/" + TEXTFIELDCONFIGURATOR_TYPE, method =
-	{ RequestMethod.POST })
+	@PostMapping(value = "/**/p/{productCode}/configuratorPage/" + TEXTFIELDCONFIGURATOR_TYPE)
 	public String productConfiguratorPost(@PathVariable("productCode")
 	final String encodedProductCode, final Model model, final ConfigureForm configureForm) throws CMSItemNotFoundException
 	{
@@ -159,7 +161,7 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 	}
 
 
-	@RequestMapping(value = "/**/p/{productCode}/configure/" + TEXTFIELDCONFIGURATOR_TYPE, method = RequestMethod.POST)
+	@PostMapping(value = "/**/p/{productCode}/configure/" + TEXTFIELDCONFIGURATOR_TYPE)
 	public String addToCart(@PathVariable("productCode")
 	final String encodedProductCode, final Model model, @ModelAttribute("foo")
 	@Valid
@@ -167,11 +169,12 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 			final RedirectAttributes redirectModel)
 	{
 		final String productCode = decodeWithScheme(encodedProductCode, UTF_8);
+		validateProductConfigurations(form, productCode, bindingErrors);
 		boolean err = false;
 		if (bindingErrors.hasErrors())
 		{
-			bindingErrors.getAllErrors().forEach(
-					error -> GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, error.getCode()));
+			bindingErrors.getAllErrors().forEach(error -> GlobalMessages.addFlashMessage(redirectModel,
+					GlobalMessages.ERROR_MESSAGES_HOLDER, error.getCode(), error.getArguments()));
 			err = true;
 		}
 		else
@@ -221,8 +224,7 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 		return REDIRECT_PREFIX + "/cart";
 	}
 
-	@RequestMapping(value = "/cart/{entryNumber}/configuration/" + TEXTFIELDCONFIGURATOR_TYPE, method =
-	{ RequestMethod.GET })
+	@GetMapping(value = "/cart/{entryNumber}/configuration/" + TEXTFIELDCONFIGURATOR_TYPE)
 	public String editConfigurationInEntry(@PathVariable(MODEL_ATTR_ENTRY_NUMBER)
 	final int entryNumber, final Model model) throws CMSItemNotFoundException, CommerceCartModificationException
 	{
@@ -233,21 +235,22 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 		return ENTRY_CONFIGURATOR_PAGE;
 	}
 
-	@RequestMapping(value = "/cart/{entryNumber}/configuration/" + TEXTFIELDCONFIGURATOR_TYPE, method = RequestMethod.POST)
+	@PostMapping(value = "/cart/{entryNumber}/configuration/" + TEXTFIELDCONFIGURATOR_TYPE)
 	public String updateConfigurationInEntry(@PathVariable(MODEL_ATTR_ENTRY_NUMBER)
 	final int entryNumber, final Model model, @ModelAttribute("foo")
 	@Valid
 	final TextFieldConfigurationForm form, final BindingResult bindingErrors, final HttpServletRequest request,
 			final RedirectAttributes redirectModel) throws CommerceCartModificationException
 	{
-		if (bindingErrors.hasErrors())
-		{
-			bindingErrors.getAllErrors().forEach(
-					error -> GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, error.getCode()));
-			return REDIRECT_PREFIX + request.getServletPath();
-		}
 		final CartData cart = cartFacade.getSessionCart();
 		final OrderEntryData entry = getTextFieldFacade().getAbstractOrderEntry(entryNumber, cart);
+		validateProductConfigurations(form, entry.getProduct().getCode(), bindingErrors);
+		if (bindingErrors.hasErrors())
+		{
+			bindingErrors.getAllErrors().forEach(error -> GlobalMessages.addFlashMessage(redirectModel,
+					GlobalMessages.ERROR_MESSAGES_HOLDER, error.getCode(), error.getArguments()));
+			return REDIRECT_PREFIX + request.getServletPath();
+		}
 		cartFacade.updateCartEntry(enrichOrderEntryWithConfigurationData(form, entry));
 		model.addAttribute("product", productFacade.getProductForCodeAndOptions(entry.getProduct().getCode(),
 				Collections.singletonList(ProductOption.BASIC)));
@@ -256,9 +259,7 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 		return REDIRECT_PREFIX + "/cart";
 	}
 
-	@RequestMapping(value = "/my-account/my-quotes/{quoteCode}/{entryNumber}/configurationDisplay/"
-			+ TEXTFIELDCONFIGURATOR_TYPE, method =
-	{ RequestMethod.GET })
+	@GetMapping(value = "/my-account/my-quotes/{quoteCode}/{entryNumber}/configurationDisplay/" + TEXTFIELDCONFIGURATOR_TYPE)
 	public String displayConfigurationInQuoteEntry(@PathVariable("quoteCode")
 	final String quoteCode, @PathVariable(MODEL_ATTR_ENTRY_NUMBER)
 	final int entryNumber, final Model model) throws CMSItemNotFoundException, CommerceCartModificationException
@@ -272,9 +273,7 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 		return ENTRY_READ_ONLY_PAGE;
 	}
 
-	@RequestMapping(value = "/my-account/order/{orderCode}/{entryNumber}/configurationDisplay/"
-			+ TEXTFIELDCONFIGURATOR_TYPE, method =
-	{ RequestMethod.GET })
+	@GetMapping(value = "/my-account/order/{orderCode}/{entryNumber}/configurationDisplay/" + TEXTFIELDCONFIGURATOR_TYPE)
 	public String displayConfigurationInOrderEntry(@PathVariable("orderCode")
 	final String orderCode, @PathVariable(MODEL_ATTR_ENTRY_NUMBER)
 	final int entryNumber, final Model model) throws CMSItemNotFoundException, CommerceCartModificationException
@@ -288,9 +287,7 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 		return ENTRY_READ_ONLY_PAGE;
 	}
 
-	@RequestMapping(value = "/my-account/saved-carts/{cartCode}/{entryNumber}/configurationDisplay/"
-			+ TEXTFIELDCONFIGURATOR_TYPE, method =
-	{ RequestMethod.GET })
+	@GetMapping(value = "/my-account/saved-carts/{cartCode}/{entryNumber}/configurationDisplay/" + TEXTFIELDCONFIGURATOR_TYPE)
 	public String displayConfigurationInSavedCartEntry(@PathVariable("cartCode")
 	final String cartCode, @PathVariable(MODEL_ATTR_ENTRY_NUMBER)
 	final int entryNumber, final Model model)
@@ -354,6 +351,36 @@ public class ProductTextfieldConfiguratorController extends AbstractPageControll
 		}
 		orderEntryData.setConfigurationInfos(configurationInfoDataList);
 		return orderEntryData;
+	}
+
+
+	protected void validateProductConfigurations(final TextFieldConfigurationForm form, final String productCode,
+			final BindingResult bindingErrors)
+	{
+		final Map<String, String> validConfigurationLabels = getValidConfigurationLabels(productCode);
+		final Map<ConfiguratorType, Map<String, String>> values = form.getConfigurationsKeyValueMap();
+		if (values != null)
+		{
+			values.entrySet().stream().filter(entry -> entry.getKey() == ConfiguratorType.TEXTFIELD)
+					.flatMap(entry -> entry.getValue().entrySet().stream()).forEach(property -> {
+						if (!validConfigurationLabels.containsKey(property.getKey()))
+						{
+							bindingErrors.rejectValue("configurationsKeyValueMap['" + ConfiguratorType.TEXTFIELD.getCode() + "']['"
+									+ property.getKey() + "']", "configuration.invalid.key", new Object[]
+							{ property.getKey() }, null);
+						}
+					});
+		}
+	}
+
+	protected Map<String, String> getValidConfigurationLabels(final String productCode)
+	{
+		final List<ConfigurationInfoData> configuratorSettingsForCode = getProductFacade()
+				.getConfiguratorSettingsForCode(productCode);
+		final Map<String, String> result = new HashMap<>();
+		configuratorSettingsForCode.stream()
+				.forEach(infoData -> result.put(infoData.getConfigurationLabel(), infoData.getConfigurationValue()));
+		return result;
 	}
 
 	protected String getConfigurePageRedirectPath(final String productCode)

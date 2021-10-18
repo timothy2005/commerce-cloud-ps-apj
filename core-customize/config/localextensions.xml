@@ -178,7 +178,5 @@
         <extension name='saporderexchangebackoffice' />
         <extension name='sapcoretest' />
 
-        <!-- Spatacus extension -->
-        <extension name='spartacussampledataaddon'/>
     </extensions>
 </hybrisconfig>

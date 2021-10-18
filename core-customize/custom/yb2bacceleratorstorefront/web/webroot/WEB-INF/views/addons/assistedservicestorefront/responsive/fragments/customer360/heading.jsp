@@ -13,7 +13,7 @@
             <c:when test="${not empty headingData.profilePicture}">
             	<c:set var="profilePictureUrl" value="${fn:escapeXml(headingData.profilePicture.url)}"/>
                 <img src="${profilePictureUrl}" class="asm__customer360-customer-image img-circle"
-                    title="<spring:theme code='text.asm.customerList.picture.alt' />" alt="<spring:theme code='text.asm.customerList.picture.alt'/>"/>
+                     title="<spring:theme code='text.asm.customerList.picture.alt' />" alt="<spring:theme code='text.asm.customerList.picture.alt'/>"/>
             </c:when>
             <c:otherwise>
                 <span class="responsive-table-link default-pic"></span>

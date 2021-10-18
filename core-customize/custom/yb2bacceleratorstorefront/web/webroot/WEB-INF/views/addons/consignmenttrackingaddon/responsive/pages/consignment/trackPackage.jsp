@@ -36,7 +36,7 @@
 					<div class="col-sm-12 col-xs-12">
 						<span> 
 							<spring:message code="label.consignment.expected.time" text="Expected delivery"/>:&nbsp;
-							&nbsp;<fmt:formatDate value="${consignment.targetArrivalDate}" pattern="E, MM/dd/yyyy, hh:mm a" />
+							&nbsp;<fmt:formatDate value="${consignment.targetArrivalDate}" dateStyle="medium" timeStyle="short" type="both" />
 						</span>
 					</div>
 				</div>
@@ -54,7 +54,7 @@
 									<c:forEach items="${consignment.trackingEvents}" var="event" varStatus="index">
 										<div class="col-sm-12 col-xs-12 ship-detail-date">
 											<ul>
-												<li><fmt:formatDate value="${event.eventDate}" pattern="E, MM/dd/yyyy, hh:mm a"/></li>
+												<li><fmt:formatDate value="${event.eventDate}" dateStyle="medium" timeStyle="short" type="both" /></li>
 												<li><label>
 													<spring:message code="text.account.order.consignment.status.${fn:toLowerCase(event.referenceCode)}" />
 												</label></li>

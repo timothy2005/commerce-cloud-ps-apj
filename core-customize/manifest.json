@@ -1,10 +1,10 @@
 {
-    "commerceSuiteVersion": "2005",
+    "commerceSuiteVersion": "2011",
     "enableImageProcessingService": true,
     "extensionPacks": [
         {
             "name": "hybris-commerce-integrations",
-            "version": "2005.5"
+            "version": "2102.3"
         }
     ],
     "extensions": [
@@ -172,12 +172,7 @@
             "addon": "personalizationaddon",
             "storefront": "yb2bacceleratorstorefront",
             "template": "yacceleratorstorefront"
-	 },
-        {
-            "addon": "spartacussampledataaddon",
-            "storefront": "yacceleratorstorefront",
-            "template": "yacceleratorstorefront"
-    }
+	 }
 
     ],
     "aspects": [

@@ -64,10 +64,7 @@ public class DefaultBruteForceAttackCounter implements BruteForceAttackCounter
 		{
 			return maxFailedLogins.compareTo(get(prepareUserUid(userUid), Integer.valueOf(0)).getCounter()) <= 0;
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	@Override
