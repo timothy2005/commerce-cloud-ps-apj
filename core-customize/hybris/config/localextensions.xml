@@ -71,6 +71,8 @@
     <extension name='outboundsyncbackoffice' />
     <extension name='kymaintegrationbackoffice' />
     <extension name='accountsummaryaddon'/>
+    <extension name='commerceorgaddon'/>
+    <extension name='ordermanagementaddon'/>
     <!--b2b extensions-->
     <extension name='b2bacceleratoraddon' />
     <extension name='b2bacceleratorfacades' />
