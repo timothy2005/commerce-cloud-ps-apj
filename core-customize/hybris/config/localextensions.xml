@@ -176,7 +176,7 @@
     <extension name='sapcoretest' />
 
     <!-- Spatacus extension -->
-    <extension name='spartacussampledataaddon'/>
+    <extension name='spartacussampledata'/>
 
 
   </extensions>

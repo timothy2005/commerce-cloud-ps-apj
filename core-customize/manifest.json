@@ -152,7 +152,12 @@
             "addon": "personalizationaddon",
             "storefront": "yb2bacceleratorstorefront",
             "template": "yacceleratorstorefront"
-	 }
+	 },
+           {
+            "addon": "spartacussampledata",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+    }
     ],
     "aspects": [
         {
