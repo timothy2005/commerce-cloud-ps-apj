@@ -59,7 +59,6 @@
     <extension name='assistedservicepromotionaddon' />
     <extension name='pcmbackofficesamplesaddon' />
     <extension name='personalizationintegration' />
-    <extension name='hybrisanalyticsaddon' />
     <extension name='eventtrackingwsaddon' />
     <extension name='personalizationaddon' />
     <extension name='outboundservices' />
