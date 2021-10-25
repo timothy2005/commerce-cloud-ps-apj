@@ -159,6 +159,7 @@
     <extension name='accountsummaryaddon'/>
 
     <extension name='yacceleratorcockpits'/>
+    <extension name='eventtrackingwsaddon'/>
 
     <!--scpi extensions-->
     <extension name='sapcoreaddon' />
