@@ -54,8 +54,63 @@
     ],
     "storefrontAddons": [
         {
-            "addon": ["adaptivesearchsamplesaddon","assistedservicestorefront","commerceorgsamplesaddon","consignmenttrackingaddon","customerticketingaddon","ordermanagementaddon","orderselfserviceaddon","pcmbackofficesamplesaddon","sapdigitalpaymentaddon","smarteditaddon","textfieldconfiguratortemplateaddon","personalizationaddon"],
-            "storefront": ["yacceleratorstorefront","yb2bacceleratorstorefront"],
+            "addon": "adaptivesearchsamplesaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "assistedservicestorefront",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "commerceorgsamplesaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "consignmenttrackingaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "customerticketingaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "ordermanagementaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "orderselfserviceaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "pcmbackofficesamplesaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "sapdigitalpaymentaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "smarteditaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "textfieldconfiguratortemplateaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "personalizationaddon",
+            "storefront": "yacceleratorstorefront",
             "template": "yacceleratorstorefront"
         },
         {
@@ -64,7 +119,77 @@
             "template": "yacceleratorstorefront"
         },
         {
-            "addon": ["b2bacceleratoraddon","commerceorgaddon","sapdigitalpaymentb2baddon"],
+            "addon": "adaptivesearchsamplesaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "assistedservicestorefront",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "commerceorgsamplesaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "consignmenttrackingaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "customerticketingaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "ordermanagementaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "orderselfserviceaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "pcmbackofficesamplesaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "sapdigitalpaymentaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "smarteditaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "textfieldconfiguratortemplateaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "personalizationaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
+        {
+            "addon": "b2bacceleratoraddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+	    },
+        {
+            "addon": "commerceorgaddon",
+            "storefront": "yb2bacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+	    },
+        {
+            "addon": "sapdigitalpaymentb2baddon",
             "storefront": "yb2bacceleratorstorefront",
             "template": "yacceleratorstorefront"
 	    }
