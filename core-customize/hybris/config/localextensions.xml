@@ -157,9 +157,10 @@
     <extension name='permissionswebservices' />
     <extension name='webservicescommons' />
     <extension name='accountsummaryaddon'/>
+    <extension name='sapdigitalpaymentaddon'/>
+    <extension name='sapdigitalpaymentb2baddon'/>
 
     <extension name='yacceleratorcockpits'/>
-    <extension name='eventtrackingwsaddon'/>
 
     <!--scpi extensions-->
     <extension name='sapcoreaddon' />
