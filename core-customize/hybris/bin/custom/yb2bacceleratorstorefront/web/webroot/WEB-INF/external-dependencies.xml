@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.hybris.platform</groupId>
 	<artifactId>yb2bacceleratorstorefront.web</artifactId>
-	<version>1905.31</version>
+	<version>1905.33</version>
 
 	<packaging>jar</packaging>
 
