@@ -1,5 +1,12 @@
 /*
- * Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ * [y] hybris Platform
+ *
+ * Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+ *
+ * This software is the confidential and proprietary information of SAP
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with SAP.
  */
 package de.hybris.platform.yb2bacceleratorstorefront.controllers.pages;
 
@@ -13,7 +20,6 @@ import de.hybris.platform.acceleratorstorefrontcommons.controllers.ThirdPartyCon
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.AbstractSearchPageController;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMessages;
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
-import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.comment.data.CommentData;
 import de.hybris.platform.commercefacades.order.CartFacade;
 import de.hybris.platform.commercefacades.order.QuoteFacade;
@@ -97,9 +103,8 @@ public class MyQuotesController extends AbstractSearchPageController
 		breadcrumbs.add(new Breadcrumb("/my-account/my-quotes", getMessageSource().getMessage(
 				"text.account.manageQuotes.breadcrumb", null, getI18nService().getCurrentLocale()), null));
 		model.addAttribute(WebConstants.BREADCRUMBS_KEY, breadcrumbs);
-		final ContentPageModel myQuotesPage = getContentPageForLabelOrId(MY_QUOTES_CMS_PAGE);
-		storeCmsPageInModel(model, myQuotesPage);
-		setUpMetaDataForContentPage(model, myQuotesPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(MY_QUOTES_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(MY_QUOTES_CMS_PAGE));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);
 	}
@@ -123,9 +128,8 @@ public class MyQuotesController extends AbstractSearchPageController
 			loadCommentsShown(model);
 			sortComments(quoteData);
 
-			final ContentPageModel quoteDetailsPage = getContentPageForLabelOrId(QUOTE_DETAILS_CMS_PAGE);
-			storeCmsPageInModel(model, quoteDetailsPage);
-			setUpMetaDataForContentPage(model, quoteDetailsPage);
+			storeCmsPageInModel(model, getContentPageForLabelOrId(QUOTE_DETAILS_CMS_PAGE));
+			setUpMetaDataForContentPage(model, getContentPageForLabelOrId(QUOTE_DETAILS_CMS_PAGE));
 
 			setAllowedActions(model, quoteCode);
 

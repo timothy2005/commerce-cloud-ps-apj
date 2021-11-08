@@ -11,7 +11,7 @@
 
 <div class="headline"><spring:theme code="guest.checkout" arguments="${siteName}"/></div>
 
-<form:form action="${action}" method="post" modelAttribute="guestForm">
+<form:form action="${action}" method="post" commandName="guestForm">
 	<div class="form-group">
 		<formElement:formInputBox idKey="guest.email" labelKey="guest.email" inputCSS="guestEmail" path="email" mandatory="true"/>
 	</div>

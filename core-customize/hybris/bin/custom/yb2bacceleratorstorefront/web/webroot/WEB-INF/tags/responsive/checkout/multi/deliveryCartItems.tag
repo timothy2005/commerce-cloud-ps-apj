@@ -27,8 +27,7 @@
 			<c:when test="${showDeliveryAddress and not empty deliveryAddress}">
 				<div class="title"><spring:theme code="checkout.pickup.items.to.be.shipped"/></div>
 				<div class="address">
-					<c:if test="${ not empty deliveryAddress.title }"> ${fn:escapeXml(deliveryAddress.title)}&nbsp;</c:if>
-					${fn:escapeXml(deliveryAddress.firstName)}&nbsp;${fn:escapeXml(deliveryAddress.lastName)}
+					${fn:escapeXml(deliveryAddress.title)}&nbsp;${fn:escapeXml(deliveryAddress.firstName)}&nbsp;${fn:escapeXml(deliveryAddress.lastName)}
 					<br>
 					<c:if test="${ not empty deliveryAddress.line1 }">
 						${fn:escapeXml(deliveryAddress.line1)},&nbsp;

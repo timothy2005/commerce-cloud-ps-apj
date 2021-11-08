@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ [y] hybris Platform
+
+ Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -45,9 +52,6 @@
 		<!-- filter to log the current request -->
 		<ref bean="requestLoggerFilter"/>
 
-		<!-- filter to initialize polyglot persistence repo per-request behaviour -->
-		<ref bean="polyglotPersistenceCallbackFilter"/>
-
 		<!-- filter to setup the cms integration -->
 		<ref bean="cmsSiteFilter"/>
 
@@ -65,9 +69,6 @@
 
 		<!-- filter to log out guest user if he/she attempts to access a page outside of checkout flow -->
 		<ref bean="anonymousCheckoutFilter"/>
-
-		<!--filter to handle anonymous user consent -->
-		<ref bean="consentFilter"/>
 
 		<!-- filter to restore items in cart -->
 		<ref bean="cartRestorationFilter"/>
@@ -153,12 +154,7 @@
 		<property name="refererExcludeUrlSet" ref="refererExcludeUrlSet"/>
 		<property name="pathMatcher" ref="defaultPathMatcher"/>
 	</bean>
-
-	<bean id="consentFilter" class="de.hybris.platform.yb2bacceleratorstorefront.filters.ConsentFilter">
-		<property name="userFacade" ref="defaultUserFacade"/>
-		<property name="anonymousConsentFacade" ref="anonymousConsentFacade"/>
-	</bean>
-
+	
 	<bean id="cartRestorationFilter" class="de.hybris.platform.yb2bacceleratorstorefront.filters.CartRestorationFilter" >
 		<property name="baseSiteService" ref="baseSiteService"/>
 		<property name="cartService" ref="cartService"/>

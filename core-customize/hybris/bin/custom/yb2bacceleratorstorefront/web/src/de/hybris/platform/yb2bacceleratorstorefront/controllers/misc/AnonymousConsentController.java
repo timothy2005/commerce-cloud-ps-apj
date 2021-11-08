@@ -1,25 +1,32 @@
 /*
- * Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ * [y] hybris Platform
+ *
+ * Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+ *
+ * This software is the confidential and proprietary information of SAP
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with SAP.
  */
 package de.hybris.platform.yb2bacceleratorstorefront.controllers.misc;
 
+import de.hybris.platform.acceleratorstorefrontcommons.consent.data.ConsentCookieData;
 import de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.AbstractPageController;
-import de.hybris.platform.commercefacades.consent.data.AnonymousConsentData;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -36,6 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Controller for managing Anonymous Consent Cookie
+ *
  */
 @Controller
 @RequestMapping("/anonymous-consent")
@@ -53,19 +61,19 @@ public class AnonymousConsentController extends AbstractPageController
 
 		try
 		{
-			final List<AnonymousConsentData> anonymousConsentDataList = Arrays.asList(
-					mapper.readValue(URLDecoder.decode(anonymousConsentCookie.getValue(), StandardCharsets.UTF_8),
-							AnonymousConsentData[].class));
-			final List<AnonymousConsentData> updatedList = anonymousConsentDataList.stream().peek(anonymousConsentData -> {
-				if (anonymousConsentData.getTemplateCode().equals(consentTemplateId))
+			final List<ConsentCookieData> consentCookieDataList = new ArrayList(Arrays
+					.asList(mapper.readValue(URLDecoder.decode(anonymousConsentCookie.getValue(), UTF_8), ConsentCookieData[].class)));
+			final List<ConsentCookieData> updatedList = consentCookieDataList.stream().map(consentCookieData -> {
+				if (consentCookieData.getTemplateCode().equals(consentTemplateId))
 				{
-					anonymousConsentData.setConsentState(consentState);
+					consentCookieData.setConsentState(consentState);
 				}
+				return consentCookieData;
 			}).collect(Collectors.toList());
 
 			final String cookieValue = mapper.writeValueAsString(updatedList);
 			final Cookie updatedAnonymousConsentCookie = new Cookie(WebConstants.ANONYMOUS_CONSENT_COOKIE,
-					URLEncoder.encode(cookieValue, StandardCharsets.UTF_8));
+					URLEncoder.encode(cookieValue, UTF_8));
 			updatedAnonymousConsentCookie.setPath("/");
 			updatedAnonymousConsentCookie.setSecure(true);
 			updatedAnonymousConsentCookie.setHttpOnly(true);

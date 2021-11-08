@@ -10581,6 +10581,9 @@ fieldset[disabled] .btn-primary.active {
 .AddToCart-PickUpInStoreAction {
   margin-top: 10px;
 }
+.AddToCart-ShareOnSocialNetworkAction {
+  margin-top: 20px;
+}
 #AddToCart-AddToCartAction {
   position: relative;
   min-height: 1px;
@@ -10599,6 +10602,15 @@ fieldset[disabled] .btn-primary.active {
     float: left;
     width: 100%;
   }
+}
+#AddToCart-ShareOnSocialNetworkAction {
+  position: relative;
+  float: left;
+  width: 100%;
+  min-height: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 30px;
 }
 .image-gallery img {
   width: 100%;
@@ -10645,6 +10657,11 @@ fieldset[disabled] .btn-primary.active {
 }
 .addtocart-component .actions .btn {
   margin-bottom: 10px;
+}
+.addtocart-component .row .AddToCart-ShareOnSocialNetworkAction {
+  margin: 0 auto;
+  padding-top: 50px;
+  width: 100px;
 }
 .addtocart-component div.a2a_kit a.a2a_dd.share {
   background: url("../../common/images/productShareIcon.png") no-repeat left center;

@@ -45,7 +45,7 @@
                                                         <input type="hidden" name="selectedAddressCode" value="${fn:escapeXml(deliveryAddress.id)}" />
                                                         <ul>
                                                             <li>
-                                                                <strong><c:if test="${ not empty deliveryAddress.title }"> ${fn:escapeXml(deliveryAddress.title)}&nbsp;</c:if>
+                                                                <strong>${fn:escapeXml(deliveryAddress.title)}&nbsp;
                                                                 ${fn:escapeXml(deliveryAddress.firstName)}&nbsp;
                                                                 ${fn:escapeXml(deliveryAddress.lastName)}</strong>
                                                                 <br>

@@ -325,7 +325,7 @@ ACC.storefinder = {
 				},
 				function (error)
 				{
-					console.log("An error occurred... The error code and message are: " + error.code + "/" + error.message);    // NOSONAR
+					console.log("An error occurred... The error code and message are: " + error.code + "/" + error.message);
 				}
 			);
 		}

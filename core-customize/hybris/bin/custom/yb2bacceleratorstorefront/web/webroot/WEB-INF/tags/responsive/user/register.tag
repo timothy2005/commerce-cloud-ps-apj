@@ -20,11 +20,11 @@
 	<spring:theme code="register.description" />
 </p>
 
-<form:form method="post" modelAttribute="registerForm" action="${action}">
-	<formElement:formSelectBoxDefaultEnabled idKey="register.title"
+<form:form method="post" commandName="registerForm" action="${action}">
+	<formElement:formSelectBox idKey="register.title"
 		labelKey="register.title" selectCSSClass="form-control"
 		path="titleCode" mandatory="true" skipBlank="false"
-		skipBlankMessageKey="form.select.none" items="${titles}" />
+		skipBlankMessageKey="form.select.empty" items="${titles}" />
 	<formElement:formInputBox idKey="register.firstName"
 		labelKey="register.firstName" path="firstName" inputCSS="form-control"
 		mandatory="true" />

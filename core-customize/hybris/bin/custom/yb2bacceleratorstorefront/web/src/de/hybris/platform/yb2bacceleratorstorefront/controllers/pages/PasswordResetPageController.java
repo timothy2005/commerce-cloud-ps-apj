@@ -1,21 +1,27 @@
 /*
- * Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ * [y] hybris Platform
+ *
+ * Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+ *
+ * This software is the confidential and proprietary information of SAP
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with SAP.
  */
 package de.hybris.platform.yb2bacceleratorstorefront.controllers.pages;
 
 import de.hybris.platform.acceleratorstorefrontcommons.breadcrumb.ResourceBreadcrumbBuilder;
 import de.hybris.platform.acceleratorstorefrontcommons.constants.WebConstants;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.AbstractPageController;
-import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMessages;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.ForgottenPwdForm;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.UpdatePwdForm;
 import de.hybris.platform.acceleratorstorefrontcommons.forms.validation.UpdatePasswordFormValidator;
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
-import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.customer.CustomerFacade;
 import de.hybris.platform.commerceservices.customer.TokenInvalidatedException;
 import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
 import de.hybris.platform.yb2bacceleratorstorefront.controllers.ControllerConstants;
+import de.hybris.platform.acceleratorstorefrontcommons.controllers.util.GlobalMessages;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -92,9 +98,8 @@ public class PasswordResetPageController extends AbstractPageController
 	public String getExternalPasswordRequest(final Model model) throws CMSItemNotFoundException
 	{
 		model.addAttribute(new ForgottenPwdForm());
-		final ContentPageModel contentPage = getContentPageForLabelOrId(null);
-		storeCmsPageInModel(model, contentPage);
-		setUpMetaDataForContentPage(model, contentPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(null));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(null));
 		model.addAttribute(WebConstants.BREADCRUMBS_KEY, resourceBreadcrumbBuilder.getBreadcrumbs(FORGOTTEN_PWD_TITLE));
 		return ControllerConstants.Views.Pages.Password.PasswordResetRequest;
 	}
@@ -102,9 +107,8 @@ public class PasswordResetPageController extends AbstractPageController
 	@RequestMapping(value = "/request/external/conf", method = RequestMethod.GET)
 	public String getExternalPasswordRequestConf(final Model model) throws CMSItemNotFoundException
 	{
-		final ContentPageModel contentPage = getContentPageForLabelOrId(null);
-		storeCmsPageInModel(model, contentPage);
-		setUpMetaDataForContentPage(model, contentPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(null));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(null));
 		model.addAttribute(WebConstants.BREADCRUMBS_KEY, resourceBreadcrumbBuilder.getBreadcrumbs(FORGOTTEN_PWD_TITLE));
 		return ControllerConstants.Views.Pages.Password.PasswordResetRequestConfirmation;
 	}
@@ -113,9 +117,8 @@ public class PasswordResetPageController extends AbstractPageController
 	public String externalPasswordRequest(@Valid final ForgottenPwdForm form, final BindingResult bindingResult, final Model model, final RedirectAttributes redirectModel)
 			throws CMSItemNotFoundException
 	{
-		final ContentPageModel contentPage = getContentPageForLabelOrId(null);
-		storeCmsPageInModel(model, contentPage);
-		setUpMetaDataForContentPage(model, contentPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(null));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(null));
 		model.addAttribute(WebConstants.BREADCRUMBS_KEY, resourceBreadcrumbBuilder.getBreadcrumbs(FORGOTTEN_PWD_TITLE));
 
 		if (bindingResult.hasErrors())
@@ -149,9 +152,8 @@ public class PasswordResetPageController extends AbstractPageController
 		final UpdatePwdForm form = new UpdatePwdForm();
 		form.setToken(token);
 		model.addAttribute(form);
-		final ContentPageModel updatePwdPage = getContentPageForLabelOrId(UPDATE_PWD_CMS_PAGE);
-		storeCmsPageInModel(model, updatePwdPage);
-		setUpMetaDataForContentPage(model, updatePwdPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(UPDATE_PWD_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(UPDATE_PWD_CMS_PAGE));
 		model.addAttribute(WebConstants.BREADCRUMBS_KEY, resourceBreadcrumbBuilder.getBreadcrumbs("updatePwd.title"));
 		return ControllerConstants.Views.Pages.Password.PasswordResetChangePage;
 	}
@@ -192,15 +194,14 @@ public class PasswordResetPageController extends AbstractPageController
 
 	/**
 	 * Prepares the view to display an error message
-	 *
+	 * 
 	 * @throws CMSItemNotFoundException
 	 */
 	protected void prepareErrorMessage(final Model model, final String page) throws CMSItemNotFoundException
 	{
 		GlobalMessages.addErrorMessage(model, "form.global.error");
-		final ContentPageModel contentPage = getContentPageForLabelOrId(page);
-		storeCmsPageInModel(model, contentPage);
-		setUpMetaDataForContentPage(model, contentPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(page));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(page));
 	}
 
 

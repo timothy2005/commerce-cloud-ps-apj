@@ -93,7 +93,7 @@ ACC.savedcarts = {
             ACC.common.checkAuthenticationStatusBeforeAction(function(){
             	$.post(url, postData, undefined, 'html').done(function (result, data, status) {
             		result = ACC.sanitizer.sanitize(result);
-            		if (result == "200 OK") {
+            		if (result == "200") {
             			var url = ACC.config.encodedContextPath + "/cart"
             			window.location.replace(url);
             		} else {

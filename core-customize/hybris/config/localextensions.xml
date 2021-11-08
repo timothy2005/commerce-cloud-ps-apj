@@ -91,7 +91,7 @@
 
 
     <!-- Sample Extensions -->
-    <extension name='spartacussampledataaddon' />
+    <!-- <extension name='spartacussampledataaddon' /> -->
     <!--<extension name='kiwi' />
     <extension name='tiger'/> -->
 

@@ -1,5 +1,5 @@
 {
-    "commerceSuiteVersion": "1905",
+    "commerceSuiteVersion": "1811",
     "enableImageProcessingService": true,
     "useCloudExtensionPack": true,
     "extensions": [
@@ -63,7 +63,9 @@
                 "xyformsstorefrontcommons",
                 "smarteditaddon",
                 "multicountrysampledataaddon",
-                "eventtrackingwsaddon"
+                "eventtrackingwsaddon",
+                "textfieldconfiguratortemplateaddon",
+                "personalizationsearchsamplesaddon"
             ],
             "storefronts": [
                 "yacceleratorstorefront",
@@ -72,14 +74,8 @@
             "template": "yacceleratorstorefront"
         },
         {
-            "addon": "spartacussampledataaddon",
-            "storefront": "yacceleratorstorefront",
-            "template": "yacceleratorstorefront"
-        },
-        {
             "addons": [
                 "acceleratorwebservicesaddon",
-                "consignmenttrackingoccaddon",
                 "cmsoccaddon"
             ],
             "storefront": "ycommercewebservices",

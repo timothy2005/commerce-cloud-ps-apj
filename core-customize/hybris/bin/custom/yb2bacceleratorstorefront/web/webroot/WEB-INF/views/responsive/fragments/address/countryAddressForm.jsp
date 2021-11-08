@@ -3,7 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <c:if test="${not empty country}">
-	<form:form modelAttribute="addressForm">
+	<form:form commandName="addressForm">
 		<address:addressFormElements regions="${regions}"
 		                             country="${country}"/>
 	</form:form>

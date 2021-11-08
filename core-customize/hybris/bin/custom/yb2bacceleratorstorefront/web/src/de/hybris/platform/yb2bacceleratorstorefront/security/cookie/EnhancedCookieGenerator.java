@@ -1,5 +1,12 @@
 /*
- * Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ * [y] hybris Platform
+ *
+ * Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+ *
+ * This software is the confidential and proprietary information of SAP
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with SAP.
  */
 package de.hybris.platform.yb2bacceleratorstorefront.security.cookie;
 
@@ -67,10 +74,19 @@ public class EnhancedCookieGenerator extends CookieGenerator
 
 				if (isHttpOnly())
 				{
-					cookie.setHttpOnly(true);
+					// Custom code to write the cookie including the httpOnly flag
+					// StringBuffer cannot be replaced by StringBuilder due to the type required by called function
+					final StringBuffer headerBuffer = new StringBuffer(100); // NOSONAR
+					ServerCookie.appendCookieValue(headerBuffer, cookie.getVersion(), cookie.getName(), cookie.getValue(),
+							cookie.getPath(), cookie.getDomain(), cookie.getComment(), cookie.getMaxAge(), cookie.getSecure(),
+							true);
+					response.addHeader(HEADER_COOKIE, headerBuffer.toString());
 				}
-				
-				super.addCookie(cookie);
+				else
+				{
+					// Write the cookie as normal
+					super.addCookie(cookie);
+				}
 			}
 		}, cookieValue);
 	}

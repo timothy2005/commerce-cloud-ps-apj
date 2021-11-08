@@ -6,8 +6,7 @@ if ($("#quickOrder").length > 0) {
             "bindClearQuickOrderRow",
             "bindAddSkuInputRow",
             "bindResetFormBtn",
-            "bindAddToCartClick",
-            "bindCompileTemplate"
+            "bindAddToCartClick"
         ],
 
         $quickOrderContainer: $('.js-quick-order-container'),
@@ -28,8 +27,6 @@ if ($("#quickOrder").length > 0) {
         $productItemTotal: '.js-quick-order-item-total',
         $classHasError: 'has-error',
 
-        $templateAlias: 'quickOrderRowTemplate',
-
         bindResetFormBtn: function () {
             ACC.quickorder.$resetFormBtn.on("click", ACC.quickorder.clearForm);
         },
@@ -46,10 +43,6 @@ if ($("#quickOrder").length > 0) {
             $(ACC.quickorder.$removeQuickOrderRowBtn).on("mousedown", ACC.quickorder.clearQuickOrderRow);
         },
 
-        bindCompileTemplate: function () {
-            $.template(ACC.quickorder.$templateAlias, $("#quickOrderRowTemplate"));
-        },
-
         addToCart: function () {
             $.ajax({
                 url: ACC.quickorder.$quickOrderContainer.data('quickOrderAddToCartUrl'),
@@ -63,7 +56,7 @@ if ($("#quickOrder").length > 0) {
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // log the error to the console
-                    console.log("The following error occurred: " + textStatus, errorThrown);    // NOSONAR
+                    console.log("The following error occurred: " + textStatus, errorThrown);
                 }
             });
         },
@@ -86,7 +79,7 @@ if ($("#quickOrder").length > 0) {
                     ACC.quickorder.findElement(parentLi, ACC.quickorder.$skuValidationContainer).text(errorMsg);
                 }
                 else {
-                    ACC.quickorder.clearGivenQuickOrderRow(parentLi);
+                    ACC.quickorder.findElement(parentLi, ACC.quickorder.$removeQuickOrderRowBtn).trigger("mousedown");
                 }
             });
 
@@ -107,32 +100,32 @@ if ($("#quickOrder").length > 0) {
         },
 
         handleFocusOutOnSkuInput: function (event) {
-            var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
-            if (key == 13) {
-                $(event.target).focusout();
-            }
-            if (event.type == "focusout") {
-                ACC.quickorder.handleGetProduct(event);
-                ACC.quickorder.handleBeforeUnloadEvent();
-            }
+        	var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
+        	if (key == 13) {
+        		$(event.target).focusout();
+        	}
+        	if (event.type == "focusout") {
+        		ACC.quickorder.handleGetProduct(event);
+        		ACC.quickorder.handleBeforeUnloadEvent();
+        	}
         },
 
         handleFocusOutOnQtyInput: function (event) {
-            var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
-            if (key == 13) {    
-                event.preventDefault();
-                var parentLi = ACC.quickorder.getCurrentParentLi(event.target);             
-                parentLi.next().find(ACC.quickorder.$skuInputField).focus();
-                $(event.target).focusout();
-            }
-            if (event.type == "focusout") {
-                ACC.quickorder.validateAndUpdateItemTotal(event);
-                ACC.quickorder.enableDisableAddToCartBtn();
-            }
+        	var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
+        	if (key == 13) {	
+        		event.preventDefault();
+        		var parentLi = ACC.quickorder.getCurrentParentLi(event.target);        		
+        		parentLi.next().find(ACC.quickorder.$skuInputField).focus();
+        		$(event.target).focusout();
+        	}
+        	if (event.type == "focusout") {
+        		ACC.quickorder.validateAndUpdateItemTotal(event);
+        		ACC.quickorder.enableDisableAddToCartBtn();
+        	}
         },
 
         clearForm: function () {
-            window.location.reload();
+        	window.location.reload();
         },
 
         validateAndUpdateItemTotal: function (event) {
@@ -174,14 +167,11 @@ if ($("#quickOrder").length > 0) {
         },
 
         clearQuickOrderRow: function () {
-            var parentLi = ACC.quickorder.getCurrentParentLi(this);
-            ACC.quickorder.clearGivenQuickOrderRow(parentLi);
-        },
-        
-        clearGivenQuickOrderRow: function (parentLi) {
             var quickOrderMinRows = ACC.quickorder.$quickOrderMinRows;
+            var parentLi = ACC.quickorder.getCurrentParentLi(this);
             if ($('.js-ul-container li.js-li-container').length > quickOrderMinRows) {
                 parentLi.remove();
+                ACC.quickorder.bindClearQuickOrderRow();
             }
             else {
                 ACC.quickorder.findElement(parentLi, ACC.quickorder.$productInfoContainer).remove();
@@ -258,7 +248,7 @@ if ($("#quickOrder").length > 0) {
                 else {
                     $(event.target).removeClass(ACC.quickorder.$classHasError);
                     ACC.quickorder.findElement(parentLi, ACC.quickorder.$skuValidationContainer).text('');
-                    $.tmpl(ACC.quickorder.$templateAlias, result.productData).insertAfter(ACC.quickorder.findElement(parentLi, '.js-sku-container'));
+                    $('#quickOrderRowTemplate').tmpl(result.productData).insertAfter(ACC.quickorder.findElement(parentLi, '.js-sku-container'));
                     var qtyInputField = ACC.quickorder.findElement(parentLi, ACC.quickorder.$qtyInputField);
                     qtyInputField.focusout(ACC.quickorder.handleFocusOutOnQtyInput).keydown(ACC.quickorder.handleFocusOutOnQtyInput);
                     var stockLevelStatus = result.productData.stock.stockLevelStatus.code;
@@ -267,7 +257,7 @@ if ($("#quickOrder").length > 0) {
                         qtyInputField.prop('disabled', true);
                     }
                     else {
-                        qtyInputField.focus().select();
+                    	qtyInputField.focus().select();
                     }
                     ACC.quickorder.enableDisableAddToCartBtn();
                 }

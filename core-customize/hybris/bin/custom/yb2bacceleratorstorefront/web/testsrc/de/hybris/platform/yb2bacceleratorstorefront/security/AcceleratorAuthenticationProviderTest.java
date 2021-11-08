@@ -1,15 +1,20 @@
 /*
- * Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ * [y] hybris Platform
+ *
+ * Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+ *
+ * This software is the confidential and proprietary information of SAP
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with SAP.
  */
 package de.hybris.platform.yb2bacceleratorstorefront.security;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import de.hybris.bootstrap.annotations.UnitTest;
+import de.hybris.platform.acceleratorstorefrontcommons.security.AbstractAcceleratorAuthenticationProvider;
 import de.hybris.platform.acceleratorstorefrontcommons.security.BruteForceAttackCounter;
 import de.hybris.platform.core.Constants;
 import de.hybris.platform.core.model.user.UserGroupModel;
@@ -32,6 +37,9 @@ import org.springframework.security.core.Authentication;
 public class AcceleratorAuthenticationProviderTest
 {
 	private AcceleratorAuthenticationProvider acceleratorAuthenticationProvider;
+
+	@Mock
+	private AbstractAcceleratorAuthenticationProvider abstractAcceleratorAuthenticationProvider;
 
 	private Authentication authentication;
 
@@ -65,17 +73,5 @@ public class AcceleratorAuthenticationProviderTest
 		given(userService.getUserGroupForUID(Constants.USER.CUSTOMER_USERGROUP)).willReturn(userGroupModel);
 		given(Boolean.valueOf(userService.isMemberOfGroup(userModel, userGroupModel))).willReturn(Boolean.FALSE);
 		acceleratorAuthenticationProvider.authenticate(authentication);
-	}
-
-	@Test(expected = BadCredentialsException.class)
-	public void testDisabledUserShouldNotBeConsideredABruteForceAttack()
-	{
-		final String uid = "testuser@hybris.com";
-		userModel.setUid(uid);
-		userModel.setLoginDisabled(true);
-
-		when(userService.getUserForUID(anyString())).thenReturn(userModel);
-		acceleratorAuthenticationProvider.authenticate(authentication);
-		verify(bruteForceAttackCounter).resetUserCounter(uid);
 	}
 }

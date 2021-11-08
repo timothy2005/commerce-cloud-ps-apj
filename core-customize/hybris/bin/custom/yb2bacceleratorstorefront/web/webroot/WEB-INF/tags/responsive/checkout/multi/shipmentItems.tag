@@ -32,8 +32,7 @@
             <div class="col-sm-12 col-lg-6">
                 <div class="checkout-shipping-items-header"><spring:theme code="checkout.summary.shippingAddress" /></div>
                 <span>
-                    <b><c:if test="${ not empty deliveryAddress.title }">${fn:escapeXml(deliveryAddress.title)}&nbsp;</c:if>
-                    ${fn:escapeXml(deliveryAddress.firstName)}&nbsp;${fn:escapeXml(deliveryAddress.lastName)}</b>
+                    <b>${fn:escapeXml(deliveryAddress.title)}&nbsp;${fn:escapeXml(deliveryAddress.firstName)}&nbsp;${fn:escapeXml(deliveryAddress.lastName)}</b>
                     <br/>
                     <c:if test="${ not empty deliveryAddress.line1 }">
                         ${fn:escapeXml(deliveryAddress.line1)},&nbsp;

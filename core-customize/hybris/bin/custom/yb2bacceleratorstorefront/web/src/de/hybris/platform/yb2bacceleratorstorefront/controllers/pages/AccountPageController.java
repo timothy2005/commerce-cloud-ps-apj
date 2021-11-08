@@ -1,5 +1,12 @@
 /*
- * Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ * [y] hybris Platform
+ *
+ * Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+ *
+ * This software is the confidential and proprietary information of SAP
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with SAP.
  */
 package de.hybris.platform.yb2bacceleratorstorefront.controllers.pages;
 
@@ -23,7 +30,6 @@ import de.hybris.platform.acceleratorstorefrontcommons.forms.verification.Addres
 import de.hybris.platform.acceleratorstorefrontcommons.strategy.CustomerConsentDataStrategy;
 import de.hybris.platform.acceleratorstorefrontcommons.util.AddressDataUtil;
 import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
-import de.hybris.platform.cms2.model.pages.ContentPageModel;
 import de.hybris.platform.commercefacades.address.AddressVerificationFacade;
 import de.hybris.platform.commercefacades.address.data.AddressVerificationResult;
 import de.hybris.platform.commercefacades.customer.CustomerFacade;
@@ -290,9 +296,8 @@ public class AccountPageController extends AbstractSearchPageController
 			GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, "system.error.page.not.found", null);
 			return REDIRECT_PREFIX + "/";
 		}
-		final ContentPageModel accountPage = getContentPageForLabelOrId(ACCOUNT_CMS_PAGE);
-		storeCmsPageInModel(model, accountPage);
-		setUpMetaDataForContentPage(model, accountPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(ACCOUNT_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ACCOUNT_CMS_PAGE));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(null));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);
@@ -308,9 +313,9 @@ public class AccountPageController extends AbstractSearchPageController
 		final PageableData pageableData = createPageableData(page, 5, sortCode, showMode);
 		final SearchPageData<OrderHistoryData> searchPageData = orderFacade.getPagedOrderHistoryForStatuses(pageableData);
 		populateModel(model, searchPageData, showMode);
-		final ContentPageModel orderHistoryPage = getContentPageForLabelOrId(ORDER_HISTORY_CMS_PAGE);
-		storeCmsPageInModel(model, orderHistoryPage);
-		setUpMetaDataForContentPage(model, orderHistoryPage);
+
+		storeCmsPageInModel(model, getContentPageForLabelOrId(ORDER_HISTORY_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ORDER_HISTORY_CMS_PAGE));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs("text.account.orderHistory"));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);
@@ -340,10 +345,9 @@ public class AccountPageController extends AbstractSearchPageController
 			GlobalMessages.addFlashMessage(redirectModel, GlobalMessages.ERROR_MESSAGES_HOLDER, "system.error.page.not.found", null);
 			return REDIRECT_TO_ORDER_HISTORY_PAGE;
 		}
-		final ContentPageModel orderDetailPage = getContentPageForLabelOrId(ORDER_DETAIL_CMS_PAGE);
-		storeCmsPageInModel(model, orderDetailPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(ORDER_DETAIL_CMS_PAGE));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
-		setUpMetaDataForContentPage(model, orderDetailPage);
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ORDER_DETAIL_CMS_PAGE));
 		return getViewForPage(model);
 	}
 
@@ -376,9 +380,8 @@ public class AccountPageController extends AbstractSearchPageController
 
 		model.addAttribute("customerData", customerData);
 
-		final ContentPageModel profilePage = getContentPageForLabelOrId(PROFILE_CMS_PAGE);
-		storeCmsPageInModel(model, profilePage);
-		setUpMetaDataForContentPage(model, profilePage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(PROFILE_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(PROFILE_CMS_PAGE));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(TEXT_ACCOUNT_PROFILE));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);
@@ -409,9 +412,9 @@ public class AccountPageController extends AbstractSearchPageController
 		updateEmailForm.setEmail(customerData.getDisplayUid());
 
 		model.addAttribute("updateEmailForm", updateEmailForm);
-		final ContentPageModel updateEmailPage = getContentPageForLabelOrId(UPDATE_EMAIL_CMS_PAGE);
-		storeCmsPageInModel(model, updateEmailPage);
-		setUpMetaDataForContentPage(model, updateEmailPage);
+
+		storeCmsPageInModel(model, getContentPageForLabelOrId(UPDATE_EMAIL_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(UPDATE_EMAIL_CMS_PAGE));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(TEXT_ACCOUNT_PROFILE));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);
@@ -468,9 +471,8 @@ public class AccountPageController extends AbstractSearchPageController
 	protected String setErrorMessagesAndCMSPage(final Model model, final String cmsPageLabelOrId) throws CMSItemNotFoundException
 	{
 		GlobalMessages.addErrorMessage(model, FORM_GLOBAL_ERROR);
-		final ContentPageModel cmsPage = getContentPageForLabelOrId(cmsPageLabelOrId);
-		storeCmsPageInModel(model, cmsPage);
-		setUpMetaDataForContentPage(model, cmsPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(cmsPageLabelOrId));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(cmsPageLabelOrId));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(TEXT_ACCOUNT_PROFILE));
 		return getViewForPage(model);
 	}
@@ -491,9 +493,8 @@ public class AccountPageController extends AbstractSearchPageController
 
 		model.addAttribute("updateProfileForm", updateProfileForm);
 
-		final ContentPageModel updateProfilePage = getContentPageForLabelOrId(UPDATE_PROFILE_CMS_PAGE);
-		storeCmsPageInModel(model, updateProfilePage);
-		setUpMetaDataForContentPage(model, updateProfilePage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(UPDATE_PROFILE_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(UPDATE_PROFILE_CMS_PAGE));
 
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(TEXT_ACCOUNT_PROFILE));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
@@ -518,9 +519,8 @@ public class AccountPageController extends AbstractSearchPageController
 
 		model.addAttribute(TITLE_DATA_ATTR, userFacade.getTitles());
 
-		final ContentPageModel updateProfilePage = getContentPageForLabelOrId(UPDATE_PROFILE_CMS_PAGE);
-		storeCmsPageInModel(model, updateProfilePage);
-		setUpMetaDataForContentPage(model, updateProfilePage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(UPDATE_PROFILE_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(UPDATE_PROFILE_CMS_PAGE));
 
 		if (bindingResult.hasErrors())
 		{
@@ -555,9 +555,8 @@ public class AccountPageController extends AbstractSearchPageController
 
 		model.addAttribute("updatePasswordForm", updatePasswordForm);
 
-		final ContentPageModel updatePasswordPage = getContentPageForLabelOrId(UPDATE_PASSWORD_CMS_PAGE);
-		storeCmsPageInModel(model, updatePasswordPage);
-		setUpMetaDataForContentPage(model, updatePasswordPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(UPDATE_PASSWORD_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(UPDATE_PASSWORD_CMS_PAGE));
 
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs("text.account.profile.updatePasswordForm"));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
@@ -594,9 +593,8 @@ public class AccountPageController extends AbstractSearchPageController
 		if (bindingResult.hasErrors())
 		{
 			GlobalMessages.addErrorMessage(model, FORM_GLOBAL_ERROR);
-			final ContentPageModel updatePasswordPage = getContentPageForLabelOrId(UPDATE_PASSWORD_CMS_PAGE);
-			storeCmsPageInModel(model, updatePasswordPage);
-			setUpMetaDataForContentPage(model, updatePasswordPage);
+			storeCmsPageInModel(model, getContentPageForLabelOrId(UPDATE_PASSWORD_CMS_PAGE));
+			setUpMetaDataForContentPage(model, getContentPageForLabelOrId(UPDATE_PASSWORD_CMS_PAGE));
 
 			model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs("text.account.profile.updatePasswordForm"));
 			return getViewForPage(model);
@@ -614,9 +612,9 @@ public class AccountPageController extends AbstractSearchPageController
 	public String getAddressBook(final Model model) throws CMSItemNotFoundException
 	{
 		model.addAttribute(ADDRESS_DATA_ATTR, userFacade.getAddressBook());
-		final ContentPageModel addressBookPage = getContentPageForLabelOrId(ADDRESS_BOOK_CMS_PAGE);
-		storeCmsPageInModel(model, addressBookPage);
-		setUpMetaDataForContentPage(model, addressBookPage);
+
+		storeCmsPageInModel(model, getContentPageForLabelOrId(ADDRESS_BOOK_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ADDRESS_BOOK_CMS_PAGE));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(TEXT_ACCOUNT_ADDRESS_BOOK));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);
@@ -632,9 +630,8 @@ public class AccountPageController extends AbstractSearchPageController
 		model.addAttribute(ADDRESS_FORM_ATTR, addressForm);
 		model.addAttribute(ADDRESS_BOOK_EMPTY_ATTR, Boolean.valueOf(CollectionUtils.isEmpty(userFacade.getAddressBook())));
 		model.addAttribute(IS_DEFAULT_ADDRESS_ATTR, Boolean.FALSE);
-		final ContentPageModel addEditAddressPage = getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE);
-		storeCmsPageInModel(model, addEditAddressPage);
-		setUpMetaDataForContentPage(model, addEditAddressPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
 
 		final List<Breadcrumb> breadcrumbs = accountBreadcrumbBuilder.getBreadcrumbs(null);
 		breadcrumbs.add(new Breadcrumb(MY_ACCOUNT_ADDRESS_BOOK_URL,
@@ -666,9 +663,8 @@ public class AccountPageController extends AbstractSearchPageController
 		if (bindingResult.hasErrors())
 		{
 			GlobalMessages.addErrorMessage(model, FORM_GLOBAL_ERROR);
-			final ContentPageModel addEditAddressPage = getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE);
-			storeCmsPageInModel(model, addEditAddressPage);
-			setUpMetaDataForContentPage(model, addEditAddressPage);
+			storeCmsPageInModel(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
+			setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
 			setUpAddressFormAfterError(addressForm, model);
 			return getViewForPage(model);
 		}
@@ -757,9 +753,9 @@ public class AccountPageController extends AbstractSearchPageController
 				break;
 			}
 		}
-		final ContentPageModel addEditAddressPage = getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE);
-		storeCmsPageInModel(model, addEditAddressPage);
-		setUpMetaDataForContentPage(model, addEditAddressPage);
+
+		storeCmsPageInModel(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
 
 		final List<Breadcrumb> breadcrumbs = accountBreadcrumbBuilder.getBreadcrumbs(null);
 		breadcrumbs.add(new Breadcrumb(MY_ACCOUNT_ADDRESS_BOOK_URL,
@@ -779,12 +775,11 @@ public class AccountPageController extends AbstractSearchPageController
 			final RedirectAttributes redirectModel) throws CMSItemNotFoundException
 	{
 		getAddressValidator().validate(addressForm, bindingResult);
-		final ContentPageModel addEditAddressPage = getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE);
 		if (bindingResult.hasErrors())
 		{
 			GlobalMessages.addErrorMessage(model, FORM_GLOBAL_ERROR);
-			storeCmsPageInModel(model, addEditAddressPage);
-			setUpMetaDataForContentPage(model, addEditAddressPage);
+			storeCmsPageInModel(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
+			setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
 			setUpAddressFormAfterError(addressForm, model);
 			return getViewForPage(model);
 		}
@@ -811,8 +806,8 @@ public class AccountPageController extends AbstractSearchPageController
 
 		if (addressRequiresReview)
 		{
-			storeCmsPageInModel(model, addEditAddressPage);
-			setUpMetaDataForContentPage(model, addEditAddressPage);
+			storeCmsPageInModel(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
+			setUpMetaDataForContentPage(model, getContentPageForLabelOrId(ADD_EDIT_ADDRESS_CMS_PAGE));
 			return getViewForPage(model);
 		}
 
@@ -921,9 +916,8 @@ public class AccountPageController extends AbstractSearchPageController
 	public String consentManagement(final Model model) throws CMSItemNotFoundException
 	{
 		model.addAttribute("consentTemplateDataList", getConsentFacade().getConsentTemplatesWithConsents());
-		final ContentPageModel consentManagementPage = getContentPageForLabelOrId(CONSENT_MANAGEMENT_CMS_PAGE);
-		storeCmsPageInModel(model, consentManagementPage);
-		setUpMetaDataForContentPage(model, consentManagementPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(CONSENT_MANAGEMENT_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(CONSENT_MANAGEMENT_CMS_PAGE));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(TEXT_ACCOUNT_CONSENT_MANAGEMENT));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);
@@ -986,9 +980,8 @@ public class AccountPageController extends AbstractSearchPageController
 	@RequireHardLogIn
 	public String showCloseAccountPage(final Model model) throws CMSItemNotFoundException
 	{
-		final ContentPageModel closeAccountPage = getContentPageForLabelOrId(CLOSE_ACCOUNT_CMS_PAGE);
-		storeCmsPageInModel(model, closeAccountPage);
-		setUpMetaDataForContentPage(model, closeAccountPage);
+		storeCmsPageInModel(model, getContentPageForLabelOrId(CLOSE_ACCOUNT_CMS_PAGE));
+		setUpMetaDataForContentPage(model, getContentPageForLabelOrId(CLOSE_ACCOUNT_CMS_PAGE));
 		model.addAttribute(BREADCRUMBS_ATTR, accountBreadcrumbBuilder.getBreadcrumbs(TEXT_ACCOUNT_CLOSE));
 		model.addAttribute(ThirdPartyConstants.SeoRobots.META_ROBOTS, ThirdPartyConstants.SeoRobots.NOINDEX_NOFOLLOW);
 		return getViewForPage(model);

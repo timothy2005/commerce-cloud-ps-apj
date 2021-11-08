@@ -1,11 +1,15 @@
 /*
- * Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+ * [y] hybris Platform
+ *
+ * Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+ *
+ * This software is the confidential and proprietary information of SAP
+ * ("Confidential Information"). You shall not disclose such Confidential
+ * Information and shall use it only in accordance with the terms of the
+ * license agreement you entered into with SAP.
  */
 package de.hybris.platform.yb2bacceleratorstorefront.controllers.misc;
 
-import de.hybris.platform.acceleratorfacades.urlencoder.UrlEncoderFacade;
-import de.hybris.platform.acceleratorfacades.urlencoder.data.UrlEncoderData;
-import de.hybris.platform.acceleratorservices.constants.AcceleratorServicesConstants;
 import de.hybris.platform.acceleratorservices.uiexperience.UiExperienceService;
 import de.hybris.platform.acceleratorservices.urlencoder.UrlEncoderService;
 import de.hybris.platform.acceleratorstorefrontcommons.controllers.AbstractController;
@@ -15,7 +19,6 @@ import de.hybris.platform.commercefacades.user.UserFacade;
 import de.hybris.platform.commerceservices.enums.UiExperienceLevel;
 import de.hybris.platform.enumeration.EnumerationService;
 import de.hybris.platform.servicelayer.exceptions.UnknownIdentifierException;
-import de.hybris.platform.servicelayer.session.SessionService;
 import de.hybris.platform.yb2bacceleratorstorefront.filters.StorefrontFilter;
 
 import java.util.Arrays;
@@ -56,14 +59,9 @@ public class StoreSessionController extends AbstractController
 	@Resource(name = "enumerationService")
 	private EnumerationService enumerationService;
 
-	@Resource(name = "urlEncoderFacade")
-	private UrlEncoderFacade urlEncoderFacade;
-
 	@Resource(name = "urlEncoderService")
 	private UrlEncoderService urlEncoderService;
 
-	@Resource(name = "sessionService")
-	private SessionService sessionService;
 
 	@RequestMapping(value = "/language", method =
 	{ RequestMethod.GET, RequestMethod.POST })
@@ -71,7 +69,6 @@ public class StoreSessionController extends AbstractController
 	{
 		final String previousLanguage = storeSessionFacade.getCurrentLanguage().getIsocode();
 		storeSessionFacade.setCurrentLanguage(isoCode);
-		updateUrlEncodingData(AcceleratorServicesConstants.LANGUAGE_ENCODING, isoCode);
 		if (!userFacade.isAnonymousUser())
 		{
 			userFacade.syncSessionLanguage();
@@ -215,18 +212,6 @@ public class StoreSessionController extends AbstractController
 			return REDIRECT_PREFIX + StringUtils.replace(referer, "/" + old + "/", "/" + current + "/");
 		}
 		return REDIRECT_PREFIX + referer;
-	}
-
-	protected void updateUrlEncodingData(final String attributeName, final String value)
-	{
-		for (final UrlEncoderData urlEncoderData : urlEncoderFacade.getCurrentUrlEncodingData())
-		{
-			if (attributeName.equals(urlEncoderData.getAttributeName()))
-			{
-				urlEncoderData.setCurrentValue(value);
-			}
-		}
-
 	}
 
 	@ExceptionHandler(UnknownIdentifierException.class)
