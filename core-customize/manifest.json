@@ -62,7 +62,8 @@
                 "xyformssamples",
                 "xyformsstorefrontcommons",
                 "smarteditaddon",
-                "multicountrysampledataaddon"
+                "multicountrysampledataaddon",
+                "eventtrackingwsaddon"
             ],
             "storefronts": [
                 "yacceleratorstorefront",
