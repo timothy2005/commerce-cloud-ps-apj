@@ -2,7 +2,7 @@
 Repo for ps apj
 
 # Branch naming convention: <Commerce_Major_Version>+<additional_remark>
-# Sample manifest contains Commerce b2b, b2c, smartedit, mediaconversion, cloud hot folder, scpi and spartacus.
+# Sample manifest contains Commerce b2b, b2c, smartedit, mediaconversion, cloud hot folder, scpi.( No spartacus yet)
 # Commerce Version 
 1. 1811(EOMM)(CEP 1811)
 2. 1905(CEP1905)
