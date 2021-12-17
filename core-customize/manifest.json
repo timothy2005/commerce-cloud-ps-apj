@@ -62,7 +62,6 @@
                 "xyformssamples",
                 "xyformsstorefrontcommons",
                 "smarteditaddon",
-                "b2bpunchoutaddon",
                 "multicountrysampledataaddon",
                 "eventtrackingwsaddon"
             ],
@@ -70,11 +69,6 @@
                 "yacceleratorstorefront",
                 "yb2bacceleratorstorefront"
             ],
-            "template": "yacceleratorstorefront"
-        },
-        {
-            "addon": "spartacussampledataaddon",
-            "storefront": "yacceleratorstorefront",
             "template": "yacceleratorstorefront"
         },
           {
