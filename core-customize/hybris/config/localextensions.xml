@@ -5,6 +5,7 @@
 
     <path dir='${HYBRIS_BIN_DIR}' autoload='false' />
     
+        <extension name='yb2bacceleratorstorefront' />
     <extension name='adaptivesearchsolr' />
     <extension name='adaptivesearchbackoffice' />
     <extension name='adaptivesearchsamplesaddon' />
