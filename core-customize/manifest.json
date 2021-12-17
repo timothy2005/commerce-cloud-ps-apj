@@ -1,10 +1,10 @@
 {
-    "commerceSuiteVersion": "2005",
+    "commerceSuiteVersion": "1905.29",
     "enableImageProcessingService": true,
     "extensionPacks": [
         {
             "name": "hybris-commerce-integrations",
-            "version": "2005.0"
+            "version": "1905.29"
         }
     ],
     "extensions": [
@@ -115,7 +115,7 @@
         },
            {
             "addon": "b2bpunchoutaddon",
-            "storefront": "yb2bacceleratorstorefront",
+            "storefront": "yacceleratorstorefront",
             "template": "yacceleratorstorefront"
         },
         {
