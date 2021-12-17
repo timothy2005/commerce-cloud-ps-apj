@@ -77,6 +77,11 @@
             "storefront": "yacceleratorstorefront",
             "template": "yacceleratorstorefront"
         },
+          {
+            "addon": "b2bpunchoutaddon",
+            "storefront": "yacceleratorstorefront",
+            "template": "yacceleratorstorefront"
+        },
         {
             "addons": [
                 "acceleratorwebservicesaddon",
