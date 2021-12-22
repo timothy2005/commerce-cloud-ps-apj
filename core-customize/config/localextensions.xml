@@ -178,7 +178,34 @@
         <!-- Spatacus extension -->
         <extension name='spartacussampledataaddon'/>
 
-        <!-- addon for yb2b -->
+        <!-- extensions required for yb2bacceleratorstorefront -->
         <extension name='eventtrackingwsaddon'/>
+        <extension name='secureportaladdon'/>
+        <extension name='sapproductconfigb2baddon'/>
+        <extension name='b2bpunchoutaddon'/>
+        <extension name='ysapproductconfigaddon'/>
+        <extension name='xyformsstorefrontcommons'/>
+        <extension name='xyformssamples'/>
+        <extension name='timedaccesspromotionenginesamplesaddon'/>
+        <extension name='timedaccesspromotionengineaddon'/>
+        <extension name='stocknotificationaddon'/>
+        <extension name='selectivecartsplitlistaddon'/>
+        <extension name='profiletagaddon'/>
+        <extension name='personalizationyprofilesampledataaddon'/>
+        <extension name='notificationaddon'/>
+        <extension name='multicountrysampledataaddon'/>
+        <extension name='merchandisingstorefrontsampledataaddon'/>
+        <extension name='merchandisingaddon'/>
+        <extension name='customerinterestsaddon'/>
+        <extension name='customercouponsamplesaddon'/>
+        <extension name='customercouponaddon'/>
+        <extension name='configurablebundleaddon'/>
+        <extension name='captchaaddon'/>
+        <extension name='assistedserviceyprofileaddon'/>
+        <extension name='assistedservicepromotionaddon'/>
+        <extension name='assistedservicecustomerinterestsaddon'/>
+
+
+
     </extensions>
 </hybrisconfig>
