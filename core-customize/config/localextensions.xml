@@ -177,5 +177,8 @@
 
         <!-- Spatacus extension -->
         <extension name='spartacussampledataaddon'/>
+
+        <!-- addon for yb2b -->
+        <extension name='eventtrackingwsaddon'/>
     </extensions>
 </hybrisconfig>
