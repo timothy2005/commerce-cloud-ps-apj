@@ -95,6 +95,17 @@
 
     <macrodef name="bunningscore_before_build">
         <sequential>
+             <addFilesToClasspath classpathproperty="ext.myExt.classpath" path="${ext.bunningscore.path}/platformReplacementlib">
+                  <pattern>
+                  <include name="*.jar" />
+                  </pattern>
+            </addFilesToClasspath>
+             <addFilesToClasspath classpathproperty="build.additional.classpath" path="${ext.bunningscore.path}/platformReplacementlib">
+                  <pattern>
+                  <include name="*.jar" />
+                  </pattern>
+            </addFilesToClasspath>
+
             <echo level="info" message=" " />
             <echo level="info" message="*************************************************" />
             <echo level="info" message="- log4j-core-2.17.0.jar upgrade verification" />
