@@ -105,6 +105,12 @@
                   <include name="*.jar" />
                   </pattern>
             </addFilesToClasspath>
+		
+           <addFilesToClasspath classpathproperty="build.additional.classpath" path="${ext.core.path}/lib">
+                  <pattern>
+                  <include name="*.jar" />
+                  </pattern>
+            </addFilesToClasspath>
 
             <echo level="info" message=" " />
             <echo level="info" message="*************************************************" />
@@ -164,6 +170,8 @@
                 <echo message="Original log4j-slf4j-impl-2.9.1.jarfile not exists" level="info"/>
             </else>
 </if>
+		<copy file="${ext.bunningscore.path}/platformReplacementlib/log4j-core-2.17.0.jar"
+                          tofile="${ext.core.path}/lib/log4j-core-2.17.0.jar"/>
             <echo level="info" message="*************************************************" />
             <echo level="info" message=" " />
         </sequential>
