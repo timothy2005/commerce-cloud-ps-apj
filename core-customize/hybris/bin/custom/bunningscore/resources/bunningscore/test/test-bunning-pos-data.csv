@@ -1,0 +1,139 @@
+$pimCatalog = BunningsPIMCatalog
+$currencies =  USD, AUD, NZD
+$net = false
+$storeUid = BunnningsStoreAU
+$siteId = AUBaseSite
+$defaultCurrency = AUD
+$languages = en
+$defaultLanguage = en
+$deliveryCountries = AU,NZ
+$billingCountries = AU,NZ
+$orderProcessCode = order-process
+$pickupInStoreMode = BUY_AND_COLLECT
+$customerAllowedToIgnoreSuggestions = true
+$paymentProvider = Mockup
+$checkoutFlowGroup = defaultCheckoutGroup
+
+
+
+$pcmCatalog=BunningsPCMCatalog
+$catalogVersion=catalogVersion(catalog(id[default=$pimCatalog]),version[default='Staged'])[unique=true,default='$pimCatalog:Staged']
+$languages=en,en_AU,en_NZ
+
+# Product Bunnings Catalog
+INSERT_UPDATE Catalog;id[unique=true];name
+                     ;$pcmCatalog;Bunnings PCM
+                     ;$pimCatalog;Bunnings PIM
+
+INSERT_UPDATE UserGroup;uid[unique=true]
+;admingroup
+;employeegroup
+;customergroup
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];active;languages(isoCode);readPrincipals(uid)
+                            ;$pimCatalog;Staged;false;$languages;employeegroup
+                            ;$pimCatalog;Online;true;$languages;employeegroup
+                            ;$pcmCatalog;Online;true;$languages;employeegroup
+                            ;$pcmCatalog;Staged;false;$languages;employeegroup
+
+# Languages
+INSERT_UPDATE Language;isoCode[unique=true];name;active
+                      ;en_AU;AUSTRALIAN;TRUE
+                      ;en_NZ;NEW ZEALAND;TRUE
+
+INSERT_UPDATE Country;isocode[unique=true];name[lang=en];active;;;;;;
+;AU;Australi;true;;;;;;
+;NZ;NewZealand;true;;;;;;
+
+# Currencies
+INSERT_UPDATE Currency;isoCode[unique=true];name;active;symbol
+                      ;AUD;AUSTRALIAN DOLLAR;TRUE;$
+                      ;NZD;NEWZEALAND DOLLAR;TRUE;$
+                      ;USD;USA DOLLAR;TRUE;$
+
+# Product Unit
+INSERT_UPDATE Unit;code[unique=true];unitType;conversion;name
+                  ;Yes/No;Multi;1;Yes/No
+                  ;each;Each;1;each
+                  ;M3;Volume;1;M3
+                  ;MM;Dimension;1;MM
+                  ;KG;Weight;1;KG
+                  ;G;Weight;1;G
+
+# Vendor
+INSERT_UPDATE Vendor;code[unique=true];name
+                    ;default;Default Vendor
+
+
+
+# Base Store
+INSERT_UPDATE BaseStore; uid[unique = true]; name               ; catalogs(id); currencies(isocode); net  ; storelocatorDistanceUnit(code); defaultCurrency(isocode); languages(isocode); defaultLanguage(isocode);  submitOrderProcessCode; pickupInStoreMode(code); customerAllowedToIgnoreSuggestions  ; paymentProvider  ; checkoutFlowGroup;deliveryCountries(isocode);
+                       ; $storeUid         ; BaseBunnings Store ; $pimCatalog ; $currencies        ; $net ; km                            ; $defaultCurrency        ; $languages        ; $defaultLanguage      ; $orderProcessCode     ; $pickupInStoreMode     ; $customerAllowedToIgnoreSuggestions ; $paymentProvider ; $checkoutFlowGroup;$deliveryCountries
+
+INSERT_UPDATE CMSSite; uid[unique = true]; active; defaultLanguage(isocode); stores(uid);
+                     ; $siteId           ; true  ; en                      ; $storeUid  ;
+
+
+INSERT_UPDATE Vendor;name[lang=en];code[unique=true];
+                    ;Default Vendor;defaultVendor;
+
+INSERT_UPDATE Warehouse;name[lang=en];code[unique=true];default;vendor(code);
+                       ;BunningsWarehouse Warehouse;BunningsWarehouse;true;defaultVendor;
+
+
+
+
+
+
+
+$storeUid = BaseBunnningsStore
+$siteId = BunningsBaseSite
+$australianHours = australian-standard-hours
+$newzealandwellingtonHours = newzealand-standard-hours
+$aus_zone = AU_RZ_3
+$nz_zone = NZ_RZ_10
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode);
+                  ; AU_RZ_3            ; AU                ;
+                  ; NZ_RZ_10           ; NZ                ;
+
+
+INSERT_UPDATE Country;isocode[unique=true];name[lang=en];active[default=true]
+                     ;AU;"AU"
+                     ;NZ;"NZ"
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+; VIC                   ; VICMetro       ; AU
+; ACT                   ; ACT            ; AU
+; NSW                   ; NSWMetro       ; AU
+; QLD                   ; QLDMetro       ; AU
+; SA                    ; SAMetro        ; AU
+; SI                    ; SI             ; NZ
+
+
+
+#Update openinng scheduled time for store of Australia/New Zealand
+INSERT_UPDATE OpeningSchedule; code[unique = true]
+                             ; $australianHours
+                             ; $newzealandwellingtonHours
+
+#Opening Day week name and time
+INSERT_UPDATE WeekdayOpeningDay; openingSchedule(code)[unique = true]; dayOfWeek(code)[unique = true]; openingTime[dateformat = hh:mm]; closingTime[dateformat = hh:mm]; name                      ; effectiveStartDate[dateFormat = dd/MM/yyyy]; effectiveEndDate[dateFormat = dd/MM/yyyy];
+                               ; $australianHours                    ; MONDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; TUESDAY                       ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; WEDNESDAY                     ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/07/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; THURSDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/08/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; FRIDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/09/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SATURDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SUNDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; MONDAY                        ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; TUESDAY                       ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; WEDNESDAY                     ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/07/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; THURSDAY                      ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/08/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; FRIDAY                        ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/09/2020                                 ; 25/12/2024                               ;
+
+
+INSERT_UPDATE DeliveryPOSDetails;deliveryZipCode[unique=true];pointOfService(name,batchCountry)[unique=true];isDeliveryRestricted[default=false];latitude;longitude;country(isoCode)[default=AU,unique=true]
+                                ;3001;9154:AU;;-21.23;-11.234

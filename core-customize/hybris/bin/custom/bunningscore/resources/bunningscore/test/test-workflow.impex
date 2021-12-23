@@ -1,0 +1,185 @@
+$pcmCatalog = BunningsPCMCatalog
+$version = Staged
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$productDocuments = productDocuments(code, $catalogVersion)
+$thumbnail = thumbnail(code, $catalogVersion)
+$picture = picture(code, $catalogVersion)
+$thumbnails = thumbnails(code, $catalogVersion)
+$detail = detail(code, $catalogVersion)
+$normal = normal(code, $catalogVersion)
+$others = others(code, $catalogVersion)
+$logo = logo(code, $catalogVersion)
+$installationGuideDocument = installationGuideDocument(code, $catalogVersion)
+$baseProduct = baseProduct(code, $catalogVersion)[unique=true]
+$approvalStatus = approvalstatus(code)[default='VALIDATE'][unique=true]
+$variantType = variantType(code)[default='GenericVariantProduct']
+$gallery = galleryImages(qualifier, $catalogVersion)
+$currencyCode = NZD
+$syncJobCode = Sync Default:Staged -> Default:Online
+$languages = en, en_AU, en_NZ
+$supercategories = supercategories(code, $catalogVersion)[unique=true, mode=append]
+$defaultPassword = 12341234
+$media = @media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator]
+$currencies = AUD, NZD
+$net = false
+$storeUid = BunnningsStoreAU
+$siteId = BunningsBaseSite
+$site_AU_Id = AUBaseSite
+$defaultCurrency = AUD
+$deliveryCountries = AU, NZ
+$billingCountries = AU, NZ
+$orderProcessCode = order-process
+$pickupInStoreMode = BUY_AND_COLLECT
+$customerAllowedToIgnoreSuggestions = true
+$paymentProvider = Mockup
+$checkoutFlowGroup = defaultCheckoutGroup
+$unit = unit(code)[default=each]
+$australianHours = australian-standard-hours
+$workflowTemplateName = SampleWorkflowTemplate
+$item = item(GenericVariantProduct.code, GenericVariantProduct.$catalogVersion)
+$workflowActionTemplateName= SampleWorkflowActionTemplate
+$classificationCatalog = BunningsClassification
+
+# Product Bunnings Catalog
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+
+# Product Unit
+INSERT_UPDATE Unit; code[unique = true]; unitType  ; conversion; name
+                  ; Yes/No             ; Multi     ; 1         ; Yes/No
+                  ; each               ; Each      ; 1         ; each
+                  ; M3                 ; Volume    ; 1         ; M3
+                  ; MM                 ; Dimension ; 1         ; MM
+                  ; KG                 ; Weight    ; 1         ; KG
+                  ; G                  ; Weight    ; 1         ; G
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE
+                      ; en                    ; sample      ; TRUE
+
+INSERT_UPDATE UserGroup; uid[unique = true]
+                       ; admingroup
+                       ; employeegroup
+                       ; customergroup
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode)
+                            ; $pcmCatalog               ; Online                ; true  ; $languages
+                            ; $pcmCatalog               ; Staged                ; false ; $languages
+
+# Currencies
+INSERT_UPDATE Currency; isoCode[unique = true]; name              ; active; symbol
+                      ; AUD                   ; AUSTRALIAN DOLLAR ; TRUE  ; $
+                      ; NZD                   ; NEWZEALAND DOLLAR ; TRUE  ; $
+
+
+INSERT_UPDATE Customer; uid[unique = true]   ; customerID           ; password[default = $defaultPassword]; name           ; description; sessionLanguage(isocode); sessionCurrency(isocode); groups(uid)   ; loginDisabled[default = false]
+                      ; 00u318izsmA7CmVnS4x6 ; 00u318izsmA7CmVnS4x6 ;                                     ; dummy Customer ;            ; en_NZ                   ; NZD                     ; customergroup ; ;
+
+INSERT_UPDATE Category; $supercategories; code[unique = true]; name              ; order; navLevel(code)[default = L1]; categoryBaseStore(uid)[mode = append]; $catalogVersion;
+                      ;                 ; Curtains-Blinds    ; Curtains & Blinds ; 1    ;                             ; $storeUid
+
+INSERT_UPDATE Category; $supercategories; code[unique = true] ; name                  ; order; navLevel(code)[default = L2]; categoryBaseStore(uid)[mode = append]; $catalogVersion;
+                      ; Curtains-Blinds ; Curtain-Accessories ; Curtain & Accessories ; 15   ;                             ; $storeUid                            ;                ;
+
+
+INSERT_UPDATE VariantCategory[disable.interceptor.types = validate]; code[unique = true]; $catalogVersion; name[lang = en]  ; $supercategories
+                             ; size               ;                ; size             ;
+                             ; color              ;                ; color            ;
+                             ; weight             ;                ; weight           ;
+                             ; volume             ;                ; volume           ;
+                             ; time               ;                ; time             ;
+                             ; length x breadth   ;                ; length x breadth ;
+
+
+INSERT_UPDATE VariantCategory[disable.interceptor.types = validate]; code[unique = true]                     ; $catalogVersion; name[lang = en];
+                             ; no_variant_cat                          ;                ; no_variant_cat
+                             ; COLOUR_VARIANT                          ;                ; Colour
+                             ; SIZE_VARIANT                            ;                ; Size
+                             ; OPTION_VARIANT                          ;                ; Option
+                             ; TIME_VARIANT                            ;                ; Time
+                             ; SIZE_WIDTH_VARIANT                      ;                ; Width (mm)
+                             ; SIZE_HEIGHT_VARIANT                     ;                ; Height (mm)
+                             ; SIZE_LENGTH_VARIANT                     ;                ; Length/Depth (mm)
+                             ; SIZE_AREA_WIDTH_HEIGHT_VARIANT          ;                ; Area - Width x Heigth (mm)
+                             ; SIZE_AREA_WIDTH_LENGTH_VARIANT          ;                ; Area - Width x Length/Depth (mm)
+                             ; SIZE_VOLUME_WIDTH_HEIGHT_LENGTH_VARIANT ;                ; Volume - Width x Heigth x  Length/Depth (mm)
+                             ; SIZE_VOLUME_LITRES_VARIANT              ;                ; Volume (litres)
+                             ; SIZE_VOLUME_WEIGHT_VARIANT              ;                ; Volume (Weight)
+
+INSERT_UPDATE VariantValueCategory[disable.interceptor.types = validate]; sequence; code[unique = true]; name          ; $supercategories; order; $catalogVersion; allowedPrincipals(uid)[default = 'customergroup']
+                                  ; 1000    ; COLOUR_#ffffff     ; White         ; COLOUR_VARIANT  ; 1    ;
+                                  ; 1001    ; COLOUR_#162219     ; Black Granite ; COLOUR_VARIANT  ; 2    ;
+                                  ; 1002    ; COLOUR_#C4C2BC     ; Riverstone    ; COLOUR_VARIANT  ; 3    ;
+                                  ; 1003    ; COLOUR_#A9A9AE     ; Marble        ; COLOUR_VARIANT  ; 4    ;
+                                  ; 1004    ; SizeXS             ; XS            ; SIZE_VARIANT    ; 5    ;
+                                  ; 1005    ; SizeM              ; XS            ;     ; 5    ;
+
+
+INSERT_UPDATE Product[disable.interceptor.types = validate]; name[lang = en]             ; code[unique = true]; $supercategories            ; $variantType; $approvalStatus; $catalogVersion; batchCountry[unique = true, default = 'AU']
+                                                           ; Hume Oakfield Internal Door ; W9100010           ; COLOUR_VARIANT,SIZE_VARIANT ;             ;                ;                ;
+                                                           ; Hume Oakfield Internal Door ; W9100011           ; Curtains-Blinds             ;             ;                ;                ;
+                                                           ; Hume Oakfield Internal Door ; W9100012           ; Curtains-Blinds             ;             ;                ;                ;
+                                                           ; Hume Oakfield Internal Door ; W9100013           ; Curtains-Blinds             ;             ;                ;                ;
+
+
+INSERT_UPDATE GenericVariantProduct[disable.interceptor.types = validate]; code[unique = true]; name                    ; shortName               ; $unit; $baseProduct; $supercategories      ; batchCountry[unique = true, default = 'AU']; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; lastUpdate[dateformat = dd.MM.yyyy HH:mm:ss]; $approvalStatus; $catalogVersion; IsWorkflowRequired
+                                                                         ; 0000001            ; Hard Yakka Men's Shorts ; Hard Yakka Men's Shorts ;      ; W9100010    ; COLOUR_#ffffff,SizeXS ;                                            ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ;                ;                ; TRUE
+                                                                         ; 0000002            ; Hard Yakka Men's Shorts ; Hard Yakka Men's Shorts ;      ; W9100010    ;                       ;                                            ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ;                ;                ; TRUE
+                                                                         ; 0000003            ; Hard Yakka Men's Shorts ; Hard Yakka Men's Shorts ;      ; W9100012    ; SizeM                 ;                                            ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ;                ;                ; TRUE
+                                                                         ; 0000004            ; Hard Yakka Men's Shorts ; Hard Yakka Men's Shorts ;      ; W9100013    ; Curtains-Blinds       ;                                            ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ;                ;                ; TRUE
+
+
+INSERT_UPDATE UserGroup; uid[unique = true]  ; groups(uid)[mode = append]
+                       ; cockpitgroup        ;
+                       ; employeegroup       ;
+                       ; customergroup       ; cockpitgroup
+                       ; cmsmanagergroup     ; cockpitgroup,employeegroup
+                       ; productmanagergroup ; cockpitgroup,employeegroup
+
+
+# Bunnings Classification catalog
+INSERT_UPDATE ClassificationSystem; id[unique = true]
+                                  ; $classificationCatalog
+
+
+INSERT_UPDATE BackofficeRole; UID[unique = true]       ; groups(uid)[mode = append]; locName              ; name                 ; backOfficeLoginDisabled; authorities          ; readableLanguages(isocode); writeableLanguages(isocode)
+                            ; bunningssuppliergroup    ; productmanagergroup       ; Bunnings Suplier     ; Bunnings Suplier     ; FALSE                  ; bunningspcmonlyuser  ; en_AU,en                  ; en_AU,en
+                            ; digitalmerchandisergroup ; productmanagergroup       ; Digital Merchandiser ; Digital Merchandiser ; FALSE                  ; bunningspcmonlyuser  ; en_AU,en                  ; en_AU,en
+                            ; merchandisergroup        ; productmanagergroup       ; Merchandiser         ; Merchandiser         ; FALSE                  ; bunningspcmonlyuser  ; en_AU,en                  ; en_AU,en
+
+INSERT_UPDATE Employee; UID[unique = true]  ; name                 ; groups(uid)              ; description                        ; password
+                      ; DigitalMerchandiser ; Digital Merchandiser ; digitalmerchandisergroup ; Digital Merchandiser for Bunnings. ; 1234
+                      ; Marketeer           ; Marketeer            ; digitalmerchandisergroup ; Digital Merchandiser for Bunnings. ; 1234
+                      ; Merchandiser        ; Merchandiser         ; merchandisergroup        ; Merchandiser for Bunnings.         ; 1234
+                      ; ProductManager      ; ProductManager       ; merchandisergroup        ; Merchandiser for Bunnings.         ; 1234
+
+
+
+INSERT_UPDATE Supplier; supplierCode[unique = true]; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; endDate[dateformat = dd.MM.yyyy HH:mm:ss]  ;name
+                      ; bunAUSSupplier             ; 28.03.2014 00:00:00                        ;                                           ;Bunning AUS supplier
+                      ; bunNZSupplier              ; 28.03.2014 00:00:00                        ;                                           ;Bunning NZ supplier
+
+INSERT_UPDATE SupplierUser; UID[unique = true]        ; name          ; groups(uid)                                 ; description                               ; password        ;email                 ;suppliers(supplierCode)
+                          ; BunningSupplierAUS ; Bunning Supplier AUS ; bunningssuppliergroup                    ; Bunning Supplier for Bunnings.     ; Pass@1234       ;supplier1@bunnings.com          ;bunAUSSupplier
+                          ; BunningSupplierNZ  ; Bunning Supplier NZ  ; bunningssuppliergroup                    ; Bunning Supplier for Bunnings.     ; Pass@1234       ;supplier2@bunnings.com          ;bunNZSupplier
+
+
+
+INSERT_UPDATE WorkflowTemplate; code[unique = true]   ; name[lang = en]   ; visibleForPrincipals(uid)[mode = append];
+                              ; $workflowTemplateName ; Workflow Template ; bunningssuppliergroup
+
+INSERT_UPDATE Workflow; code[unique = true]; job(code)             ; status(code); owner(uid)         ; name
+                      ; workflow1          ; $workflowTemplateName ; RUNNING    ; BunningSupplierAUS ; junitSampleWorkflow
+
+INSERT_UPDATE WorkflowActionTemplate;code[unique=true];name[lang=en];description[lang=en];principalAssigned(uid);workflow(code)[unique=true];actionType(code);sendEmail
+                                    ;$workflowActionTemplateName;sample wf;sample wf;admin;$workflowTemplateName;normal;false
+
+INSERT_UPDATE WorkflowItemAttachment; name[lang = en][unique = true]; workflow(code); $item;
+                                    ; gvpProductAttachment          ; workflow1     ; 0000001
+
+INSERT_UPDATE WorkflowAction; code[unique = true]; workflow(code); template(code); status(code); principalAssigned(uid); activated[dateformat=dd.MM.yyyy HH:mm]
+                            ; action1Start ; workflow1 ; $workflowActionTemplateName ; in_progress ;admin; 06.02.2019 04:00 ;
+
+

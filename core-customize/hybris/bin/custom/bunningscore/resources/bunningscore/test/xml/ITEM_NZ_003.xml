@@ -1,0 +1,316 @@
+<ItemBatch xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:api.bunnings/inventory/item">
+    <BatchHeader>
+        <TransmissionBatchID>20200714</TransmissionBatchID>
+        <ExtractTime>2020-07-14T08:55:53.1298086+00:00</ExtractTime>
+        <Version>1.0</Version>
+        <Country>AU</Country>
+        <ID>633989928</ID>
+    </BatchHeader>
+    <Items>
+        <Item>
+            <ItemNumber>0023261</ItemNumber>
+            <Description>
+                <SectionDescription>MODEL WH ONLY</SectionDescription>
+                <ProductDescription>NEW ITEM</ProductDescription>
+            </Description>
+            <Brand />
+            <FamilyTree>
+                <ID>16005</ID>
+                <Nodes>
+                    <Node>
+                        <Name>SUB_CLASS</Name>
+                        <Level>5</Level>
+                        <Value>FLOATING FLOOR TRIM SBC</Value>
+                    </Node>
+                    <Node>
+                        <Name>CLASS</Name>
+                        <Level>4</Level>
+                        <Value>FLOATING FLOOR TRIM CLS</Value>
+                    </Node>
+                    <Node>
+                        <Name>SUB_DEPARTMENT</Name>
+                        <Level>3</Level>
+                        <Value>FLOORING TRIM SBD</Value>
+                    </Node>
+                    <Node>
+                        <Name>DEPARTMENT</Name>
+                        <Level>2</Level>
+                        <Value>HARD FLOORING</Value>
+                    </Node>
+                    <Node>
+                        <Name>CATEGORY</Name>
+                        <Level>1</Level>
+                        <Value>HOME FURNISHINGS</Value>
+                    </Node>
+                </Nodes>
+            </FamilyTree>
+            <UnspscCode>30161710</UnspscCode>
+            <StartDate>2020-07-14T16:53:42.0000000+00:00</StartDate>
+            <LastUpdate>2020-07-14T16:53:42.0000000+00:00</LastUpdate>
+            <TaxInformation>
+                <TaxCode>P1AU</TaxCode>
+                <TaxRate>10</TaxRate>
+            </TaxInformation>
+            <ItemType>RETAIL</ItemType>
+            <MinimumGrades>
+                <MinimumGrade>
+                    <LocationType>Retail Hardware Site</LocationType>
+                    <Grade>Model</Grade>
+                </MinimumGrade>
+            </MinimumGrades>
+            <SaleUnitOfMeasure>EA</SaleUnitOfMeasure>
+            <ProductOffer>Standard</ProductOffer>
+            <Barcodes>
+                <Barcode>
+                    <Number>046100007891</Number>
+                    <Level>Consumer</Level>
+                    <Packaging />
+                    <AdditionalDescription />
+                </Barcode>
+            </Barcodes>
+            <Sourcing>
+                <Suppliers>
+                    <Supplier>
+                        <SupplierCode>3MA001</SupplierCode>
+                        <StartDate>2020-07-14T00:00:00.0000000+00:00</StartDate>
+                        <PackQty>1</PackQty>
+                        <PackUOM>Each</PackUOM>
+                        <SupplierBarcodes>
+                            <Barcode>
+                                <Number>046100007891</Number>
+                                <Primary>true</Primary>
+                                <SupplierItemNumber />
+                            </Barcode>
+                        </SupplierBarcodes>
+                        <CountriesOfOrigin />
+                        <Costs>
+                            <CostDetail>
+                                <CostZone>AU CZ 1</CostZone>
+                                <Cost>14</Cost>
+                            </CostDetail>
+                            <CostDetail>
+                                <CostZone>AU CZ 3</CostZone>
+                                <Cost>14</Cost>
+                            </CostDetail>
+                            <CostDetail>
+                                <CostZone>AU CZ 2</CostZone>
+                                <Cost>14</Cost>
+                            </CostDetail>
+                        </Costs>
+                    </Supplier>
+                </Suppliers>
+                <OverridingSuppliers>
+                    <OverridingSupplier>
+                        <SupplierCode>3MA001</SupplierCode>
+                        <StartDate>2020-07-14T00:00:00.0000000+00:00</StartDate>
+                        <PackQty>1</PackQty>
+                        <PackUOM>Each</PackUOM>
+                        <SupplierBarcodes />
+                        <CountriesOfOrigin />
+                        <Reason />
+                    </OverridingSupplier>
+                </OverridingSuppliers>
+            </Sourcing>
+            <ZoningInformation>
+                <Zone>
+                    <RetailZone>AU RZ 8</RetailZone>
+                    <Region>NQ</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 4</RetailZone>
+                    <Region>SA</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 1</RetailZone>
+                    <Region>VIC</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 3</RetailZone>
+                    <Region>QLD</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 5</RetailZone>
+                    <Region>WA</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 2</RetailZone>
+                    <Region>ACT</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 6</RetailZone>
+                    <Region>TAS</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 10</RetailZone>
+                    <Region>NT</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+                <Zone>
+                    <RetailZone>AU RZ 2</RetailZone>
+                    <Region>NSW</Region>
+                    <Status>Live</Status>
+                    <Restrictions />
+                    <FulfilmentDetails>
+                        <IsDirectDelivery>false</IsDirectDelivery>
+                        <LeadTimes>
+                            <SupplierDispatch>3</SupplierDispatch>
+                            <BunningsDispatch>1</BunningsDispatch>
+                        </LeadTimes>
+                    </FulfilmentDetails>
+                    <WebCommerceAttributes>
+                        <Visible>true</Visible>
+                        <Transactable>false</Transactable>
+                        <InStorePickup>false</InStorePickup>
+                        <AvailableForDelivery>false</AvailableForDelivery>
+                        <Comment />
+                    </WebCommerceAttributes>
+                </Zone>
+            </ZoningInformation>
+            <RatingsRiskAndCompliance>
+                <HighRisk>false</HighRisk>
+                <SafetyStandards>
+                    <ACCCMandatoryStandard>false</ACCCMandatoryStandard>
+                </SafetyStandards>
+                <DangerousGood>
+                    <HazardClassifications />
+                    <HazardousContent>
+                        <ChemicalIngredients />
+                    </HazardousContent>
+                </DangerousGood>
+                <BuildingProduct>
+                    <InstallationDocuments />
+                    <ConformanceDocuments />
+                    <OtherDocuments />
+                </BuildingProduct>
+                <EnergyRatings />
+            </RatingsRiskAndCompliance>
+        </Item>
+    </Items>
+</ItemBatch>

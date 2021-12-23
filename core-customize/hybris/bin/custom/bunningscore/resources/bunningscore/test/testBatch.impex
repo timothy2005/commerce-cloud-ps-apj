@@ -1,0 +1,79 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+# Test batch configuration
+#
+$productCatalog=apparelProductCatalog
+$defaultCurrency=EUR
+$languages=en
+$defaultLanguage=en
+$prices=europe1prices[translator=de.hybris.platform.europe1.jalo.impex.Europe1PricesTranslator]
+$catalogVersion=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default='$productCatalog:Staged']
+$product=product(code, $catalogVersion)
+
+INSERT_UPDATE Language;isocode[unique=true];active
+;de;true
+;en;true
+
+INSERT_UPDATE Country;isocode[unique=true];name[lang=en];active[default=true]
+                     ;AU;"Australia"
+                     ;NZ;"New Zealand"
+
+INSERT_UPDATE Currency;isocode[unique=true];name[lang=de];name[lang=en];active;base;conversion;digits;symbol
+;EUR;Euro;Euro;true;true;1;2;€
+
+INSERT_UPDATE Catalog;id[unique=true];name[lang=de];name[lang=en];defaultCatalog
+;$productCatalog;$productCatalog;$productCatalog;true
+
+# Catalog versions for content catalogs
+INSERT_UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];active;defaultCurrency(isocode);languages(isoCode)
+;$productCatalog;Staged;false;$defaultCurrency;$languages
+;$productCatalog;Online;true;$defaultCurrency;$languages
+
+INSERT_UPDATE Unit;unitType[unique=true];code[unique=true];name[lang=de];name[lang=en];conversion;;;
+;pieces;pieces;pieces;pieces;1
+;weight;kg;kg;kg;1
+
+INSERT_UPDATE ProductTaxGroup;code[unique=true]
+;eu-vat-full;
+;eu-vat-half;
+
+INSERT_UPDATE Vendor;code[unique=true];name
+;default;Default Vendor
+
+INSERT_UPDATE Warehouse;code[unique=true];name;vendor(code)[default=default];default
+;default;Default Warehouse;;true
+
+INSERT_UPDATE MediaFolder;qualifier[unique=true]
+;root
+;images
+
+INSERT_UPDATE MediaFormat;qualifier[unique=true]
+;1200Wx1200H
+;515Wx515H
+;300Wx300H
+;96Wx96H
+;65Wx65H
+;30Wx30H
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; QLD                   ; QLD            ; AU
+
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 3            ; AU                ; QLD
+
+INSERT_UPDATE RegionalProductDetails;itemNumber[unique=true];regionDetails(isocode)[unique=true];zone(code)[unique=true];status;batchCountry[unique=true,default='AU']
+                             ;AU810010;QLD;AU RZ 3;Restricted
+                             ;AU810011;VIC;AU RZ 1;Restricted
+
+INSERT_UPDATE SupplierDetails;itemNumber[unique=true];supplierCode[unique=true];startDate[dateformat='yyyy-MM-dd'];endDate[dateformat='yyyy-MM-dd'];packQty;batchCountry[unique=true,default='AU']
+                      ;AU810010;SU810011;2014-02-11;;2;
+                      ;AU810011;SU810012;2025-02-11;;4;
+
+
+INSERT_UPDATE ItemLocationAttributes;itemNumber[unique=true];locationCode[unique=true];itemstatus;primaryBarCode;batchCountry[unique=true,default='AU']
+                             ;AU810010;2112;Quit(S1);0033287148661
+                             ;AU810011;3198;Deleted;0033287148662
+

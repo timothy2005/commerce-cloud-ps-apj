@@ -1,0 +1,61 @@
+#Search restrictions for PCM and PIM
+
+INSERT_UPDATE SearchRestriction ; code[unique=true]                            ; active ; generate ; restrictedType(code) ; principal(uid)           ; query
+################################################SupplierGroup###############################################################
+                                ; Backoffice_Product_Supplier                  ; true   ; false    ; Product              ; bunningssuppliergroup    ; "EXISTS  ({{ Select distinct({g:pk})  from  {GenericVariantProduct as g  JOIN supplierDetails as sd  on {sd:itemNumber} = {g:code}  AND {sd:batchCountry} = {g:batchCountry} and ({sd:endDate} is null or {sd:endDate}> current_timestamp) and {g.pk}={item.pk}   JOIN supplier as s   on {sd:supplierCode} = {s:supplierCode}   and {g.approvalstatus} <> '8796101640283'   and {g.catalogVersion}=8796093153881}   where  exists ({{  select 1 from  {SupplierUser as sus  join supplier as sup  on {sus.suppliers}= {sup.pk} }   where {sus:uid} = (?session.user.uid)  and {sup.pk} = {s.pk}}}) or exists ({{  select 1  from  {SupplierToSupplierRelation as rel1  join SupplierToSupplierRelation as rel2   on {rel1.target}={rel2.target}   join SupplierToSupplierRelation as rel3   on {rel2.source}={rel3.source} }   where {rel3.target} = {s.pk}   and exists  ({{ select 1 from  {SupplierUser as sus  join supplier as sup  on {sus.suppliers}= {sup.pk} }   where {sus:uid} = (?session.user.uid)  and {sup.pk}={rel1.target} }}) }}) }})"
+
+                                ; Backoffice_CatalogVersion_supplier           ; true   ; false    ; CatalogVersion       ; bunningssuppliergroup    ; "{version} <> ('Online')"
+
+                                ; Backoffice_Catalog_supplier                  ; true   ; false    ; Catalog              ; bunningssuppliergroup    ; "{id} in ('BunningsPCMCatalog','BunningsClassification','BunningsClassificationNZ')"
+
+                                ; Backoffice_User_Supplier                     ; true   ; false    ; User                 ; bunningssuppliergroup    ; "{uid} = (?session.user.uid) "
+
+                                ; Backoffice_Brand_Supplier_User               ; true   ; false    ; Brand                ; bunningssuppliergroup    ; "EXISTS ({{ select {br.pk} from {Supplier as s join SupplierBrand as sb on {s.supplierCode}={sb.supplierCode} join Brand as br ON {br.brandCode}={sb.brandCode} and {br.pk}= {item.pk} join CatalogVersion as cv on {br.catalogVersion}=8796093153881} Where exists ({{  select 1 from  {SupplierUser as sus  join supplier as sup  on {sus.suppliers}= {sup.pk} }   where {sus:uid} = (?session.user.uid)  and {sup.pk} = {s.pk}}}) or   exists ({{ select 1  from {SupplierToSupplierRelation as rel1 join SupplierToSupplierRelation as rel2  on {rel1.target}={rel2.target}  join SupplierToSupplierRelation as rel3  on {rel2.source}={rel3.source} }  where {rel3.target} = {s.pk}  and exists ({{ select 1 from {SupplierUser as sus join supplier as sup on {sus.suppliers}= {sup.pk} }  where {sus:uid} = (?session.user.uid) and {sup.pk}={rel1.target} }}) }}) }})"
+
+                                ; Backoffice_MediaFolder_Supplier              ; true   ; false    ; MediaFolder          ; bunningssuppliergroup    ; "{qualifier} in ('images','documents','root','backofficeexcelimport')"
+
+################################################BuyerGroup###############################################################
+
+							    ;Backoffice_Product_Buyer			          ; true    ; false 	;Product		      ;bunningsbuyersgroup	     ; "{PK} In ({{select DISTINCT({gvp:pk}) from {GenericVariantProduct as gvp JOIN Product as prd ON {prd:PK}={gvp:baseProduct} JOIN CategoryProductRelation as cpr ON {cpr:target}={prd:PK} JOIN Category as cat ON {cat:PK}={cpr:source}} where {cat:pk} In ({{ select uniontable.code from ({{select {c.pk} as code from {category as c join Employee2Category as ecr on {c.pk}={ecr.target} join employee as u on {ecr.source}={u.pk}} where {u.uid}=(?session.user.uid)}} UNION ALL {{select {ccr.target} from {Category as cat JOIN CategoryCategoryRelation as ccr ON {ccr:source}={cat:PK} join catalogversion as cv on {cv.pk}={cat.catalogversion} join catalog as cl on {cl.pk}={cv.catalog}} where {cv.version}='Staged' and {cat.code} IN ({{select {c.code} from {category as c join Employee2Category as ecr on {c.pk}={ecr.target} join employee as u on {ecr.source}={u.pk}} where {u.uid}=(?session.user.uid)}})}} UNION ALL {{select {ccr.target} from {Category as cat JOIN CategoryCategoryRelation as ccr ON {ccr:source}={cat:PK} join catalogversion as cv on {cv.pk}={cat.catalogversion} join catalog as cl on {cl.pk}={cv.catalog}} where {cv.version}='Staged' and {cat.pk} IN ({{select {ccr.target} from {Category as cat JOIN CategoryCategoryRelation as ccr ON {ccr:source}={cat:PK} join catalogversion as cv on {cv.pk}={cat.catalogversion} join catalog as cl on {cl.pk}={cv.catalog}} where {cv.version}='Staged' and {cat.code} IN ({{select {c.code} from {category as c join Employee2Category as ecr on {c.pk}={ecr.target} join employee as u on {ecr.source}={u.pk}} where {u.uid}=(?session.user.uid)}})}})}}UNION ALL {{select {ccr.target} from {Category as cat JOIN CategoryCategoryRelation as ccr ON {ccr:source}={cat:PK} join catalogversion as cv on {cv.pk}={cat.catalogversion} join catalog as cl on {cl.pk}={cv.catalog}} where {cv.version}='Staged' and {cat.pk} IN ({{select {ccr.target} from {Category as cat JOIN CategoryCategoryRelation as ccr ON {ccr:source}={cat:PK} join catalogversion as cv on {cv.pk}={cat.catalogversion} join catalog as cl on {cl.pk}={cv.catalog}} where {cv.version}='Staged' and {cat.pk} IN ({{select {ccr.target} from {Category as cat JOIN CategoryCategoryRelation as ccr ON {ccr:source}={cat:PK} join catalogversion as cv on {cv.pk}={cat.catalogversion} join catalog as cl on {cl.pk}={cv.catalog}} where {cv.version}='Staged' and {cat.code} IN ({{select {c.code} from {category as c join Employee2Category as ecr on {c.pk}={ecr.target} join employee as u on {ecr.source}={u.pk}} where {u.uid}=(?session.user.uid)}})}})}})}}) uniontable }})}})"
+							   
+                                ;Backoffice_CatalogVersion_buyer		      ; true    ; false 	;CatalogVersion       ;bunningsbuyersgroup	     ; "{version} <> ('Online')"
+
+                                ; Backoffice_Catalog_buyer                     ; true   ; false    ; Catalog              ; bunningsbuyersgroup      ; "{id} in ('BunningsPCMCatalog','BunningsClassification','BunningsClassificationNZ')"
+
+                                ; Backoffice_User_Buyer                        ; true   ; false    ; User                 ; bunningsbuyersgroup      ; "{uid} = (?session.user.uid) "
+
+                                ; Backoffice_Brand_Buyer_User                  ; true   ; false    ; Brand                ; bunningsbuyersgroup      ; "{PK} In ({{ select {br.pk} from {Brand as br join CatalogVersion as cv on {br.catalogVersion}={cv.pk} and {cv.version}='Staged' join Catalog as c on {c.pk}={cv.catalog} and {c.id}='BunningsPCMCatalog'}}})"
+
+                                ; Backoffice_Category_buyer                    ; true   ; false    ; Category             ; bunningsbuyersgroup      ; "EXISTS  ({{ select {cat.PK} from {category! as cat join CatalogVersion as cv on {cat.catalogVersion}={cv.pk} join Catalog as c on {c.pk}={cv.catalog}} where {c.id} = 'BunningsPCMCatalog' and {cv.version} = 'Staged'}}) "
+
+                                ; Backoffice_MediaFolder_Buyer                 ; true   ; false    ; MediaFolder          ; bunningsbuyersgroup      ; "{qualifier} in ('images','documents','root','backofficeexcelimport')"
+
+################################################MerchandiserGroup###############################################################
+
+                                ; Backoffice_Product_Status_merchandise        ; true   ; false    ; Product              ; merchandisergroup        ; "{approvalstatus} <> '8796101640283' and  {defaultBase} = 0"
+
+                                ; Backoffice_Category_merchandiser             ; true   ; false    ; VariantValueCategory ; merchandisergroup        ; " {CatalogVersion}  in ({{ select {pk} from {CatalogVersion} where {catalog} in ({{ select {pk} from {Catalog} where {id} in ('BunningsPCMCatalog','BunningsClassification','BunningsClassificationNZ') }}) }})"
+
+                                ; Backoffice_Staged_Brand_merchandiser         ; true   ; false    ; Brand                ; merchandisergroup        ; "{pk} in ({{ select {br.pk} from {Brand as br join CatalogVersion as cv on {br.catalogVersion}={cv:pk} join Catalog AS cat ON {cv:catalog}={cat:pk} } where {cv.version} = 'Staged' }})"
+
+                                ; Backoffice_Catalog_merchandiser              ; true   ; false    ; Catalog              ; merchandisergroup        ; "{id} in ('BunningsPCMCatalog','BunningsClassification','BunningsClassificationNZ')"
+
+                                ; Backoffice_MediaFolder_Merchandiser          ; true   ; false    ; MediaFolder          ; merchandisergroup        ; "{qualifier} in ('images','documents','root','backofficeexcelimport')"
+
+#######################################DigitalMerchandiserGroup#####################################################
+
+                                ; Backoffice_Product_Status_marketeer          ; true   ; false    ; Product              ; digitalmerchandisergroup ; "{approvalstatus} <> '8796101640283' and  {defaultBase} = 0"
+
+                                ; Backoffice_MediaFolder_Marketeer             ; true   ; false    ; MediaFolder          ; digitalmerchandisergroup ; "{qualifier} in ('images','documents','root','backofficeexcelimport')"
+
+################################################MarketplaceManagerGroup###############################################################
+
+                                ; Backoffice_Product_Status_marketplacemanager ; true   ; false    ; Product              ; marketplacemanagergroup  ; "{approvalstatus} <> '8796101640283' and  {defaultBase} = 0 and {origin} in ({{ select {pk} from {ProductOrigin} where {code} = 'MARKETPLACE'}})"
+
+                                ; Backoffice_Category_marketplacemanager       ; true   ; false    ; VariantValueCategory ; marketplacemanagergroup  ; " {CatalogVersion}  in ({{ select {pk} from {CatalogVersion} where {catalog} in ({{ select {pk} from {Catalog} where {id} in ('BunningsPCMCatalog','BunningsClassification') }}) }})"
+
+                                ; Backoffice_Staged_Brand_marketplacemanager   ; true   ; false    ; Brand                ; marketplacemanagergroup  ; "{pk} in ({{ select {br.pk} from {Brand as br join CatalogVersion as cv on {br.catalogVersion}={cv:pk} join Catalog AS cat ON {cv:catalog}={cat:pk} } where {cv.version} = 'Staged' }})"
+
+                                ; Backoffice_Catalog_marketplacemanager        ; true   ; false    ; Catalog              ; marketplacemanagergroup  ; "{id} in ('BunningsPCMCatalog','BunningsClassification')"
+
+                                ; Backoffice_MediaFolder_MarketplaceManager    ; true   ; false    ; MediaFolder          ; marketplacemanagergroup  ; "{qualifier} in ('images','documents','root','backofficeexcelimport')"

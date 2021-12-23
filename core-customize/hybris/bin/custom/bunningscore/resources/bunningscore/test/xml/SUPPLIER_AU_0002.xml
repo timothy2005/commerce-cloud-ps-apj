@@ -1,0 +1,84 @@
+<SupplierBatch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:api.bunnings/inventory/supplier">
+  <BatchHeader>
+	<RequestID>R12345</RequestID>
+	<TransmissionBatchID>B01</TransmissionBatchID>
+    <ExtractTime>2020-06-01T11:42:54.278052Z</ExtractTime>
+    <Version>3</Version>
+    <Country>AU</Country>
+	<ID>123</ID>
+  </BatchHeader>
+  <Suppliers>
+    <Supplier>
+      <SupplierCode>LON041</SupplierCode>
+      <Name>MAKIN CONCRETE PRODUCTS</Name>
+      <StartDate>2015-09-15T00:00:00</StartDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>FLO133</SupplierCode>
+      <Name>FLORABUNDANCE NURSERY NSW</Name>
+      <StartDate>2015-09-24T00:00:00</StartDate>
+      <EndDate>2015-10-19T00:00:00</EndDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>HUN115</SupplierCode>
+      <Name>HUNTER LEISURE PTY LTD</Name>
+      <StartDate>2015-06-02T00:00:00</StartDate>
+      <EndDate>2020-01-22T00:00:00</EndDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>OVER2059</SupplierCode>
+      <Name>JIANGMEN TUQIANG HARDWARE FACTORY (OVERSEAS)</Name>
+      <StartDate>2015-09-04T00:00:00</StartDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>ALE034</SupplierCode>
+      <Name>ALEMLUBE PL</Name>
+      <StartDate>2015-07-29T00:00:00</StartDate>
+      <EndDate>2020-01-22T00:00:00</EndDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>OVER2056</SupplierCode>
+      <Name>PRIMY CORPORATION LTD (OVERSEAS)</Name>
+      <StartDate>2015-08-31T00:00:00</StartDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>ELS011</SupplierCode>
+      <Name>ELSON AUSTRAASIA PTY LTD</Name>
+      <StartDate>2015-08-19T00:00:00</StartDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>MAY121</SupplierCode>
+      <Name>MAYO HARDWARE #2</Name>
+      <StartDate>2015-06-08T00:00:00</StartDate>
+      <EndDate>2017-04-07T00:00:00</EndDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>MAR342</SupplierCode>
+      <Name>MARLBOROUGH NURSERY (NSW/ACT)</Name>
+      <StartDate>2015-07-17T00:00:00</StartDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>LUN006</SupplierCode>
+      <Name>LUNCHBOX SOLUTIONS PTY LTD</Name>
+      <StartDate>2015-09-15T00:00:00</StartDate>
+      <EndDate>2020-01-22T00:00:00</EndDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>BEC017</SupplierCode>
+      <Name>BECKS BAKERY</Name>
+      <StartDate>2015-05-20T00:00:00</StartDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>CRI043</SupplierCode>
+      <Name>CRITERION IND</Name>
+      <StartDate>2015-08-12T00:00:00</StartDate>
+      <EndDate>2020-01-22T00:00:00</EndDate>
+    </Supplier>
+    <Supplier>
+      <SupplierCode>GER105</SupplierCode>
+      <Name>GERARD LIGHTING-CROMPTON</Name>
+      <StartDate>2015-09-18T00:00:00</StartDate>
+      <EndDate>2020-01-22T00:00:00</EndDate>
+    </Supplier>
+  </Suppliers>
+</SupplierBatch>

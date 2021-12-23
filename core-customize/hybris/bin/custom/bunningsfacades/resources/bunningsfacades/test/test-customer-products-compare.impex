@@ -1,0 +1,227 @@
+$pcmCatalog = BunningsPCMCatalog
+$version = Online
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$productDocuments = productDocuments(code, $catalogVersion)
+$superCategories = supercategories(code, $catalogVersion)[unique=true, mode=append]
+$thumbnail = thumbnail(code, $catalogVersion)
+$picture = picture(code, $catalogVersion)
+$thumbnails = thumbnails(code, $catalogVersion)
+$detail = detail(code, $catalogVersion)
+$normal = normal(code, $catalogVersion)
+$others = others(code, $catalogVersion)
+$logo = logo(code, $catalogVersion)
+$installationGuideDocument = installationGuideDocument(code, $catalogVersion)
+$baseProduct = baseProduct(code, $catalogVersion)[unique=true]
+$approvalStatus = approvalstatus(code)[default='approved'][unique=true]
+$variantType = variantType(code)[default='GenericVariantProduct']
+$gallery = galleryImages(qualifier, $catalogVersion)
+$currencyCode = NZD
+$syncJobCode = Sync Default:Staged -> Default:Online
+$languages = en, en_AU, en_NZ
+$supercategories = supercategories(code, $catalogVersion)[unique=true, mode=append]
+$defaultPassword = 12341234
+$media = @media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator]
+$currencies = AUD, NZD
+$net = false
+$unit = unit(code)[default=MM]
+$storeUid = BaseBunnningsStore
+$siteId = BunningsBaseSite
+$defaultCurrency = AUD
+$deliveryCountries = AU, NZ
+$billingCountries = AU, NZ
+$orderProcessCode = order-process
+$pickupInStoreMode = BUY_AND_COLLECT
+$customerAllowedToIgnoreSuggestions = true
+$paymentProvider = Mockup
+$checkoutFlowGroup = defaultCheckoutGroup
+
+# Product Bunnings Catalog
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+
+# Product Unit
+INSERT_UPDATE Unit; code[unique = true]; unitType  ; conversion; name
+                  ; Yes/No             ; Multi     ; 1         ; Yes/No
+                  ; each               ; Each      ; 1         ; each
+                  ; M3                 ; Volume    ; 1         ; M3
+                  ; MM                 ; Dimension ; 1         ; MM
+                  ; KG                 ; Weight    ; 1         ; KG
+                  ; G                  ; Weight    ; 1         ; G
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE
+                      ; en                    ; sample      ; TRUE
+
+INSERT_UPDATE UserGroup; uid[unique = true]
+                       ; admingroup
+                       ; employeegroup
+                       ; customergroup
+
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode)
+                            ; $pcmCatalog               ; Online                ; true  ; $languages
+                            ; $pcmCatalog               ; Staged                ; false ; $languages
+
+
+
+# Currencies
+INSERT_UPDATE Currency; isoCode[unique = true]; name              ; active; symbol
+                      ; AUD                   ; AUSTRALIAN DOLLAR ; TRUE  ; $
+                      ; NZD                   ; NEWZEALAND DOLLAR ; TRUE  ; $
+
+
+INSERT_UPDATE Customer; uid[unique = true]   ; customerID           ; password[default = $defaultPassword]; name           ; description; sessionLanguage(isocode); sessionCurrency(isocode); groups(uid)   ; loginDisabled[default = false]
+                      ; 00u318izsmA7CmVnS4x6 ; 00u318izsmA7CmVnS4x6 ;                                     ; dummy Customer ;            ; en_NZ                   ; NZD                     ; customergroup ; ;
+
+
+INSERT_UPDATE VariantCategory; code[unique = true]; $catalogVersion; name[lang = en]  ; $supercategories
+                             ; size               ;                ; size             ;
+                             ; color              ;                ; color            ;
+                             ; weight             ;                ; weight           ;
+                             ; volume             ;                ; volume           ;
+                             ; time               ;                ; time             ;
+                             ; length x breadth   ;                ; length x breadth ;
+
+INSERT_UPDATE VariantValueCategory; sequence; code[unique = true]; name                         ; $supercategories; order; $catalogVersion; allowedPrincipals(uid)[default = 'customergroup']
+                                  ; 1       ; size_Small         ; S                            ; size            ; 1    ;
+                                  ; 2       ; size_Medium        ; M                            ; size            ; 2    ;
+                                  ; 3       ; size_Large         ; L                            ; size            ; 3    ;
+                                  ; 4       ; size_XL            ; XL                           ; size            ; 4    ;
+                                  ; 5       ; size_1XL           ; 1XL                          ; size            ; 5    ;
+                                  ; 6       ; size_2XL           ; 2XL                          ; size            ; 6    ;
+                                  ; 7       ; size_3XL           ; 3XL                          ; size            ; 7    ;
+                                  ; 8       ; size_4XL           ; 4XL                          ; size            ; 8    ;
+                                  ; 9       ; size_5XL           ; 5XL                          ; size            ; 9    ;
+                                  ; 1       ; color_#000000      ; Black                        ; color           ; 1    ;
+                                  ; 2       ; color_#A52A2A      ; Brown                        ; color           ; 2    ;
+                                  ; 3       ; color_#A9A9A9      ; Dark Grey                    ; color           ; 3    ;
+                                  ; 4       ; color_#EAD300      ; Yellow                       ; color           ; 4    ;
+                                  ; 5       ; color_#FFFFFF      ; White                        ; color           ; 5    ;
+                                  ; 6       ; color_#F5DEB3      ; Wheat                        ; color           ; 6    ;
+                                  ; 7       ; color_#F5F5DC      ; Beige                        ; color           ; 7    ;
+                                  ; 8       ; color_#654321      ; Dark Brown                   ; color           ; 8    ;
+                                  ; 9       ; color_#808000      ; Olive                        ; color           ; 9    ;
+                                  ; 10      ; color_#0000FF      ; Blue                         ; color           ; 10   ;
+                                  ; 1       ; weight_1Kg         ; 1 Kg                         ; weight          ; 1    ;
+                                  ; 2       ; weight_2Kg         ; 2 Kg                         ; weight          ; 2    ;
+                                  ; 3       ; weight_3Kg         ; 3 Kg                         ; weight          ; 3    ;
+                                  ; 1       ; volume_1Litre      ; 1 Litre                      ; volume          ; 1    ;
+                                  ; 2       ; volume_2Litre      ; 2 Litre                      ; volume          ; 2    ;
+                                  ; 3       ; volume_3Litre      ; 3 Litre                      ; volume          ; 3    ;
+                                  ; 1       ; time_1hr           ; 1hr - first 15kms included   ; time            ; 1    ;
+                                  ; 2       ; time_2hr           ; 2hr - km charge applies      ; time            ; 2    ;
+                                  ; 3       ; time_24hr          ; 24hr - first 100kms included ; time            ; 3    ;
+                                  ; 4       ; time_3Plus         ; 3+ Days - km charge applies  ; time            ; 4    ;
+
+
+INSERT_UPDATE Product[disable.interceptor.types = validate]; name[lang = en]             ; code[unique = true]; $variantType; $approvalStatus; $catalogVersion; batchCountry[unique = true, default = 'AU']
+                                                           ; Hume Oakfield Internal Door ; W810001            ;             ;                ;
+                                                           ; Hume Oakfield Internal Door ; W810002            ;             ;                ;                
+  
+INSERT_UPDATE GenericVariantProduct; code[unique = true]; $approvalStatus; $catalogVersion; name           ; $baseProduct; ; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; lastUpdate[dateformat = dd.MM.yyyy HH:mm:ss]; $superCategories; batchCountry[unique = true, default = 'AU'];colour[default='Red'];size[default='Small'];volume[default='1Litre'];modelName[default='HC2'];material;;isActive[default=true]
+                                   ; AUW810010          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre;;;;;;Fibre;
+                                   ; AUW810011          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810012          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810013          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810014          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810015          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810016          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810017          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810018          ;                ;                ; Sample variant ; W810001     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810019          ;                ;                ; Sample variant ; W810002     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+                                   ; AUW810020          ;                ;                ; Sample variant ; W810002     ; ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large,color_#000000,weight_1Kg,volume_2Litre
+
+INSERT_UPDATE PriceRow; priceId      ; cor[unique = true]; corseq; productId[unique = true]; price[translator = de.hybris.platform.acceleratorservices.dataimport.batch.converter.PriceTranslator]; priority; startTime[dateformat = 'yyyy-MM-dd''T''HH:mm:ss']; endTime[dateformat = 'yyyy-MM-dd''T''HH:mm:ss']; locationCode[unique = true]; minqtd[default = 1]; ug(code); $unit; currency(isocode)[unique = true]
+                      ; 111:566:9876 ; 100001            ; 2     ; AUW810010               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9154                       ;                    ;         ;      ; NZD
+                      ; 111:566:9876 ; 100002            ; 2     ; AUW810011               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+
+INSERT_UPDATE Vendor; name[lang = en]; code[unique = true];
+                    ; Default Vendor ; defaultVendor      ;
+
+INSERT_UPDATE Warehouse; name[lang = en]             ; code[unique = true]; default; vendor(code)  ;
+                       ; BunningsWarehouse Warehouse ; BunningsWarehouse  ; true   ; defaultVendor ;
+
+INSERT_UPDATE StockLevel; warehouse(code)[unique = true]; productCode[unique = true]; available; inStockStatus(code); nextDeliveryTime[dateformat=dd-MM-yyyy]
+                        ; BunningsWarehouse             ; AUW810010                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810011                 ; 1000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810012                 ; 2000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810013                 ; 3000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810014                 ; 4000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810015                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810016                 ; 6000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810017                 ; 7000     ; AMBER              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810018                 ; 8100     ; RED                ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810019                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; BunningsWarehouse             ; AUW810020                 ; 0        ; GREEN              ; 29-04-2021
+
+
+
+
+INSERT_UPDATE MediaContainer; qualifier[unique = true]; name                          ; $catalogVersion
+                            ; 5560224                 ; Hammer Club Estwing container ;
+
+INSERT_UPDATE MediaFormat; qualifier[unique = true]; name[lang = $languages];
+                         ; 96Wx96H                 ; 96Wx96H
+
+
+INSERT_UPDATE Media; code[unique = true]; $catalogVersion; removable; URL                                                                                  ; mediaFormat(qualifier); mediaContainer(qualifier, $catalogVersion); primaryAssetUrl; mime; duration; sequence
+                   ; DoorSampleImage    ;                ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/cfGrinder4?v=00010940 ; 96Wx96H               ; 5560224                                   ;                ;     ;         ; 1
+
+
+INSERT_UPDATE Country; isocode[unique = true]; name[lang = en]; active; ; ; ; ; ;
+                     ; NZ                    ; NZ             ; true  ; ; ; ; ; ;
+                     ; AU                    ; AU             ; true  ; ; ; ; ; ;
+
+
+INSERT_UPDATE BaseStore; uid[unique = true]; name       ; catalogs(id)
+                       ; $storeUid         ; Test Store ; $pcmCatalog
+
+INSERT_UPDATE CMSSite; uid[unique = true]; stores(uid);
+                     ; $siteId           ; $storeUid  ;
+
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; ACT                   ; ACT            ; AU
+                    ; Test                  ; Test           ; NZ
+                    ; NSW                   ; Test           ; AU
+                    ; QLD                   ; QLD            ; AU
+
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 3            ; AU                ; VIC
+                  ; NZ RZ 10           ; NZ                ; Test
+
+
+INSERT_UPDATE PricingRegion; code[unique = true]; retailZone[unique = true]; name      ; region(isoCode)
+                           ; VICMetro           ; AU RZ 1                  ; VIC Metro ; VIC
+                           ; ACT                ; AU RZ 2                  ; ACT       ; ACT
+
+
+INSERT_UPDATE RegionalProductDetails; itemNumber[unique = true]; regionDetails(isoCode); status  ; visible; transactable; instorePickup; availableForDelivery; isDirectDelivery; zone(code);batchCountry[unique=true,default='AU']
+                                    ; AUW810010                ; ACT                   ; CSO     ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; FALSE           ; AU RZ 1
+                                    ; AUW810011                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; TRUE         ; FALSE               ; FALSE           ; AU RZ 1
+                                    ; AUW810012                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; FALSE           ; AU RZ 1
+                                    ; AUW810013                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; TRUE            ; AU RZ 1
+                                    ; AUW810014                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1
+                                    ; AUW810015                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; FALSE           ; AU RZ 1
+                                    ; AUW810016                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1
+                                    ; AUW810017                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1
+                                    ; AUW810018                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1
+                                    ; AUW810020                ; ACT                   ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1
+
+
+
+INSERT_UPDATE ItemLocationAttributes; itemNumber[unique = true]; locationCode; itemStatus; primaryBarcode; inStoreLocations;batchCountry[unique=true,default='AU']
+                                    ; AUW810011                ; 9150        ; Live      ; 9312753970884 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1
+                                    ; AUW810012                ; 9150        ; Live      ; 9312753970885 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1
+                                    ; AUW810013                ; 9150        ; Live      ; 9312753970886 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1
+                                    ; AUW810014                ; 9150        ; Live      ; 9312753970887 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1
+                                    ; AUW810015                ; 9150        ; Live      ; 9312753970887 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1
+                                    ; AUW810016                ; 9150        ; Live      ; 9312753970887 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1
+                                    ; AUW810017                ; 9150        ; Live      ; 9312753970887 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1
+                                    ; AUW810018                ; 9150        ; Live      ; 9312753970887 ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1

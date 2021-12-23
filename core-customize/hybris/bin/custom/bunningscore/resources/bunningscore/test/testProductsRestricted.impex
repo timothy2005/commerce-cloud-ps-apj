@@ -1,0 +1,262 @@
+$pcmCatalog = BunningsPCMCatalog
+$version = Staged
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$productDocuments = productDocuments(code, $catalogVersion)
+$superCategories = supercategories(code, $catalogVersion)[mode=append]
+$baseProduct = baseProduct(code, $catalogVersion)
+$approvalStatus = approvalstatus(code)[default='approved']
+$variantType = variantType(code)[default='GenericVariantProduct']
+$currencies = AUD, NZD
+$languages = en, en_AU, en_NZ
+$storeUid = BaseBunnningsStore
+$defaultCurrency = AUD
+$vendor = defaultVendor
+$storeUid = BaseBunnningsStore
+$siteId = BunningsBaseSite
+$australianHours = australian-standard-hours
+$currencyCode = AUD
+$unit = unit(code)[default=each]
+# Product Bunnings Catalog
+
+INSERT_UPDATE BaseStore; uid[unique = true]; name       ; catalogs(id)
+                       ; $storeUid         ; Test Store ; $pcmCatalog
+
+INSERT_UPDATE CMSSite; uid[unique = true]; stores(uid);
+                     ; $siteId           ; $storeUid  ;
+
+INSERT_UPDATE ServicelayerJob; code[unique = true]         ; springId[unique = true]
+                             ; coveoProductUploadJob       ; coveoProductUploadJob
+                             ; coveoBundleProductUploadJob ; coveoBundleProductUploadJob
+
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+
+# Product Unit
+INSERT_UPDATE Unit; code[unique = true]; unitType  ; conversion; name
+                  ; Yes/No             ; Multi     ; 1         ; Yes/No
+                  ; each               ; Each      ; 1         ; each
+                  ; M3                 ; Volume    ; 1         ; M3
+                  ; MM                 ; Dimension ; 1         ; MM
+                  ; KG                 ; Weight    ; 1         ; KG
+                  ; G                  ; Weight    ; 1         ; G
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE
+                      ; en                    ; sample      ; TRUE
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode)
+                            ; $pcmCatalog               ; Staged                ; false ; $languages
+                            ; $pcmCatalog               ; Online                ; true  ; $languages
+
+INSERT_UPDATE Category; order; code[unique = true]; name                ; $superCategories  ; navLevel(code); $catalogVersion
+                      ; 1100 ; building-hardware  ; Building & Hardware ;                   ; L1            ;
+                      ; 1519 ; timber             ; Timber              ; building-hardware ; L2            ;
+                      ; 1520 ; timber-boards      ; Timber Boards       ; timber            ; L3            ;
+                      ; 1521 ; plywood            ; Plywood             ; timber-boards     ; L4            ;
+                      ; 1523 ; form-plywood       ; Form Plywood        ; plywood           ; L5            ;
+
+# Currencies
+INSERT_UPDATE Currency; isoCode[unique = true]; name              ; active; symbol
+                      ; AUD                   ; AUSTRALIAN DOLLAR ; TRUE  ; $
+                      ; NZD                   ; NEWZEALAND DOLLAR ; TRUE  ; $
+
+INSERT_UPDATE VariantCategory; code[unique = true]; $catalogVersion; name[lang = en]; $superCategories
+                             ; size               ;                ; size           ;
+
+INSERT_UPDATE VariantValueCategory; sequence; code[unique = true]; name; $superCategories; order; $catalogVersion;
+                                  ; 12      ; size_Large         ; L   ; size            ; 12   ;
+
+INSERT_UPDATE Product[disable.interceptor.types = validate]; name[lang = en]             ; code[unique = true]; batchCountry[unique = true]; $variantType; $approvalStatus; $catalogVersion; $superCategories
+                                                           ; Hume Oakfield Internal Door ; W810002            ; AU                         ;             ;                ;                ; size,form-plywood
+                                                           ; Hume Oakfield Internal Door ; W810003            ; AU                         ;             ;                ;                ; size
+                                                           ; Hume Oakfield Internal Door ; W810001            ; AU                         ;             ;                ;                ; size
+
+INSERT_UPDATE Country; isocode[unique = true]; name[lang = en]; active;
+                     ; NZ                    ; NZ             ; true  ;
+                     ; AU                    ; AU             ; true  ;
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; ACT                   ; ACT            ; AU
+                    ; NSW                   ; NSW            ; AU
+                    ; QLD                   ; QLD            ; AU
+                    ; SA                    ; SA             ; AU
+                    ; WA                    ; WA             ; AU
+                    ; TAS                   ; TAS            ; AU
+                    ; NQ                    ; FNQ            ; AU
+                    ; NT                    ; NT             ; AU
+                    ; NORTH ISLAND          ; NORTH ISLAND   ; NZ
+                    ; SOUTH ISLAND          ; SOUTH ISLAND   ; NZ
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 2            ; AU                ; NSW
+                  ; AU RZ 3            ; AU                ; ACT
+                  ; AU RZ 4            ; AU                ; QLD
+                  ; AU RZ 5            ; AU                ; SA
+                  ; AU RZ 6            ; AU                ; TAS
+                  ; AU RZ 8            ; AU                ; NQ
+                  ; AU RZ 9            ; AU                ; WA
+                  ; AU RZ 10           ; AU                ; NT
+
+INSERT_UPDATE PricingRegion; code[unique = true]; retailZone[unique = true]; name         ; region(isoCode)
+                           ; ACT                ; AU RZ 3                  ; ACT          ; ACT
+                           ; VICMetro           ; AU RZ 1                  ; VIC Metro    ; VIC
+                           ; NSWMetro           ; AU RZ 2                  ; NSW Metro    ; NSW
+                           ; QLDMetro           ; AU RZ 3                  ; QLD Metro    ; QLD
+                           ; SAMetro            ; AU RZ 4                  ; SA Metro     ; SA
+                           ; WAMetro            ; AU RZ 5                  ; WA Metro     ; WA
+                           ; TASMetro           ; AU RZ 6                  ; TAS Metro    ; TAS
+                           ; VICRegional        ; AU RZ 7 - 1              ; VIC Regional ; VIC
+                           ; NSWRegional        ; AU RZ 7 - 2              ; NSW Regional ; NSW
+                           ; QLDRegional        ; AU RZ 7 - 3              ; QLD Regional ; QLD
+                           ; SARegional         ; AU RZ 7 - 4              ; SA Regional  ; SA
+                           ; WARegional         ; AU RZ 7 - 5              ; WA Regional  ; WA
+                           ; FNQ                ; AU RZ 8                  ; FNQ          ; NQ
+                           ; WARemote           ; AU RZ 9                  ; WA Remote    ; WA
+
+INSERT_UPDATE RegionalProductDetails; itemNumber[unique = true]; regionDetails(isoCode)[unique = true]; status ; visible; transactable; instorePickup; availableForDelivery; isDirectDelivery; zone(code)[unique = true]; batchCountry[default = 'AU'];
+                                    ; AU810010                 ; ACT                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 3                  ;                             ;
+                                    ; AU810017                 ; ACT                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 3                  ;                             ;
+                                    ; AU810011                 ; ACT                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 3                  ;                             ;
+                                    ; AU810012                 ; ACT                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 3                  ;                             ;
+                                    ; AU810021                 ; ACT                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 3                  ;                             ;
+                                    ; AU810022                 ; ACT                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 3                  ;                             ;
+                                    ; AU810031                 ; ACT                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 3                  ;                             ;
+                                    ; AU810032                 ; ACT                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 3                  ;                             ;
+                                    ; AU810010                 ; VIC                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 1                  ;                             ;
+                                    ; AU810017                 ; VIC                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 1                  ;                             ;
+                                    ; AU810011                 ; VIC                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 1                  ;                             ;
+                                    ; AU810012                 ; VIC                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1                  ;                             ;
+                                    ; AU810021                 ; VIC                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1                  ;                             ;
+                                    ; AU810022                 ; VIC                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ; AU RZ 1                  ;                             ;
+                                    ; AU810031                 ; VIC                                  ; Active ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1                  ;                             ;
+                                    ; AU810032                 ; VIC                                  ; CSO    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1                  ;                             ;
+
+INSERT_UPDATE GenericVariantProduct; code[unique = true]; $approvalStatus; $catalogVersion; name             ; $baseProduct;        ; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; lastUpdate[dateformat = dd.MM.yyyy HH:mm:ss]; $superCategories; batchCountry[unique = true, default = 'AU']; manufacturerName
+                                   ; AU810010           ;                ;                ; Sample 1"variant ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; AEG
+                                   ; AU810017           ;                ;                ; Sample variant   ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; AEG
+                                   ; AU810011           ;                ;                ; Sample variant   ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; AEG
+                                   ; AU810012           ;                ;                ; Sample variant   ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; aeg-brand
+                                   ; AU810021           ;                ;                ; Sample variant   ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; aeg-brand
+                                   ; AU810022           ;                ;                ; Sample variant   ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; aeg-brand
+                                   ; AU810031           ;                ;                ; Sample variant   ; W810003     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; aeg-brand
+                                   ; AU810032           ;                ;                ; Sample variant   ; W810003     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ; aeg-brand
+
+INSERT_UPDATE PackagingDetails; code[unique = true]; itemNumber[unique = true]; part; batchCountry[unique = true]; dimensionUOM; volumeUOM; weightUOM; dimensionLength; dimensionHeight; dimensionWidth; netWeight; grossWeight; volume; barCodeNumber[unique = true];
+                              ; 111111111          ; AU810010                 ; 1   ; AU                         ; m           ; ml       ; g        ; 10             ; 10             ; 10            ; 10       ; 10         ; 10    ; 111111111
+
+
+INSERT_UPDATE Vendor; name[lang = en]; code[unique = true];
+                    ; Default Vendor ; defaultVendor      ;
+
+INSERT_UPDATE    PriceRow; priceId      ; cor[unique = true]; corseq; productId[unique = true]; price[translator = de.hybris.platform.acceleratorservices.dataimport.batch.converter.PriceTranslator]; priority; startTime[dateformat = 'yyyy-MM-dd''T''HH:mm:ss']; endTime[dateformat = 'yyyy-MM-dd''T''HH:mm:ss']; locationCode[unique = true]; minqtd[default = 1]; ug(code); $unit; currency(isocode)[unique = true];
+                         ; 211:566:9877 ; 145264            ; 2     ; AU810010                ; 1120                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+                         ; 211:566:9878 ; 145265            ; 3     ; AU810017                ; 1140                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+                         ; 211:566:9879 ; 145266            ; 4     ; AU810011                ; 1160                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+                         ; 211:566:9880 ; 145267            ; 5     ; AU810012                ; 1180                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+                         ; 211:566:9881 ; 145268            ; 6     ; AU810021                ; 1200                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+                         ; 211:566:9882 ; 145269            ; 7     ; AU810022                ; 1220                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+                         ; 211:566:9883 ; 145270            ; 8     ; AU810031                ; 1240                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+                         ; 211:566:9884 ; 145271            ; 9     ; AU810032                ; 1260                                                                                                 ; 1       ;                                                  ;                                                ; 12162                      ;                    ;         ;      ; $currencyCode                   ;
+
+INSERT_UPDATE Warehouse; code[unique = true]         ; name[lang = en]          ; vendor(code); default
+                       ; AU9150                      ; Bunnings warehouse 9150  ; $vendor     ; true
+                       ; AU9151                      ; Bunnings warehouse 9151  ; $vendor     ; true
+                       ; AU9152                      ; Bunnings warehouse 9152  ; $vendor     ; true
+                       ; AU9153                      ; Bunnings warehouse 9153  ; $vendor     ; true
+                       ; AU9154                      ; Bunnings warehouse 9154  ; $vendor     ; true
+                       ; AU9155                      ; Bunnings warehouse 9155  ; $vendor     ; true
+                       ; AU9156                      ; Bunnings warehouse 9156  ; $vendor     ; true
+                       ; AU9157                      ; Bunnings warehouse 9157  ; $vendor     ; true
+                       ; AU9158                      ; Bunnings warehouse 9158  ; $vendor     ; true
+                       ; AU12162                     ; Bunnings warehouse 12162 ; $vendor     ; true
+                       ; BunningsWarehouse Warehouse ; BunningsWarehouse        ; $vendor     ; true
+
+INSERT_UPDATE StockLevel; warehouse(code)[unique = true]; productCode[unique = true]; available; inStockStatus(code)
+                        ; AU9150                        ; AU810010                  ; 5000     ; GREEN
+                        ; AU9151                        ; AU810017                  ; 1000     ; GREEN
+                        ; AU9152                        ; AU810011                  ; 2000     ; GREEN
+                        ; AU9153                        ; AU810012                  ; 3000     ; GREEN
+                        ; AU9154                        ; AU810021                  ; 4000     ; GREEN
+                        ; AU9155                        ; AU810022                  ; 5000     ; GREEN
+                        ; AU9156                        ; AU810031                  ; 6000     ; GREEN
+                        ; AU9157                        ; AU810032                  ; 6000     ; RED
+
+INSERT_UPDATE OpeningSchedule; code[unique = true]
+                             ; $australianHours
+
+INSERT_UPDATE WeekdayOpeningDay; openingSchedule(code)[unique = true]; dayOfWeek(code)[unique = true]; openingTime[dateformat = hh:mm]; closingTime[dateformat = hh:mm]; name                      ; effectiveStartDate[dateFormat = dd/MM/yyyy]; effectiveEndDate[dateFormat = dd/MM/yyyy];
+                               ; $australianHours                    ; MONDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; TUESDAY                       ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; WEDNESDAY                     ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/07/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; THURSDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/08/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; FRIDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/09/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SATURDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SUNDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+
+INSERT_UPDATE PointOfService; subType       ; region(isoCode); tradingStartDate[dateFormat = yyyy-MM-dd]; tradingEndDate[dateFormat = yyyy-MM-dd]; creationDate[dateFormat = yyyy-MM-dd]; archiveDate[dateFormat = yyyy-MM-dd]; zone(code); timeZone; name[unique = true]; displayName; warehouses(code); latitude    ; longitude   ; type(code)[default = SF]; openingSchedule(code); basestore(uid)[default = $storeUid]; isTrading[default = true]; batchCountry[unique = true][default = AU]
+                            ; 9429000063641 ; ACT            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 3   ; AEST    ; 12162              ; Gungahlin  ;                 ; -35.1839274 ; 149.0602316 ;                         ; $australianHours     ;                                    ;                          ;
+
+INSERT_UPDATE Media; code[unique = true]   ; $catalogVersion; altText                    ; removable; primaryAssetUrl                                                                                                       ; mediaFormat(qualifier); mime       ; secondaryAssetUrl
+                   ; aeg-logo              ;                ; AEG logo                   ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/aeglogo?v=bcd13892                                     ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/aeglogo?v=bcd13892
+                   ; bosch-logo            ;                ; Bosch logo                 ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/boschlogo?v=843b831a                                   ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/boschlogo?v=843b831a
+                   ; dewalt-logo           ;                ; DeWalt logo                ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/dewaltlogo?v=d5b175f9                                  ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/dewaltlogo?v=d5b175f9
+                   ; irwin-logo            ;                ; Irwin logo                 ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/irwinlogo?v=e19ec343                                   ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/irwinlogo?v=e19ec343
+                   ; kincrome-logo         ;                ; Kincrome logo              ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/kincromelogo?v=7c5a49dd                                ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/kincromelogo?v=7c5a49dd
+                   ; makita-logo           ;                ; Makita logo                ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/makitalogo?v=0eedc71a                                  ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/makitalogo?v=0eedc71a
+                   ; paslode-logo          ;                ; Paslode logo               ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/paslodelogo?v=4acc0630                                 ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/paslodelogo?v=4acc0630
+                   ; ryobi-logo            ;                ; Ryobi logo                 ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/ryobibrandlogo?v=fee92ef1                   ;                       ; image/jpeg ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/ryobibrandlogo?v=fee92ef1
+                   ; clark_tanks-logo      ;                ; Clark Tanks Logo           ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/98d090efaace4cf0a2de6127ac5a960a?v=a05ea692 ;                       ; image/jpeg ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/98d090efaace4cf0a2de6127ac5a960a?v=a05ea692
+                   ; rossi_boots-logo      ;                ; Rossi Boots Logo           ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/98d090efaace4cf0a2de6127ac5a960a?v=a05ea692 ;                       ; image/jpeg ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/98d090efaace4cf0a2de6127ac5a960a?v=a05ea692
+                   ; hard_yakka-logo       ;                ; Hard Yakka Logo            ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/4348eab006154a9293ff090c2442cdb0?v=18649111 ;                       ; image/jpeg ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/4348eab006154a9293ff090c2442cdb0?v=18649111
+                   ; hume_doorstimber-logo ;                ; Hume Doors and Timber Logo ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/54bf3ed9018948bf88597aa7fe886007?v=f5cefcc2 ;                       ; image/jpeg ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/54bf3ed9018948bf88597aa7fe886007?v=f5cefcc2
+                   ; syneco-logo           ;                ; Syneco Logo                ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/2dd9eb48fe1c4a738348ee5a6ec9ef29?v=b6491532 ;                       ; image/jpeg ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/2dd9eb48fe1c4a738348ee5a6ec9ef29?v=b6491532
+                   ; powertrain-logo       ;                ; PowerTrain Logo            ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/8a5ab757222b4adf94ba4ef150f32282?v=078bf06a ;                       ; image/jpeg ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/8a5ab757222b4adf94ba4ef150f32282?v=078bf06a
+
+
+INSERT_UPDATE Brand; $catalogVersion; brandCode[unique = true]; name                  ; logo(code, $catalogVersion); brandStatus(code)[default = 'APPROVED']
+                   ;                ; aeg-brand               ; AEG                   ; aeg-logo                   ;
+                   ;                ; bosch-brand             ; Bosch                 ; bosch-logo                 ;
+                   ;                ; dewalt-brand            ; DeWalt                ; dewalt-logo                ;
+                   ;                ; irwin-brand             ; Irwin                 ; irwin-logo                 ;
+                   ;                ; kincrome-brand          ; Kincrome              ; kincrome-logo              ;
+                   ;                ; makita-brand            ; Makita                ; makita-logo                ;
+                   ;                ; paslode-brand           ; Paslode               ; paslode-logo               ;
+                   ;                ; ryobi-brand             ; Ryobi                 ; ryobi-logo                 ;
+                   ;                ; clark_tanks-brand       ; Clark Tanks           ; clark_tanks-logo           ;
+                   ;                ; rossi_boots-brand       ; Rossi Boots           ; rossi_boots-logo           ;
+                   ;                ; hard_yakka-brand        ; Hard Yakka            ; hard_yakka-logo            ;
+                   ;                ; hume_doorstimber-brand  ; Hume Doors and Timber ; hume_doorstimber-logo      ;
+                   ;                ; syneco-brand            ; Syneco                ; syneco-logo                ;
+                   ;                ; powertrain-brand        ; PowerTrain            ; powertrain-logo            ;
+
+INSERT_UPDATE Media; code[unique = true] ; $catalogVersion; removable; primaryAssetUrl                                                        ; mime      ; associatedTo(code)[unique = true]; products(code, $catalogVersion); mediaTitle  ; shortdescription       ; contenttype
+                   ; AU1016018_Document1 ;                ; TRUE     ; http://africau.edu/images/default/sample.pdf                           ; pdf       ; OTHER                            ; AU810032                       ; Sampletitle ; sampleshortdescription ; Document
+                   ; AU810011_Document2  ;                ; TRUE     ; http://mtskheta.gov.ge/public/img/1530793528.xlsx                      ; text/xlxs ; WARRANTY                         ; AU810011                       ; Sampletitle ; sampleshortdescription ; Document
+                   ; AU810012_Document3  ;                ; TRUE     ; https://scholar.harvard.edu/files/torman_personal/files/samplepptx.ppt ; ppt       ; SPECIFICATION                    ; AU810012                       ; Sampletitle ; sampleshortdescription ; Document
+                   ; AU810017_Document4  ;                ; TRUE     ; http://africau.edu/images/default/sample.csv                           ; csv       ; BROCHURE                         ; AU810017                       ; Sampletitle ; sampleshortdescription ; Document
+                   ; AU810021_Document5  ;                ; TRUE     ; http://africau.edu/images/default/sample.pdf                           ; pdf       ; INSTRUCTIONS                     ; AU810021                       ; Sampletitle ; sampleshortdescription ; Document
+                   ; AU810022_Document6  ;                ; TRUE     ; http://africau.edu/images/default/sample.pdf                           ; pdf       ; USERGUIDE                        ; AU810022                       ; Sampletitle ; sampleshortdescription ; Document
+
+
+INSERT_UPDATE ServicelayerJob; code[unique = true]     ; springId[unique = true]
+                             ; coveoDocumentsUploadJob ; coveoDocumentsUploadJob
+
+INSERT_UPDATE CoveoDocumentsUploadJob; code[unique = true]     ; job(code)               ; fullMode; sessionLanguage(isoCode[default = en])
+                                     ; coveoDocumentsUploadJob ; coveoDocumentsUploadJob ; false   ;
+
+#bunnings point of service data
+INSERT_UPDATE PointOfService[disable.interceptor.types = prepare]; name[unique = true]; subType       ; region(isoCode); tradingStartDate[dateFormat = yyyy-MM-dd]; tradingEndDate[dateFormat = yyyy-MM-dd]; creationDate[dateFormat = yyyy-MM-dd]; archiveDate[dateFormat = yyyy-MM-dd]; zone(code); timeZone; displayName  ; warehouses(code); latitude    ; longitude   ; type(code)[default = SF]; openingSchedule(code); basestore(uid)[default = $storeUid]; isTrading[default = true]; batchCountry[unique = true][default = AU]
+#VIC
+                                                                 ; 9150               ; 9429000063630 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Moorabbin    ;                 ; -37.9455102 ; 145.009818  ;                         ; $australianHours     ;                                    ;                          ;
+                                                                 ; 9151               ; 9429000063631 ; NSW            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 2   ; AEST    ; Keysborough  ;                 ; -37.9898532 ; 145.0767063 ;                         ; $australianHours     ;                                    ;                          ;
+                                                                 ; 9152               ; 9429000063632 ; QLD            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 3   ; AEST    ; Springvale   ;                 ; -37.9325495 ; 145.0829277 ;                         ; $australianHours     ;                                    ;                          ;
+                                                                 ; 9153               ; 9429000063633 ; SA             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 4   ; AEST    ; Notting Hill ;                 ; -37.9006842 ; 145.0573034 ;                         ; $australianHours     ;                                    ;                          ;
+                                                                 ; 9154               ; 9429000063634 ; WA             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 5   ; AEST    ; Chadstone    ;                 ; -37.877324  ; 145.0225472 ;                         ; $australianHours     ;                                    ;                          ;
+                                                                 ; 9155               ; 9429000063635 ; TAS            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 6   ; AEST    ; Box Hill     ;                 ; -37.8364803 ; 145.0630674 ;                         ; $australianHours     ;                                    ;                          ;
+                                                                 ; 9156               ; 9429000063636 ; NQ             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 8   ; AEST    ; Nunawading   ;                 ; -37.8193229 ; 145.0972078 ;                         ; $australianHours     ;                                    ;                          ;
+                                                                 ; 9157               ; 9429000063637 ; WA             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 9   ; AEST    ; Ringwood     ;                 ; -37.8154658 ; 145.1530951 ;                         ; $australianHours     ;                                    ;                          ;

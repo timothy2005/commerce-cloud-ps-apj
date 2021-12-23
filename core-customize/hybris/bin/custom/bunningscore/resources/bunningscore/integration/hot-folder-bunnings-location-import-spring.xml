@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:file="http://www.springframework.org/schema/integration/file"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="baseDirectoryBunningsLocation" class="java.lang.String">
+        <constructor-arg value="#{baseDirectory}/${tenantId}/location"/>
+    </bean>
+
+    <!-- Step 3: Service Activatior for Header Setup Task -->
+    <int:service-activator input-channel="batchFilesLocationProc" output-channel="bunningsBatchLocationFilesHeaderInit"
+                           ref="bunningsLocationHeaderSetupTask"
+                           method="execute"/>
+
+    <!-- Step 4: Service Activatior for Header Init Task -->
+    <int:service-activator input-channel="bunningsBatchLocationFilesHeaderInit"
+                           output-channel="bunningsLocationBatchFilTransform"
+                           ref="bunningsLocationHeaderInitTask"
+                           method="execute"/>
+
+    <!-- Step 5: Chain for Recon Data Setup Task, XML Validation Task and XML Processing Task -->
+    <int:chain input-channel="bunningsLocationBatchFilTransform" output-channel="bunningsLocationBatchFilesTran">
+        <int:service-activator ref="bunningsLocationReconDataSetupTask" method="execute" />
+        <!-- to activate the xsd based validation un-comment bunningsXmlValidationTask service activator below -->
+        <!-- <int:service-activator ref="bunningsXmlValidationTask" method="execute" /> -->
+        <int:service-activator ref="bunningsLocationXmlProcessingTask" method="execute" />
+    </int:chain>
+
+
+    <!-- Step 6: Service Activator for Impex File Processing Task-->
+    <int:service-activator input-channel="bunningsLocationBatchFilesTran" output-channel="bunningsLocationBatchFilesImp" ref="bunningsLocationBatchRunnerTask" method="execute" />
+    <bean id="bunningsLocationBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+        <property name="sessionService" ref="sessionService" />
+        <property name="importService" ref="importService" />
+        <lookup-method name="getImportConfig" bean="importConfig" />
+    </bean>
+
+    <!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+    <int:service-activator input-channel="bunningsLocationBatchFilesImp" ref="bunningsLocationBatchCleanupTask" method="execute" />
+    <bean id="bunningsLocationBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+        <property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+    </bean>
+
+    <bean id="bunningsLocationHeaderSetupTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask">
+        <property name="catalog" value="BunningsPCMCatalog"/>
+        <property name="net" value="false"/>
+        <property name="storeBaseDirectory" ref="baseDirectoryBunningsLocation"/>
+        <property name="fileType" value="LOCATION" />
+    </bean>
+
+
+
+    <bean id="bunningsLocationHeaderInitTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+        <property name="sequenceIdParser" ref="bunningsLocationBatchSequenceIdParser"/>
+        <property name="languageParser" ref="batchLanguageParser"/>
+        <property name="fallbackLanguage" value="en"/>
+    </bean>
+
+    <bean id="bunningsLocationBatchSequenceIdParser"
+          class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+        <property name="parser">
+            <bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+                <property name="regex" value="${bunnings.hotfolder.sequenceId.xml.regex.name}"/>
+            </bean>
+        </property>
+    </bean>
+
+
+    <bean id="bunningsLocationReconDataSetupTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+        <property name="batchValidationEnabledKey" value="bunnings.location.feed.import.batch.validation.enabled"/>
+        <property name="bunningsReconSAXParserHandlerName" value="bunningsLocationReconSAXParserHandler"/>
+        <property name="bunningsReconService" ref="bunningsReconService"/>
+        <property name="configurationService" ref="configurationService"/>
+    </bean>
+
+    <bean id="bunningsLocationReconSAXParserHandler" class="com.bunnings.core.dataimport.BunningsReconSAXParserHandler" scope="prototype">
+        <property name="primaryEntityNode" value="Location"/>
+    </bean>
+
+    <bean id="bunningsLocationXmlProcessingTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask">
+        <property name="xmlToImpexProcessManager" ref="locationXMLToImpexProcessManager"/>
+    </bean>
+
+    <bean id="locationXMLToImpexProcessManager"
+          class="com.bunnings.core.dataimport.XMLtoImpexProcessManager">
+        <property name="encoding" value="UTF-8" />
+        <property name="bunningsXMLParser" ref="bunningsLocationXMLParser"/>
+    </bean>
+
+
+    <bean id="bunningsLocationXMLParser" class="com.bunnings.core.dataimport.impl.BunningsXMLParserImpl">
+        <property name="saxParserHandlerBeanName" value="bunningsLocationSAXParserHandler"/>
+    </bean>
+
+
+    <bean id="bunningsLocationSAXParserHandler" class="com.bunnings.core.dataimport.BunningsSAXParserHandler"
+          scope="prototype">
+        <property name="primaryEntityNode" value="Location"/>
+        <property name="collectionNodesKeySet" ref="locationStartEndNodes"/>
+        <property name="xmlRowValidationManager" ref="xmlLocationRowValidationManager"/>
+        <property name="impexStreamManager" ref="locationImpexStreamManager"/>
+        <property name="rowTransalationManager" ref="defaultLocationRowTransalationManager"/>
+        <property name="recordReferenceKey" value="Location/LocationCode/"/>
+    </bean>
+
+    <util:set id="locationStartEndNodes" value-type="java.lang.String">
+        <value>Location/TradingHours/TradingPeriod/</value>
+        <value>Location/Contacts/Contact/</value>
+    </util:set>
+
+    <bean id="xmlLocationRowValidationManager"
+          class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+        <property name="validators" ref="locationValidators"/>
+    </bean>
+
+    <alias name="bunningsLocationContactTranslator" alias="locationContactTranslator"/>
+    <bean id="bunningsLocationContactTranslator"
+          class="com.bunnings.core.dataimport.xml.translators.BunningsLocationContactTranslator"/>
+
+    <alias name="bunningsLocationZoneTranslator" alias="locationZoneTranslator"/>
+    <bean id="bunningsLocationZoneTranslator"
+          class="com.bunnings.core.dataimport.xml.translators.BunningsLocationZoneTranslator"/>
+
+    <alias name="weekDayOpeningTranslator" alias="weekDayOpeningTranslator"/>
+    <bean id="weekDayOpeningTranslator"
+          class="com.bunnings.core.dataimport.xml.translators.BunningsWeekDayOpeningTranslator"/>
+
+    <alias name="bunningsSequenceCheckTranslator" alias="bunningsSequenceCheckTranslator"/>
+    <bean id="bunningsSequenceCheckTranslator"
+          class="com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator"/>
+
+
+    <alias name="bunningsWarehouseCountryTranslator" alias="warehouseCountryTranslator" />
+    <bean id="bunningsWarehouseCountryTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningsWarehouseCountryTranslator"/>
+
+    <util:list id="locationValidators">
+        <ref bean="locCodeXmlNodeMandatoryElementValidator"/>
+        <ref bean="bunningsLocationHeaderValidator"/>
+    </util:list>
+
+    <bean id="locCodeXmlNodeMandatoryElementValidator" class="com.bunnings.core.dataimport.xml.validators.XmlNodeManadatoryElementValidator">
+        <property name="key" value="Location/LocationCode/" />
+    </bean>
+
+    <bean id="bunningsLocationHeaderValidator"
+          class="com.bunnings.core.dataimport.xml.validators.BunningsLocationHeaderValidator">
+        <property name="key" value="LocationMessage/Header/CountryCode/"/>
+    </bean>
+
+    <bean id="defaultLocationRowTransalationManager"
+          class="com.bunnings.core.dataimport.impl.XMLRowTransalationManagerImpl">
+        <property name="rowTransalators" ref="locationRowTransalators"/>
+    </bean>
+
+
+    <util:list id="locationRowTransalators" value-type="com.bunnings.core.dataimport.XMLRowTransalator">
+        <ref bean="locationZoneTranslator"/>
+        <ref bean="locationContactTranslator"/>
+        <ref bean="warehouseCountryTranslator"/>
+        <ref bean="weekDayOpeningTranslator"/>
+    </util:list>
+
+
+    <bean id="locationImpexStreamManager" class="com.bunnings.core.dataimport.ImpexStreamManagerImpl">
+        <property name="handlers" ref="locationHandlers"/>
+    </bean>
+
+    <util:list id="locationHandlers">
+        <ref bean="bunningsWeekDaysStreamHandler"/>
+        <ref bean="bunningsOpeningScheduleStreamHandler"/>
+        <ref bean="bunningsLocationStreamHandler"/>
+        <ref bean="bunningsAddressStreamHandler"/>
+        <ref bean="bunningsStoreMapStreamHandler"/>
+        <ref bean="bunningsPOSAddressStreamHandler"/>
+        <ref bean="bunningsWarehouseStreamHandler"/>
+    </util:list>
+
+    <bean id="bunningsOpeningScheduleStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="header">
+            <value>
+                INSERT_UPDATE OpeningSchedule;code[unique=true];feedLineReference;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>Location/LocationCode/;Location/LocationCode/;LocationMessage/Header/ExtractDateTime/</value>
+        </property>
+        <property name="priority" value="1"/>
+    </bean>
+
+    <bean id="bunningsWeekDaysStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="firstValueMandatory" value="true"/>
+        <property name="header">
+            <value>
+                INSERT_UPDATE WeekdayOpeningDay;openingSchedule(code);code[unique=true];name;openingTime[dateformat=HH:mm];closingTime[dateformat=HH:mm];isClosed;dayOfWeek(code)[unique=true][cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];effectiveStartDate[dateformat='yyyy-MM-dd''T''HH:mm:ssXXX'];effectiveEndDate[dateformat='yyyy-MM-dd''T''HH:mm:ss''.9999999''XXX'];feedLineReference;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>Location/LocationCode/;S;Location/TradingHours/TradingPeriod$/Name/;Location/TradingHours/TradingPeriod$/Open/;Location/TradingHours/TradingPeriod$/Close/;Location/TradingHours/TradingPeriod$/IsClosed/;Location/TradingHours/TradingPeriod$/DaysOfWeek/;Location/TradingHours/TradingPeriod$/EffectiveStartDate/;Location/TradingHours/TradingPeriod$/EffectiveEndDate/;Location/LocationCode/;LocationMessage/Header/ExtractDateTime/</value>
+        </property>
+        <property name="priority" value="2"/>
+    </bean>
+
+
+    <bean id="bunningsLocationStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="firstValueMandatory" value="true"/>
+        <property name="header">
+            <value>
+                # Insert Bunnings Location
+                INSERT_UPDATE PointOfService; name[unique = true]; displayName; isTrading[default=true];type(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator']; latitude; longitude;openingSchedule(code); subType; tradingStartDate[dateformat='yyyy-MM-dd'];tradingEndDate[dateformat='yyyy-MM-dd']; creationDate[dateformat='yyyy-MM-dd'];archiveDate[dateformat='yyyy-MM-dd'];timeZone; baseStore(uid);@availableServices[translator=com.bunnings.core.dataimport.xml.translators.BunningsLocationServicesTranslator];zone(code);region(isoCode);friendlyName;hasClickAndCollect[default=false];hasDriveAndCollect[default=false];hasClickAndDeliver[default=false];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference;batchCountry[unique = true]
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>Location/LocationCode/;Location/Name/;Location/IsTrading/;Location/Type/;Location/GeoLocation/Latitude/;Location/GeoLocation/Longitude/;Location/LocationCode/;Location/SubType/;Location/TradingStartDate/;Location/TradingEndDate/;Location/CreationDate/;Location/ArchiveDate/;Location/TimeZone/;Location/BaseStore/;Location/Services/Service/;Location/Groups/RetailZone/;Location/Groups/Region/;Location/FriendlyName/;Location/HasClickAndCollect/;Location/HasDriveAndCollect/;Location/HasClickAndDeliver/;LocationMessage/Header/ExtractDateTime/;Location/LocationCode/;LocationMessage/Header/CountryCode/</value>
+        </property>
+        <property name="priority" value="3"/>
+    </bean>
+
+    <bean id="bunningsAddressStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="firstValueMandatory" value="true"/>
+        <property name="header">
+            <value>
+                INSERT_UPDATE Address;owner(PointOfService.name,PointOfService.batchCountry)[unique = true];streetName; streetNumber; line3; town; postalCode; region(isoCode);country(isoCode); firstName; phone1; email; fax;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>Location/LocationCode/Value;Location/Address/Line1/;Location/Address/Line2/;Location/Address/Line3/;Location/Address/TownCity/;Location/Address/PostCode/;Location/Address/State/;Location/Address/Country/Isocode/;Location/Contacts/ContactName/;Location/Contacts/Phone/;Location/Contacts/Email/;Location/Contacts/Fax/;LocationMessage/Header/ExtractDateTime/;Location/LocationCode/</value>
+        </property>
+        <property name="priority" value="4"/>
+    </bean>
+
+    <bean id="bunningsStoreMapStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="header">
+            <value>
+                $catalogVersion=catalogVersion(catalog(id[default=BunningsPCMCatalog]),version[default='Staged'])[unique=true,default='BunningsPCMCatalog:Staged']
+                INSERT_UPDATE Media;mediaUrl;code[unique=true];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];$catalogVersion
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>Location/StoreMap/;Location/LocationCode/;LocationMessage/Header/ExtractDateTime/</value>
+        </property>
+        <property name="priority" value="5"/>
+    </bean>
+
+    <bean id="bunningsPOSAddressStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="firstValueMandatory" value="true"/>
+        <property name="header">
+            <value>
+                UPDATE PointOfService;name[unique=true]; address(owner(PointOfService.name,PointOfService.batchCountry));mapIcon[translator=com.bunnings.core.dataimport.xml.translators.BunningsStoreMapTranslator];feedLineReference;batchCountry[unique  true];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>Location/LocationCode/;Location/LocationCode/Value;Location/LocationCode/;Location/LocationCode/;LocationMessage/Header/CountryCode/;LocationMessage/Header/ExtractDateTime/</value>
+        </property>
+        <property name="priority" value="6"/>
+    </bean>
+
+      <bean id="bunningsWarehouseStreamHandler"
+        class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="firstValueMandatory" value="true"/>
+        <property name="header">
+            <value>
+                INSERT_UPDATE Warehouse;code[unique=true];name;default[default=false];vendor(code)[default=default];pointsOfService(name,batchCountry)[unique =true];feedLineReference;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>Location/LocationCodeWithCountryCode/;Location/Name/;S;S;Location/LocationCode/Value;Location/LocationCode/;LocationMessage/Header/ExtractDateTime/</value>
+        </property>
+        <property name="priority" value="7"/>
+    </bean>
+</beans>

@@ -1,0 +1,1052 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+#
+# Import Users and Groups for Product Cockpit
+
+$pcmCatalog = BunningsPCMCatalog
+$languages = en, en_AU, en_NZ
+$classificationCatalog = BunningsClassification
+
+INSERT_UPDATE UserGroup; uid[unique = true]  ; groups(uid)[mode = append]
+                       ; cockpitgroup        ;
+                       ; employeegroup       ;
+                       ; customergroup       ; cockpitgroup
+                       ; cmsmanagergroup     ; cockpitgroup,employeegroup
+                       ; productmanagergroup ; cockpitgroup,employeegroup
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE
+                      ; en                    ; sample      ; TRUE
+
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+
+# Bunnings Classification catalog
+INSERT_UPDATE ClassificationSystem; id[unique = true]
+                                  ; $classificationCatalog
+
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode)
+                            ; $pcmCatalog               ; Online                ; true  ; $languages
+                            ; $pcmCatalog               ; Staged                ; false ; $languages
+                            ; $classificationCatalog    ; 1.0                   ; false ; $languages
+
+INSERT_UPDATE BackofficeRole; UID[unique = true]       ; groups(uid)[mode = append]; locName              ; name                 ; backOfficeLoginDisabled; authorities         ; readableCatalogVersions(catalog(id), version)                                  ; writableCatalogVersions(catalog(id), version)        ; readableLanguages(isocode); writeableLanguages(isocode)
+                            ; bunningssuppliergroup    ; productmanagergroup       ; Bunnings Suplier     ; Bunnings Suplier     ; FALSE                  ; bunningspcmonlyuser ; BunningsPCMCatalog:Staged,BunningsClassification:1.0                           ; BunningsPCMCatalog:Staged,BunningsClassification:1.0 ; en_AU,en                  ; en_AU,en
+                            ; digitalmerchandisergroup ; productmanagergroup       ; Digital Merchandiser ; Digital Merchandiser ; FALSE                  ; bunningspcmonlyuser ; BunningsPCMCatalog:Staged,BunningsPCMCatalog:Online,BunningsClassification:1.0 ; BunningsPCMCatalog:Staged,BunningsClassification:1.0 ; en_AU,en                  ; en_AU,en
+                            ; merchandisergroup        ; productmanagergroup       ; Merchandiser         ; Merchandiser         ; FALSE                  ; bunningspcmonlyuser ; BunningsPCMCatalog:Staged,BunningsPCMCatalog:Online,BunningsClassification:1.0 ; BunningsPCMCatalog:Staged,BunningsClassification:1.0 ; en_AU,en                  ; en_AU,en
+
+INSERT_UPDATE Employee; UID[unique = true]  ; name                 ; groups(uid)              ; description                        ; password
+                      ; DigitalMerchandiser ; Digital Merchandiser ; digitalmerchandisergroup ; Digital Merchandiser for Bunnings. ; 1234
+                      ; Marketeer           ; Marketeer            ; digitalmerchandisergroup ; Digital Merchandiser for Bunnings. ; 1234
+                      ; Merchandiser        ; Merchandiser         ; merchandisergroup        ; Merchandiser for Bunnings.         ; 1234
+                      ; ProductManager      ; ProductManager       ; merchandisergroup        ; Merchandiser for Bunnings.         ; 1234
+
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; readPrincipals(uid)[mode = append]                               ; writePrincipals(uid)[mode = append]
+                            ; BunningsPCMCatalog        ; Staged                ; bunningssuppliergroup,digitalmerchandisergroup,merchandisergroup ; bunningssuppliergroup,digitalmerchandisergroup,merchandisergroup
+                            ; BunningsPCMCatalog        ; Online                ; digitalmerchandisergroup,merchandisergroup                       ;
+
+$START_USERRIGHTS; ; ; ; ; ; ; ; ;
+Type      ; UID                   ; MemberOfGroups ; Password ; Target                                       ; read ; change ; create ; remove ; change_perm
+UserGroup ; bunningssuppliergroup ;                ;          ;                                              ;      ;        ;        ;        ;
+
+# Access Rights for  bunningssuppliergroup Users ;;;;;;;;;
+          ;                       ;                ;          ; Type                                         ; +    ;        ;        ;        ;
+          ;                       ;                ;          ; Product                                      ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; BundleProduct                                ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Catalog                                      ; +    ;        ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct                        ; +    ;        ;        ;        ;
+          ;                       ;                ;          ; CatalogVersion                               ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.safetyInformation                    ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.warrantyInformation                  ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.sustainabilityInformation            ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.installationInformation              ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.deliveryInformation                  ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.productDimensionLevel                ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.modelName              ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.modelNumber            ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.material               ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.colour                 ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.productDimensionWidth                ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.productDimensionHeight               ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.productDimensionDepth                ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.name                                 ; +    ; +      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.catalogVersion                       ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.description                          ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.code                                 ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Media                                        ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; MediaContainer                               ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; MediaFormat                                  ; +    ; +      ; +      ;        ; ;
+          ;                       ;                ;          ; MediaFolder                                  ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.keySellingPoints                     ; +    ; +      ;        ;        ; ;
+          ;                       ;                ;          ; Product.picture                              ; +    ; +      ;        ;        ; ;
+          ;                       ;                ;          ; Product.others                               ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; Product.videos                               ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; Product.relatedServices                      ; -    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; Product.showServices                         ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.availableServices                    ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.finalServices                        ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.productDocuments                     ; +    ; +      ;        ;        ; ;
+          ;                       ;                ;          ; Product.forHire                              ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.fsc                                  ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.bestSeller                           ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.newArrival                           ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.customMade                           ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.defaultBase                          ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Media.disclaimer                             ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.shortName                            ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Product.webDisclaimer                        ; +    ; +      ; -      ; -      ; ;
+          ;                       ;                ;          ; Product.customMade                           ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.isNationalPricing      ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.nationalPrice          ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.isTradingRestricted    ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.size                   ; +    ; +      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.weight                 ; +    ; +      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.volume                 ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.itemNumber             ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.isDefaultVariant       ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; GenericVariantProduct.baseProduct            ; +    ; -      ; +      ; +      ; ;
+          ;                       ;                ;          ; ProductType                                  ; +    ; +      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributes                        ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributesValues                  ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductType.key                              ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductType.showStockLevel                   ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductType.attributes                       ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributes.attributeType          ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributes.values                 ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributes.code                   ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributes.isVariantProperty      ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributes.name                   ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributes.unitOfMeasure          ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributesValues.attributeValue   ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ProductTypeAttributesValues.productCode      ; -    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; ClassificationClass                          ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; ClassificationSystem                         ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; FamilyTreeSubClass.productDimensionTerm      ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; FamilyTreeSubClass.showStockLevel            ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; FamilyTreeSubClass.isAccessory               ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; ClassAttributeAssignment                     ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; ClassAttributeAssignment.code                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; ClassAttributeAssignment.name                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; ClassificationSystemVersion                  ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; ClassificationAttribute                      ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; ClassificationClass.classificationAttributes ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Language                                     ; +    ; -      ; -      ; -      ;
+          ;                       ;                ;          ; Product.classificationClasses                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.supercategories                      ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product                                      ; +    ;        ; -      ; -      ;
+          ;                       ;                ;          ; Product.unit                                 ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.manufacturerName                     ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Product.showServices                         ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Product.availableServices                    ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.productDimensionLabel                ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Product.variantType                          ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.baseProduct                          ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Product.approvalStatus                       ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.code                   ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.picture                ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.unspscCode             ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.startDate              ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.endDate                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.lastUpdate             ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.bmieItemType           ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.unit                   ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.productOffer           ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.supplierDetails        ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.regionalProductDetails ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.familyColour           ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.hexCodeColour          ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Product.batchCountry                         ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; ItemLocationAttributes                       ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.itemLocationAttributes ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.bmieFamilyTreeCategory ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; GenericVariantProduct.productPackaging       ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.bmieProductDescription               ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.bmieSectionDescription               ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Media.code                                   ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.primaryAssetUrl                        ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Media.duration                               ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.name                                   ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.size                                   ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.secondoryAssetUrl                      ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.disclaimer                             ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.applicablelocale                       ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.associatedTo                           ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Media.mime                                   ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails                             ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.code                        ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.barcodeNumber               ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.part                        ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.dimensionUOM                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.volumeUOM                   ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.weightUOM                   ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.dimensionLength             ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.dimensionHeight             ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.dimensionWidth              ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.netWeight                   ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.grossWeight                 ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; PackagingDetails.volume                      ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Unit                                         ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Unit.code                                    ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Unit.name                                    ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Unit.unitType                                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Job                                          ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Cronjob                                      ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; SyncItemJob                                  ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Category.code                                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Category.name                                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Category.catalogVersion                      ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Category.allowedPrincipals                   ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; VariantValueCategory.sequence                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Supplier                                     ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; SupplierUser                                 ; +    ; +      ; +      ; +      ; +
+          ;                       ;                ;          ; SupplierUser.email                           ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; SupplierUser.status                          ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Supplier.supplierCode                        ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Supplier.name                                ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Supplier.startDate                           ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Supplier.endDate                             ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Supplier.name                                ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Supplier.users                               ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Supplier.brands                              ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Brand                                        ; +    ; +      ; +      ; +      ; +
+          ;                       ;                ;          ; Brand.brandCode                              ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Brand.name                                   ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Brand.description                            ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Brand.isLeadingBrand                         ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Brand.isTradeBrand                           ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Brand.isMarketPlaceBrand                     ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Brand.logo                                   ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Brand.logoDescription                        ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Brand.picture                                ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Brand.videoUrl                               ; +    ; +      ;        ;        ;
+          ;                       ;                ;          ; Brand.brandStatus                            ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Brand.suppliers                              ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; SupplierBrand                                ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Service                                      ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Product.availableServices                    ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Service.description                          ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; PointOfService.availableServices             ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Service.serviceName                          ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Service.description                          ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Service.serviceID                            ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Service.serviceIcon                          ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Service.serviceStatus                        ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; ServiceType                                  ; -    ; -      ;        ;        ;
+          ;                       ;                ;          ; Country                                      ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Country.isocode                              ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Country.regions                              ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Country.name                                 ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Region                                       ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Zone                                         ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Zone.code                                    ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Zone.regions                                 ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Region.isocodeShort                          ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Region.isocode                               ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; Region.country                               ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; SupplierUser.uid                             ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; WorkflowTemplate                             ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; Workflow                                     ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; AbstractWorkflowAction                       ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; WorkflowActionTemplate                       ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; WorkflowAction                               ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; WorkflowItemAttachment                       ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; WorkflowActionStatus                         ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; WorkflowActionComment                        ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; WorkflowDecision                             ; +    ; +      ; +      ; +      ;
+          ;                       ;                ;          ; WorkflowActionLinkRelation                   ; +    ; +      ; +      ; +      ;
+#Media subtype restrictions
+          ;                       ;                ;          ; Document                                     ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; BarcodeMedia                                 ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; CatalogUnawareMedia                          ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; EmailAttachment                              ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; JasperMedia                                  ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; LogFile                                      ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; ImpExMedia                                   ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; DroolsKIEModuleMedia                         ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; JobMedia                                     ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; Formatter                                    ; +    ; -      ; -      ; -      ; -
+          ;                       ;                ;          ; CatalogVersionSyncScheduleMedia              ; +    ; -      ; -      ; -      ; -
+
+
+# Access Rights for  bunningssuppliergroup  Users for ItemLocationStockLevel  ;;;;;;;;;
+          ;                       ;                ;          ; StockLevel                                   ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.productCode                       ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.overSelling                       ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.nextDeliveryTime                  ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.preOrder                          ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.maxPreOrder                       ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.maxStockLevelHistoryCount         ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.treatNegativeAsZero               ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.available                         ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.inStockStatus                     ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.warehouse                         ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.code                              ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.name                              ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; StockLevel.pointsOfService                   ; +    ; -      ;        ;        ; ;
+          ;                       ;                ;          ; ExcelImportCronJob                           ; +    ; -      ;        ;        ;
+          ;                       ;                ;          ; JobLog                                       ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; CronJobHistory                               ; +    ; +      ; +      ; +      ; ;
+          ;                       ;                ;          ; FamilyTreeSubClass                           ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; FamilyTreeSubClass.code                      ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; FamilyTreeSubClass.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; FamilyTreeCategory                           ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; FamilyTreeCategory.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                       ;                ;          ; FamilyTreeCategory.name                      ; +    ; -      ; -      ; -      ; ;
+$END_USERRIGHTS; ; ; ; ;
+
+
+$START_USERRIGHTS; ; ; ; ; ; ; ; ;
+Type      ; UID                      ; MemberOfGroups ; Password ; Target                                       ; read ; change ; create ; remove ; change_perm
+UserGroup ; digitalmerchandisergroup ;                ;          ;                                              ;      ;        ;        ;        ;
+
+# Access Rights for  digitalmerchandisergroup Users ;;;;;;;;;
+# Access Rights for  digitalmerchandisergroup Users for Location ;;;;;;;;;
+          ;                          ;                ;          ; PointOfService                               ; +    ;        ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.name                          ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.type                          ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.creationDate                  ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.services                      ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.locationGln                   ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.archiveDate                   ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.tradingStartDate              ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.tradingEndDate                ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.address                       ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.latitude                      ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.longitude                     ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.region                        ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; PointOfService.zone                          ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address                                      ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.streetname                           ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.streetnumber                         ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.line3                                ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.town                                 ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.postalcode                           ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.region                               ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.country                              ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.email                                ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.fax                                  ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Address.phone1                               ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; OpeningSchedule                              ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; OpeningSchedule.openingDays                  ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; WeekdayOpeningDay                            ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; WeekdayOpeningDay.dayOfWeek                  ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; WeekdayOpeningDay.name                       ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; WeekdayOpeningDay.effectiveStartDate         ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; WeekdayOpeningDay.effectiveEndDate           ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; WeekdayOpeningDay.openingTime                ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; WeekdayOpeningDay.closingTime                ; +    ; -      ;        ;        ; ;
+# Access Rights for  digitalmerchandisergroup Users for ItemLocation ;;;;;;;;;
+          ;                          ;                ;          ; ItemLocationAttributes                       ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ItemLocationAttributes.itemNumber            ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ItemLocationAttributes.locationCode          ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ItemLocationAttributes.itemStatus            ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ItemLocationAttributes.isOnRecall            ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ItemLocationAttributes.isRanged              ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ItemLocationAttributes.primaryBarcode        ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ItemLocationAttributes.inStoreLocations      ; +    ; -      ;        ;        ; ;
+# Access Rights for  digitalmerchandisergroup Users for ItemLocationStockLevel ;;;;;;;;;
+          ;                          ;                ;          ; StockLevel                                   ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.productCode                       ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.overSelling                       ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.nextDeliveryTime                  ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.preOrder                          ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.maxPreOrder                       ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.maxStockLevelHistoryCount         ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.treatNegativeAsZero               ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.available                         ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.inStockStatus                     ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.warehouse                         ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.code                              ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.name                              ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; StockLevel.pointsOfService                   ; +    ; -      ;        ;        ; ;
+
+# Access Rights for  digitalmerchandisergroup Users ;;;;;;;;;
+
+          ;                          ;                ;          ; Type                                         ; +    ;        ;        ;        ;
+          ;                          ;                ;          ; Product                                      ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; BundleProduct                                ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; BundleGroup                                  ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; PricingRegion                                ; +    ; +      ; +      ; +      ; +
+          ;                          ;                ;          ; BundleProduct.bundleGroup                    ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; BundleProduct.regions                        ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; BundleProduct.fromPrice                      ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; Catalog                                      ; +    ;        ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct                        ; +    ;        ;        ;        ;
+          ;                          ;                ;          ; CatalogVersion                               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.safetyInformation                    ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.warrantyInformation                  ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.sustainabilityInformation            ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.installationInformation              ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.deliveryInformation                  ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.productDimensionLevel                ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.modelName              ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.modelNumber            ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.material               ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.colour                 ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.productDimensionWidth                ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.productDimensionHeight               ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.productDimensionDepth                ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.code                                 ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.name                                 ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.catalogVersion                       ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.description                          ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Media                                        ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; MediaContainer                               ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; MediaFormat                                  ; +    ; +      ; +      ;        ; ;
+          ;                          ;                ;          ; MediaFolder                                  ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.approvalStatus                       ; +    ; +      ;        ;        ; ;
+          ;                          ;                ;          ; Product.keySellingPoints                     ; +    ; +      ;        ;        ; ;
+          ;                          ;                ;          ; Product.picture                              ; +    ; +      ;        ;        ; ;
+          ;                          ;                ;          ; Product.productDocuments                     ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Media.disclaimer                             ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.shortName                            ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Product.webDisclaimer                        ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.forHire                              ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.fsc                                  ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.bestSeller                           ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.newArrival                           ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.customMade                           ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.defaultBase                          ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.micrositeProductName                 ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.micrositeDescription                 ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; Product.micrositeKeyPoints                   ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.isDefaultVariant       ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.size                   ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.weight                 ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.volume                 ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.itemNumber             ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.baseProduct            ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.isNationalPricing      ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.nationalPrice          ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; GenericVariantProduct.isTradingRestricted    ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductType                                  ; +    ; +      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributes                        ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributesValues                  ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductType.key                              ; -    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductType.showStockLevel                   ; -    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductType.attributes                       ; -    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributes.attributeType          ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributes.values                 ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributes.code                   ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributes.isVariantProperty      ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributes.name                   ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributes.unitOfMeasure          ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributesValues.attributeValue   ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductTypeAttributesValues.productCode      ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ClassificationClass                          ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ClassAttributeAssignment                     ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; ClassAttributeAssignment.code                ; +    ; +      ;        ;        ; ;
+          ;                          ;                ;          ; ClassAttributeAssignment.name                ; +    ; +      ;        ;        ; ;
+          ;                          ;                ;          ; ClassificationSystem                         ; +    ;        ;        ;        ;
+          ;                          ;                ;          ; ClassificationSystemVersion                  ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; ClassificationClass.classificationAttributes ; +    ; +      ;        ;        ; ;
+          ;                          ;                ;          ; Language                                     ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; Product.classificationClasses                ; +    ; -      ;        ;        ; ;
+          ;                          ;                ;          ; Product.unit                                 ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.manufacturerName                     ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Product.finalServices                        ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.showServices                         ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.others                               ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Product.videos                               ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Product.relatedServices                      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.availableServices                    ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.productDimensionLabel                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.variantType                          ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.code                   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.picture                ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.unspscCode             ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.startDate              ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.endDate                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.lastUpdate             ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.bmieItemType           ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.unit                   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.productOffer           ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.supplierDetails        ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.regionalProductDetails ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.batchCountry                         ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ItemLocationAttributes                       ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.itemLocationAttributes ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.bmieFamilyTreeCategory ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; GenericVariantProduct.productPackaging       ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.bmieProductDescription               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Product.bmieSectionDescription               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Media.code                                   ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.primaryAssetUrl                        ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Media.duration                               ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.name                                   ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.size                                   ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.secondoryAssetUrl                      ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.disclaimer                             ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.applicablelocale                       ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.associatedTo                           ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Media.mime                                   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails                             ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.code                        ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.barcodeNumber               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.part                        ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.dimensionUOM                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.volumeUOM                   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.weightUOM                   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.dimensionLength             ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.dimensionHeight             ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.dimensionWidth              ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.netWeight                   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.grossWeight                 ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PackagingDetails.volume                      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Unit                                         ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Unit.code                                    ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Unit.name                                    ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Unit.unitType                                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Job                                          ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Cronjob                                      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; SyncItemJob                                  ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails                       ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.regionName            ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.zone                  ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.regionDetails         ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.itemNumber            ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.status                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.visible               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.transactable          ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.instorePickup         ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.availableForDelivery  ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.supplierDispatch      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.supplierToBunnings    ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.supplierToCustomer    ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.bunningsDispatch      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.restrictedLocations   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; RegionalProductDetails.restriction           ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted                            ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted.restrictionType            ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted.locationRestrictions       ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted.location                   ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted.maxQuantity                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted.maxLength                  ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted.minimumAge                 ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; ProductRestricted.regionalProductDetail      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Category                                     ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; Category.code                                ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; Category.name                                ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; Category.catalogVersion                      ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; Category.catalog                             ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; Category.isDAMSyncRequired                   ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; JobLog                                       ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; CronJobHistory                               ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; WorkflowAction                               ; +    ; +      ; +      ; +      ; ;
+          ;                          ;                ;          ; SupplierUser                                 ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; SupplierUser.email                           ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; SupplierUser.status                          ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier                                     ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier.supplierCode                        ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier.name                                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier.startDate                           ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier.endDate                             ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier.name                                ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier.users                               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Supplier.brands                              ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; PriceRow                                     ; +    ; -      ; -      ; -      ;
+          ;                          ;                ;          ; Brand                                        ; +    ; +      ; +      ; +      ; +
+          ;                          ;                ;          ; Brand.name                                   ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.description                            ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.isLeadingBrand                         ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.isTradeBrand                           ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.isMarketPlaceBrand                     ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.logo                                   ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.logoDescription                        ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.picture                                ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.videoUrl                               ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.brandStatus                            ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Brand.suppliers                              ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Service                                      ; +    ; +      ; +      ; +      ;
+          ;                          ;                ;          ; Product.availableServices                    ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; PointOfService.availableServices             ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Service.serviceName                          ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Service.serviceID                            ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Service.description                          ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Service.serviceIcon                          ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; ServiceType                                  ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Country                                      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Service.serviceStatus                        ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Country                                      ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Country.isocode                              ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Country.regions                              ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Country.name                                 ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Region                                       ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Zone                                         ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Zone.code                                    ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Zone.regions                                 ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Region.isocodeShort                          ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Region.isocode                               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; Region.country                               ; +    ; -      ;        ;        ;
+          ;                          ;                ;          ; FamilyTreeSubClass                           ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; FamilyTreeSubClass.code                      ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; FamilyTreeSubClass.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; FamilyTreeCategory                           ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; FamilyTreeCategory.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; FamilyTreeCategory.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                          ;                ;          ; ProductReference                             ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Product.productReferences                    ; +    ; +      ;        ;        ;
+          ;                          ;                ;          ; Principal                                    ; +    ; -      ; -      ; -      ; -
+          ;                          ;                ;          ; ViewType                                     ; +    ; +      ; +      ; +      ; -
+          ;                          ;                ;          ; Item                                         ; +    ; -      ; -      ; -      ; -
+
+$END_USERRIGHTS; ; ; ; ;
+
+$START_USERRIGHTS; ; ; ; ; ; ; ; ;
+Type      ; UID               ; MemberOfGroups ; Password ; Target                                       ; read ; change ; create ; remove ; change_perm
+UserGroup ; merchandisergroup ;                ;          ;                                              ;      ;        ;        ;        ;
+
+# Access Rights for  merchandisergroup Users ;;;;;;;;;
+          ;                   ;                ;          ; StockLevel                                   ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.productCode                       ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.overSelling                       ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.nextDeliveryTime                  ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.preOrder                          ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.maxPreOrder                       ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.maxStockLevelHistoryCount         ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.treatNegativeAsZero               ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.available                         ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.inStockStatus                     ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.warehouse                         ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.code                              ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.name                              ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; StockLevel.pointsOfService                   ; +    ; -      ;        ;        ; ;
+
+# Access Rights for  merchandisergroup Users ;;;;;;;;;
+          ;                   ;                ;          ; Type                                         ; +    ;        ;        ;        ;
+          ;                   ;                ;          ; Product                                      ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; BundleProduct                                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; BundleGroup                                  ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; PricingRegion                                ; +    ; +      ; +      ; +      ; +
+          ;                   ;                ;          ; BundleProduct.bundleGroup                    ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; BundleProduct.regions                        ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; BundleProduct.basicBundle                    ; +    ; +      ;        ;        ; ;
+          ;                   ;                ;          ; BundleProduct.fromPrice                      ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Catalog                                      ; +    ;        ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct                        ; +    ;        ;        ;        ;
+          ;                   ;                ;          ; CatalogVersion                               ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Product.safetyInformation                    ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.warrantyInformation                  ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.sustainabilityInformation            ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.installationInformation              ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.micrositeProductName                 ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.micrositeDescription                 ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.micrositeKeyPoints                   ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.keySellingPoints                     ; +    ; +      ;        ;        ; ;
+          ;                   ;                ;          ; Product.deliveryInformation                  ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.productDimensionLevel                ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.modelName              ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.modelNumber            ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.material               ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.colour                 ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.productDimensionWidth                ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.productDimensionHeight               ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.productDimensionDepth                ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.code                                 ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.name                                 ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.catalogVersion                       ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.description                          ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Media                                        ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; MediaContainer                               ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; MediaFormat                                  ; +    ; +      ; +      ;        ; ;
+          ;                   ;                ;          ; MediaFolder                                  ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Product.approvalStatus                       ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.picture                              ; +    ; +      ;        ;        ; ;
+          ;                   ;                ;          ; Product.productDocuments                     ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; Media.disclaimer                             ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.shortName                            ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.webDisclaimer                        ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.forHire                              ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.fsc                                  ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.bestSeller                           ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.newArrival                           ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.customMade                           ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; Product.defaultBase                          ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.isNationalPricing      ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.nationalPrice          ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.isTradingRestricted    ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.checkStoreForPrice     ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.size                   ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.weight                 ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.volume                 ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.itemNumber             ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.isDefaultVariant       ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.baseProduct            ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; GenericVariantProduct.familyColour           ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.hexCodeColour          ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.keySellingPoints       ; +    ; +      ;        ;        ; ;
+          ;                   ;                ;          ; ProductType                                  ; +    ; +      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributes                        ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributesValues                  ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductType.key                              ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductType.showStockLevel                   ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductType.attributes                       ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributes.attributeType          ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributes.values                 ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributes.code                   ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributes.isVariantProperty      ; -    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; ProductTypeAttributes.name                   ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributes.unitOfMeasure          ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributesValues.attributeValue   ; -    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; ProductTypeAttributesValues.productCode      ; -    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; ClassificationClass                          ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassAttributeAssignment                     ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; ClassAttributeAssignment.code                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassAttributeAssignment.name                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassificationSystem                         ; +    ;        ;        ;        ;
+          ;                   ;                ;          ; ClassificationSystemVersion                  ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ClassificationClass.productDimensionTerm     ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassificationClass.showStockLevel           ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassificationClass.isAccessory              ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassificationClass.availableServices        ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassificationAttribute                      ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ClassificationClass.classificationAttributes ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Language                                     ; +    ; -      ; -      ; -      ;
+          ;                   ;                ;          ; Product.unit                                 ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Product.classificationClasses                ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Product.manufacturerName                     ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.showServices                         ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.availableServices                    ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Product.finalServices                        ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.others                               ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.videos                               ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.relatedServices                      ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.availableServices                    ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Product.productDimensionLabel                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.code                   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.picture                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.unspscCode             ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.startDate              ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.endDate                ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.lastUpdate             ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.bmieItemType           ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.unit                   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.productOffer           ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.supplierDetails        ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.regionalProductDetails ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Product.batchCountry                         ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ItemLocationAttributes                       ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.itemLocationAttributes ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.bmieFamilyTreeCategory ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.productPackaging       ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Product.bmieProductDescription               ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Product.bmieSectionDescription               ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; GenericVariantProduct.micrositeProductName   ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; GenericVariantProduct.micrositeDescription   ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; GenericVariantProduct.micrositeKeyPoints     ; +    ; -      ;        ;        ; ;
+          ;                   ;                ;          ; Media.code                                   ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.primaryAssetUrl                        ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Media.duration                               ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.name                                   ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.size                                   ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.secondoryAssetUrl                      ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.disclaimer                             ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.applicablelocale                       ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.associatedTo                           ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Media.mime                                   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails                             ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.code                        ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.barcodeNumber               ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.part                        ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.dimensionUOM                ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.volumeUOM                   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.weightUOM                   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.dimensionLength             ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.dimensionHeight             ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.dimensionWidth              ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.netWeight                   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.grossWeight                 ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; PackagingDetails.volume                      ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Unit                                         ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Unit.code                                    ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Unit.name                                    ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Unit.unitType                                ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Job                                          ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Cronjob                                      ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; SyncItemJob                                  ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails                       ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.regionName            ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.zone                  ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.regionDetails         ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.itemNumber            ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.status                ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.visible               ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.transactable          ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.instorePickup         ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.availableForDelivery  ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.supplierDispatch      ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.supplierToBunnings    ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.supplierToCustomer    ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.bunningsDispatch      ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.restrictedLocations   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; RegionalProductDetails.restriction           ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted                            ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted.restrictionType            ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted.locationRestrictions       ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted.location                   ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted.maxQuantity                ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted.maxLength                  ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted.minimumAge                 ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; ProductRestricted.regionalProductDetail      ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Category                                     ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Category.code                                ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Category.name                                ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Category.catalogVersion                      ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Category.catalog                             ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Category.isDAMSyncRequired                   ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; SupplierUser                                 ; +    ; +      ; +      ;        ;
+          ;                   ;                ;          ; SupplierUser.email                           ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; SupplierUser.status                          ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Supplier                                     ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Supplier.supplierCode                        ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Supplier.name                                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Supplier.startDate                           ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Supplier.endDate                             ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Supplier.name                                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Supplier.users                               ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Supplier.brands                              ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand                                        ; +    ; +      ; +      ; +      ; +
+          ;                   ;                ;          ; Brand.name                                   ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.description                            ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.isLeadingBrand                         ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.isTradeBrand                           ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.isMarketPlaceBrand                     ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.logo                                   ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.logoDescription                        ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.picture                                ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.videoUrl                               ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.brandStatus                            ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Brand.suppliers                              ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; SupplierBrand                                ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Service                                      ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Product.availableServices                    ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; PointOfService.availableServices             ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Service.serviceName                          ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Service.serviceID                            ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Service.description                          ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Service.serviceIcon                          ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; ServiceType                                  ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Service.serviceStatus                        ; +    ; +      ;        ;        ;
+          ;                   ;                ;          ; Country                                      ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Country.isocode                              ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Country.regions                              ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Country.name                                 ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Region                                       ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Zone                                         ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Zone.code                                    ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Zone.regions                                 ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Region.isocodeShort                          ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Region.isocode                               ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; Region.country                               ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; WorkflowTemplate                             ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; Workflow                                     ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; AbstractWorkflowAction                       ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; WorkflowActionTemplate                       ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; WorkflowAction                               ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; WorkflowItemAttachment                       ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; WorkflowActionStatus                         ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; WorkflowActionComment                        ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; WorkflowDecision                             ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; WorkflowActionLinkRelation                   ; +    ; +      ; +      ; +      ;
+          ;                   ;                ;          ; ExcelImportCronJob                           ; +    ; -      ;        ;        ;
+          ;                   ;                ;          ; JobLog                                       ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; CronJobHistory                               ; +    ; +      ; +      ; +      ; ;
+          ;                   ;                ;          ; FamilyTreeSubClass                           ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; FamilyTreeSubClass.code                      ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; FamilyTreeSubClass.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; FamilyTreeCategory                           ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; FamilyTreeCategory.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; FamilyTreeCategory.name                      ; +    ; -      ; -      ; -      ; ;
+          ;                   ;                ;          ; Principal                                    ; +    ; -      ; -      ; -      ; -
+          ;                   ;                ;          ; SupplierDetails                              ; +    ; +      ; +      ; +      ; -
+          ;                   ;                ;          ; ViewType                                     ; +    ; +      ; +      ; +      ; -
+          ;                   ;                ;          ; Item                                         ; +    ; -      ; -      ; -      ; -
+
+$END_USERRIGHTS; ; ; ; ;
+
+$START_USERRIGHTS
+Type      ; UID     ; MemberOfGroups ; Password ; Target                      ; read ; change ; create ; remove ; change_perm
+UserGroup ; Ecom_RO ;                ;          ;                             ; +    ; -      ; -      ; -      ; -
+          ;         ;                ;          ; Type                        ; +    ; -      ; -      ; -      ; -
+          ;         ;                ;          ; ItemSyncTimestamp           ; +    ; -      ; -      ; -
+          ;         ;                ;          ; SyncItemJob                 ; +    ; -      ; -      ; -
+          ;         ;                ;          ; Type                        ; +    ; -      ; -      ; -
+          ;         ;                ;          ; Category                    ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; VariantType                 ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Catalog                     ; +    ; -      ; -      ; -
+          ;         ;                ;          ; CatalogVersion              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ClassificationAttributeUnit ; +    ; -      ; -      ; -
+          ;         ;                ;          ; Media                       ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; MediaContainer              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; MediaFormat                 ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; MediaFolder                 ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Vendor                      ; +    ; -      ; -      ; -      ; - ;
+          ;         ;                ;          ; StockLevel                  ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Tax                         ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; TaxRow                      ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; PriceRow                    ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ProductFeature              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ProductReference            ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Warehouse                   ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ProductTaxCode              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ProductOrderLimit           ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Job                         ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; CronJob                     ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; CronJob.status              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; CronJob.result              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; JobLog                      ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; CronJobHistory              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; WorkflowAction              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; AbstractComment             ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Comment                     ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Reply                       ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; WorkflowItemAttachment      ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Domain                      ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Component                   ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; CommentType                 ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; CommentUserSetting          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; CommentMetadata             ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; WorkflowDecision            ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; UserGroup                   ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; RegionalProductDetails      ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ItemLocationAttributes      ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Zone                        ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Region                      ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Unit                        ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; FeedImportMetaData          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Order                       ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Cart                        ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; PricingRegion               ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; IDPRole                     ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Customer                    ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; WeekdayOpeningDay           ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; PointOfService              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Address                     ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ClassificationClass         ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; FamilyTreeSubClass          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Service                     ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ClassificationData          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; BundleGroup                 ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; BundleProduct               ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; SupplierBrand               ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; SupplierUser                ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Supplier                    ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; SupplierDetails             ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; PackagingDetails            ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ClassificationCatMapping    ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; FamilyTreeCategory          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Brand                       ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; OpeningSchedule             ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; FeedExportMetaData          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; enumerationvalue            ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; MonitorHistoryData          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ApplicationResourceLock     ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; MetadataStoreEntry          ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Employee                    ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ConstraintGroup             ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; TriggerTask                 ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; AttributeConstraint         ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; DynamicConstraint           ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; SizeConstraint              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; NotNullConstraint           ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; ObjectPatternConstraint     ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Constraints                 ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; TypeConstraint              ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; BaseStore                   ; +    ; -      ; -      ; -      ;   ;
+          ;         ;                ;          ; Product                     ; +    ; -      ; -      ; -      ;   ;
+$END_USERRIGHTS
+
+
+$START_USERRIGHTS
+Type      ; UID          ; MemberOfGroups ; Password ; Target                      ; read ; change ; create ; remove ; change_perm
+UserGroup ; Ecom_Support ;                ;          ;                             ; +    ; -      ; -      ; -      ; -
+          ;              ;                ;          ; Type                        ; +    ; -      ; -      ; -      ; -
+          ;              ;                ;          ; ItemSyncTimestamp           ; +    ; -      ; -      ; -
+          ;              ;                ;          ; SyncItemJob                 ; +    ; -      ; -      ; -
+          ;              ;                ;          ; Type                        ; +    ; -      ; -      ; -
+          ;              ;                ;          ; Category                    ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; VariantType                 ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Catalog                     ; +    ; -      ; -      ; -
+          ;              ;                ;          ; CatalogVersion              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ClassificationAttributeUnit ; +    ; -      ; -      ; -
+          ;              ;                ;          ; Media                       ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; MediaContainer              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; MediaFormat                 ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; MediaFolder                 ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Vendor                      ; +    ; -      ; -      ; -      ; - ;
+          ;              ;                ;          ; StockLevel                  ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Tax                         ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; TaxRow                      ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; PriceRow                    ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ProductFeature              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ProductReference            ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Warehouse                   ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ProductTaxCode              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ProductOrderLimit           ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Job                         ; +    ; +      ; +      ; -      ; + ;
+          ;              ;                ;          ; CronJob                     ; +    ; +      ; +      ; -      ;   ;
+          ;              ;                ;          ; CronJob.status              ; +    ; +      ; +      ; -      ;   ;
+          ;              ;                ;          ; CronJob.result              ; +    ; +      ; +      ; -      ;   ;
+          ;              ;                ;          ; JobLog                      ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; CronJobHistory              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; WorkflowAction              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; AbstractComment             ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Comment                     ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Reply                       ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; WorkflowItemAttachment      ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Domain                      ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Component                   ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; CommentType                 ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; CommentUserSetting          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; CommentMetadata             ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; WorkflowDecision            ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; UserGroup                   ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; RegionalProductDetails      ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ItemLocationAttributes      ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Zone                        ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Region                      ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Unit                        ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; FeedImportMetaData          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Order                       ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Cart                        ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; PricingRegion               ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; IDPRole                     ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Customer                    ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; WeekdayOpeningDay           ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; PointOfService              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Address                     ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ClassificationClass         ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; FamilyTreeSubClass          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Service                     ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ClassificationData          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; BundleGroup                 ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; BundleProduct               ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; SupplierBrand               ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; SupplierUser                ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Supplier                    ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; SupplierDetails             ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; PackagingDetails            ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ClassificationCatMapping    ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; FamilyTreeCategory          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Brand                       ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; OpeningSchedule             ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; FeedExportMetaData          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; enumerationvalue            ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; MonitorHistoryData          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ApplicationResourceLock     ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; MetadataStoreEntry          ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Employee                    ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ConstraintGroup             ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; TriggerTask                 ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; AttributeConstraint         ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; DynamicConstraint           ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; SizeConstraint              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; NotNullConstraint           ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; ObjectPatternConstraint     ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Constraints                 ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; TypeConstraint              ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; BaseStore                   ; +    ; -      ; -      ; -      ;   ;
+          ;              ;                ;          ; Product                     ; +    ; -      ; -      ; -      ;   ;
+$END_USERRIGHTS

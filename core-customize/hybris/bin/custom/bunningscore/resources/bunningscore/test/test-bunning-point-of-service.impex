@@ -1,0 +1,213 @@
+$storeNZUid = BunnningsStoreNZ
+$storeAUUid = BunnningsStoreAU
+$site_AU_Id = AUBaseSite
+$site_NZ_Id = NZBaseSite
+$australianHours = australian-standard-hours
+$newzealandwellingtonHours = newzealand-standard-hours
+$pcmCatalog=BunningsPCMCatalog
+$catalogVersion=catalogVersion(catalog(id[default=$pcmCatalog]),version[default='Staged'])[unique=true,default='$pcmCatalog:Staged']
+$aus_zone = AU RZ 3
+$nz_zone = NZ RZ 10
+$vendor=Vendor1
+$trade_site_NZ_Id = nztrade
+$trade_site_AU_Id = autrade
+$tradeStoreAUUid = autrade
+$tradeStoreNZUid = nztrade
+$currenciesAU = AUD
+$storeAUUid = BunnningsStoreAU
+$tradeStoreAUUid = autrade
+$defaultCurrencyAU = AUD
+$deliveryCountriesAU = AU
+$billingCountriesAU = AU
+$defaultAULanguage = en_AU
+$languagesAU = en,en_AU
+$currenciesNZ = NZD
+$storeNZUid = BunnningsStoreNZ
+$tradeStoreNZUid = nztrade
+$defaultCurrencyNZ = NZD
+$deliveryCountriesNZ = NZ
+$billingCountriesNZ = NZ
+$defaultNZLanguage = en_NZ
+$net = false
+$languagesNZ = en,en_NZ
+
+$orderProcessCode = order-process
+$pickupInStoreMode = BUY_AND_COLLECT
+$customerAllowedToIgnoreSuggestions = true
+$paymentProvider = Mockup
+$checkoutFlowGroup = defaultCheckoutGroup
+
+INSERT_UPDATE Catalog;id[unique=true];name
+                     ;$pcmCatalog;Bunnings PCM
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion;catalog(id)[unique=true];version[unique=true];active;languages(isoCode);readPrincipals(uid)
+                            ;$pcmCatalog;Online;true;en;employeegroup
+                            ;$pcmCatalog;Staged;false;en;employeegroup
+
+INSERT_UPDATE Country;isocode[unique=true];name
+                     ;AU;Australia
+                     ;NZ;New Zealand
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; ACT                   ; ACT            ; AU
+                    ; NSW                   ; NSW            ; AU
+                    ; QLD                   ; QLD            ; AU
+                    ; SA                    ; SA             ; AU
+                    ; WA                    ; WA             ; AU
+                    ; TAS                   ; TAS            ; AU
+                    ; NQ                    ; FNQ            ; AU
+                    ; NT                    ; NT             ; AU
+                    ; NORTH ISLAND          ; NORTH ISLAND   ; NZ
+                    ; SOUTH ISLAND          ; SOUTH ISLAND   ; NZ
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 2            ; AU                ; ACT,NSW
+                  ; AU RZ 3            ; AU                ; QLD
+                  ; AU RZ 4            ; AU                ; SA
+                  ; AU RZ 5            ; AU                ; WA
+                  ; AU RZ 6            ; AU                ; TAS
+                  ; AU RZ 8            ; AU                ; NQ
+                  ; AU RZ 9            ; AU                ; WA
+                  ; AU RZ 10           ; AU                ; NT
+                  ; AU RZ 7 - 1        ; AU                ; VIC
+                  ; AU RZ 7 - 2        ; AU                ; NSW
+                  ; AU RZ 7 - 3        ; AU                ; QLD
+                  ; AU RZ 7 - 4        ; AU                ; SA
+                  ; AU RZ 7 - 5        ; AU                ; WA
+                  ; NZ RZ 1            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 2            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 3            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 4            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 5            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 6            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 7            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 8            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 9            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 10           ; NZ                ; SOUTH ISLAND
+                  ; NZ RZ 11           ; NZ                ; SOUTH ISLAND
+                  ; NZ RZ 12           ; NZ                ; SOUTH ISLAND
+                  ; NZ RZ 13           ; NZ                ; SOUTH ISLAND
+
+INSERT_UPDATE PricingRegion; code[unique = true]; retailZone[unique = true]; name                          ; region(isoCode)
+                           ; VICMetro           ; AU RZ 1                  ; VIC Metro                     ; VIC
+                           ; ACT                ; AU RZ 2                  ; ACT                           ; ACT
+                           ; NSWMetro           ; AU RZ 2                  ; NSW Metro                     ; NSW
+                           ; QLDMetro           ; AU RZ 3                  ; QLD Metro                     ; QLD
+                           ; SAMetro            ; AU RZ 4                  ; SA Metro                      ; SA
+                           ; WAMetro            ; AU RZ 5                  ; WA Metro                      ; WA
+                           ; TASMetro           ; AU RZ 6                  ; TAS Metro                     ; TAS
+                           ; VICRegional        ; AU RZ 7 - 1              ; VIC Regional                  ; VIC
+                           ; NSWRegional        ; AU RZ 7 - 2              ; NSW Regional                  ; NSW
+                           ; QLDRegional        ; AU RZ 7 - 3              ; QLD Regional                  ; QLD
+                           ; SARegional         ; AU RZ 7 - 4              ; SA Regional                   ; SA
+                           ; WARegional         ; AU RZ 7 - 5              ; WA Regional                   ; WA
+                           ; FNQ                ; AU RZ 8                  ; FNQ                           ; NQ
+                           ; WARemote           ; AU RZ 9                  ; WA Remote                     ; WA
+                           ; NTMetro            ; AU RZ 10                 ; NT Metro                      ; NT
+                           ; NI Zone 1          ; NZ RZ 1                  ; Auckland                      ; NORTH ISLAND
+                           ; NI Zone 2          ; NZ RZ 2                  ; Waikoto                       ; NORTH ISLAND
+                           ; NI Zone 3          ; NZ RZ 3                  ; Western Bay of Plenty         ; NORTH ISLAND
+                           ; NI Zone 4          ; NZ RZ 4                  ; Northland                     ; NORTH ISLAND
+                           ; NI Zone 5          ; NZ RZ 5                  ; Bay of Plenty & South Waikoto ; NORTH ISLAND
+                           ; NI Zone 6          ; NZ RZ 6                  ; Gisborne                      ; NORTH ISLAND
+                           ; NI Zone 7          ; NZ RZ 7                  ; Hawke's Bay                   ; NORTH ISLAND
+                           ; NI Zone 8          ; NZ RZ 8                  ; Central North Island          ; NORTH ISLAND
+                           ; NI Zone 9          ; NZ RZ 9                  ; Wellington                    ; NORTH ISLAND
+                           ; SI Zone 10         ; NZ RZ 10                 ; Christchurch                  ; SOUTH ISLAND
+                           ; SI Zone 11         ; NZ RZ 11                 ; Canterbury                    ; SOUTH ISLAND
+                           ; SI Zone 12         ; NZ RZ 12                 ; South Island (North)          ; SOUTH ISLAND
+                           ; SI Zone 13         ; NZ RZ 13                 ; Otago                         ; SOUTH ISLAND
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active ; fallbackLanguages(isoCode)
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE   ; en
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE   ; en
+                      ; de                    ; GERMAN      ; TRUE   ; en
+
+
+INSERT_UPDATE Vendor; name[lang = en]; code[unique = true];
+                    ; Default Vendor ; defaultVendor      ;
+                    ; Default Vendor ; Vendor1            ;
+# Macros / Replacement Parameter definitions
+INSERT_UPDATE Warehouse;code[unique=true];name[lang=en];;vendor(code);default
+                       ;BunningsWarehouse;Bunnings warehouse;;$vendor;true
+
+INSERT_UPDATE BaseStore; uid[unique = true] ; warehouses(code)
+                       ; $storeAUUid        ; BunningsWarehouse ;
+
+INSERT_UPDATE BaseStore; uid[unique = true]; name                           ; catalogs(id); net  ; storelocatorDistanceUnit(code);  languages(isocode); defaultLanguage(isocode); deliveryCountries(isocode); billingCountries(isocode); submitOrderProcessCode; pickupInStoreMode(code); customerAllowedToIgnoreSuggestions  ; paymentProvider  ; checkoutFlowGroup
+                       ; $tradeStoreAUUid  ; BaseBunnings Trade Australia Store   ; $pcmCatalog ;        $net ; km                            ;  $languagesAU      ; $defaultAULanguage      ; $deliveryCountriesAU      ; $billingCountriesAU      ; $orderProcessCode     ; $pickupInStoreMode     ; $customerAllowedToIgnoreSuggestions ; $paymentProvider ; $checkoutFlowGroup
+                       #; $tradeStoreNZUid  ; BaseBunnings Trade New Zealand Store ; $pcmCatalog ; $currenciesNZ      ; $net ; km                            ; $defaultCurrencyNZ      ; $languagesNZ      ; $defaultNZLanguage      ; $deliveryCountriesNZ      ; $billingCountriesNZ      ; $orderProcessCode     ; $pickupInStoreMode     ; $customerAllowedToIgnoreSuggestions ; $paymentProvider ; $checkoutFlowGroup
+
+
+INSERT_UPDATE CMSSite; uid[unique = true]; channel(code);active; defaultLanguage(isocode); stores(uid) ; locale; urlPatterns
+                     ; $trade_site_AU_Id ;B2B; true  ; $defaultAULanguage      ; $tradeStoreAUUid ; en_AU ; (?i)^https?://[^/]+(:[d]+)?/.*$ ,(?i)^https?://.*$,(?i)^https?://[^/]+(:[d]+)?/.*?com\.au(/.*?|\?.*?)?$
+                     #; $trade_site_NZ_Id ;B2B; true  ; $defaultNZLanguage      ; $tradeStoreNZUid ; en_NZ ; (?i)^https?://[^/]+(:[d]+)?/.*$ ,(?i)^https?://.*$,(?i)^https?://[^/]+(:[d]+)?/.*?co\.nz(/.*?|\?.*?)?$
+
+
+#Update openinng scheduled time for store of Australia/New Zealand
+INSERT_UPDATE OpeningSchedule; code[unique = true]
+                             ; $australianHours
+                             ; $newzealandwellingtonHours
+
+INSERT_UPDATE Media; mediaUrl        ; $catalogVersion; code[unique = true]
+                   ; test@test.com   ;                ; 1111
+                   ;                 ;                ; 1112
+
+#Opening Day week name and time
+INSERT_UPDATE WeekdayOpeningDay; openingSchedule(code)[unique = true]; dayOfWeek(code)[unique = true]; openingTime[dateformat = hh:mm]; closingTime[dateformat = hh:mm]; name                      ; effectiveStartDate[dateFormat = dd/MM/yyyy]; effectiveEndDate[dateFormat = dd/MM/yyyy];
+                               ; $australianHours                    ; MONDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; TUESDAY                       ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; WEDNESDAY                     ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/07/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; THURSDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/08/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; FRIDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/09/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SATURDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SUNDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; MONDAY                        ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; TUESDAY                       ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; WEDNESDAY                     ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/07/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; THURSDAY                      ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/08/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; FRIDAY                        ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/09/2020                                 ; 25/12/2024                               ;
+
+#bunnings point of service data
+INSERT_UPDATE PointOfService[disable.interceptor.types = prepare]; name[unique = true]; subType       ; region(isoCode); tradingStartDate[dateFormat = yyyy-MM-dd]; tradingEndDate[dateFormat = yyyy-MM-dd]; creationDate[dateFormat = yyyy-MM-dd]; archiveDate[dateFormat = yyyy-MM-dd]; zone(code)  ; timeZone; displayName   ; description; warehouses(code)  ; address(&addrID) ; latitude   ; longitude  ; type(code)[default = WA]; openingSchedule(code); basestore(uid)[default = $storeAUUid]; isTrading[default = true]; isActiveLocation[default=true]; batchCountry[unique = true][default = AU]
+                            ; 9150               ; 9429000063630 ; ACT            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Moorabbin     ;            ; BunningsWarehouse ; moorabbinaddr    ; 37.9419    ; 145.0602   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9151               ; 9429000063631 ; ACT            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Keysborough   ;            ; BunningsWarehouse ; keysboroughddr   ; 37.9989    ; 145.1744   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9152               ; 9429000063632 ; ACT            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Springvale    ;            ; BunningsWarehouse ; springvaleaddr   ; 37.9493    ; 145.1528   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9153               ; 9429000063633 ; NSW            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Notting Hill  ;            ; BunningsWarehouse ; nottinghilladdr  ; 51.5160    ; 0.2090     ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9154               ; 9429000063634 ; NSW            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Chadstone     ;            ; BunningsWarehouse ; chadstoneaddr    ; 28.4357121 ; 77.0612362 ; SF                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9155               ; 9429000063635 ; NSW            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 2     ; NZDT    ; Box Hill      ;            ; BunningsWarehouse ; boxhilladdr      ; 37.8181    ; 145.1239   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9156               ; 9429000063636 ; QLD            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Nunawading    ;            ; BunningsWarehouse ; nunawadingaddr   ; 37.8184    ; 145.1760   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9157               ; 9429000063637 ; QLD            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Ringwood      ;            ; BunningsWarehouse ; ringwoodaddr     ; 37.8106    ; 145.2307   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 9158               ; 9429000063638 ; QLD            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone   ; NZDT    ; Vermont South ;            ; BunningsWarehouse ; vermontsouthaddr ; 37.8566    ; 145.1834   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 1176               ; 9429000063638 ; WA             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 5     ; NZDT    ; WA Remote     ; WA Remote  ; BunningsWarehouse ; waremoteaddr     ; 37.8566    ; 145.1834   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 1156               ; 9429000063638 ; WA             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 7 - 5 ; NZDT    ; WA Remote     ; WA Remote  ; BunningsWarehouse ; wametroaddr      ; 37.8566    ; 145.1834   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 1157               ; 9429000063638 ; WA             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 9     ; NZDT    ; WA Remote     ;            ; BunningsWarehouse ; waregionaladdr   ; 37.8566    ; 145.1834   ; WA                      ; $australianHours     ;                                      ;                          ;                 ;
+                            ; 1158               ; 9429000063638 ; WA             ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 9     ; NZDT    ; WA Remote     ;            ; BunningsWarehouse ; waregionaladdr   ; 37.8566    ; 145.1834   ; WA                      ; $australianHours     ;                                      ; TRUE                     ;                 ;
+
+INSERT_UPDATE PointOfService[disable.interceptor.types = prepare]; name[unique = true]; subType       ; region(isoCode); tradingStartDate[dateFormat = yyyy-MM-dd]; tradingEndDate[dateFormat = yyyy-MM-dd]; creationDate[dateFormat = yyyy-MM-dd]; archiveDate[dateFormat = yyyy-MM-dd]; zone(code); timeZone; displayName ; warehouses(code)  ; latitude; longitude; type(code)[default = WA]; openingSchedule(code); basestore(uid)[default = $storeAUUid]; isTrading[default = true]; mapIcon(code); batchCountry[unique = true][default = AU];isActiveLocation[default=true]
+                            ; 1111               ; 9429000063630 ; ACT            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone ; NZDT    ; Moorabbin   ; BunningsWarehouse ; 37.9419 ; 145.0602 ; WA                      ; $australianHours     ;                                      ;                          ; 1111                                                                                                ;;
+                            ; 1112               ; 9429000063631 ; ACT            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone ; NZDT    ; Keysborough ; BunningsWarehouse ; 37.9989 ; 145.1744 ; WA                      ; $australianHours     ;                                      ;                          ; 1112                                                                                                ;;
+							; 1113				 ; 9429000063632 ; ACT			  ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; $aus_zone ; NZDT    ; Keysborough ; BunningsWarehouse ; 37.9989 ; 145.1744 ; WA                      ; $australianHours     ;                                      ;                          ;                                                                                               	 ;;
+
+#bunnings stores addresses
+INSERT_UPDATE Address; &addrID          ; streetname                                            ; streetnumber; postalcode[unique = true]; town[unique = true]; country(isocode); region(isocode); phone1       ; owner(PointOfService.name,PointOfService.batchCountry)[unique = true]
+                     ; moorabbinaddr    ; Corner Fairchild Street & Warrigal Road Moorabbin VIC ; 3189        ; 3189                     ; Moorabbin          ; AU              ;                ; 03-8540-9500 ; 9150:AU
+                     ; keysboroughddr   ; Corner Springvale & Cheltenham Road Keysborough VIC   ; 3173        ; 3173                     ; Keysborough        ; AU              ;                ; 03-8796-7100 ; 9151:AU
+                     ; springvaleaddr   ; Princes Hwy Springvale VIC                            ; 849         ; 3171                     ; Springvale         ; AU              ;                ; 03-8558-7300 ; 9152:AU
+                     ; nottinghilladdr  ; Ferntree Gully Road Notting Hill VIC                  ; 232-256     ; 3168                     ; Notting Hill       ; AU              ;                ; 03-9518-4400 ; 9153:AU
+                     ; chadstoneaddr    ; Homemaker Centre, Warrigal Rd Chadstone VIC           ; 675-685     ; 3148                     ; Chadstone          ; AU              ;                ; 03-8567-1600 ; 9154:AU
+                     ; boxhilladdr      ; Middleborough Road Box Hill VIC                       ; 259         ; 3128                     ; Box Hill           ; AU              ;                ; 03-8878-0900 ; 9155:AU
+                     ; nunawadingaddr   ; Whitehorse Road Nunawading VIC                        ; 250         ; 3131                     ; Nunawading         ; AU              ;                ; 03-9845-3900 ; 9156:AU
+                     ; ringwoodaddr     ; Ringwood Square Shopping Centre Ringwood VIC          ; 3134        ; 3134                     ; Ringwood           ; AU              ;                ; 03-9871-0000 ; 9157:AU
+                     ; vermontsouthaddr ; Burwood Highway Vermont South VIC                     ; 606-634     ; 3133                     ; Vermont South      ; AU              ;                ; 03-8805-0800 ; 9158:AU
+                     ; waremoteaddr     ; Burwood Highway WA Remote                             ; 606-634     ; 0001                     ; Vermont South      ; AU              ;                ; 03-8805-0800 ; 1176:AU
+                     ; wametroaddr      ; Bunbury Highway WA Remote                             ; 606-634     ; 0002                     ; Vermont South      ; AU              ;                ; 03-8805-0800 ; 1176:AU
+                     ; waregionaladdr   ; Burwood Highway WA Remote                             ; 606-634     ; 0003                     ; Vermont South      ; AU              ;                ; 03-8805-0800 ; 1176:AU
+
+
+INSERT_UPDATE DeliveryPOSDetails; deliveryZipCode[unique = true]; pointOfService(name,batchCountry)[unique = true]; isDeliveryRestricted[default = false]; latitude; longitude; country(isocode)
+                                ; 3001                          ; 9150:AU                                       ;                                      ; -21.23  ; -11.234  ; AU

@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:api.bunnings/inventory/item" elementFormDefault="qualified" xmlns="urn:api.bunnings/inventory/item" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+ 
+  <xs:annotation>
+    <xs:appinfo>
+      <Resource>Item</Resource>
+      <Version>3</Version>
+      <AvailableClaims>
+        <Claim name="ItemFamilyTree"></Claim>
+        <Claim name="Supplier">
+          <Claim name="ItemCosts"></Claim>
+        </Claim>
+        <Claim name="Pricing">
+          <Claim name="TeamMemberPricing"></Claim>
+          <Claim name="BaseCommercialPricing"></Claim>
+        </Claim>
+        <Claim name="FulfilmentDetails"></Claim>
+        <Claim name="WebAttributes"></Claim>
+      </AvailableClaims>
+    </xs:appinfo>
+    <xs:documentation>
+      3.0  PSimmons    Initial Build of Version 3
+      3.01 PSimmons    /ItemBatch/Items/Item now minOccurs=0 maxOccurs=unbounded. Rename element BunningsProcessing to BunningsDispatch
+      3.02 PSimmons    renamed .../ZoneDetails/Price to .../ZoneDetails/Pricing,
+                       added MinimumGrades at /Item/MinimumGrades
+                       set .../WebCommerceAttributes/Comment from nillable=true to minOccurs=0
+      3.03 MBubnich    updating restrictions to allow multiple restriction types. updated restriction locations to allow zero or more
+                       locations for the restriction. updated delivery and freight to be types rather then item numbers to allow for
+                       more complex rules for delivery and freight calulations in the future.
+      3.04 MBubnich    update family tree moving ID outside the node list.
+      3.05 AGanda      Changed claim name and Type name from DeliveryDetails to FulfilmentDetails.
+                       Changed TaxRate to decimal.
+                       Added AvailableForDelivery element to WebCommerceAttributes.
+                       Changed elements within LeadTimes to use nonNegativeInteger type.
+                       String typed all other elements that was not previously typed.
+      3.06 DBrown      Make fields inside Packaging minOccurs=0
+      3.07 AGanda      Added the UnspscCode to the FamilyTree element
+    </xs:documentation>
+    <xs:documentation>
+      This resource can be queried by clients that have the item resource. A batch of items can only contain items from one country.
+      Item information is detailed to a RetailZone/Region level.  If higher granuality of at item at an individual location is required then
+      access the resource(s) ItemLocation, ItemLocationStockLevel
+    </xs:documentation>
+  </xs:annotation>
+ 
+  <xs:element name="Item">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ItemNumber" nillable="false" type="ItemNumberType">
+          <xs:annotation>
+            <xs:documentation>
+              The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Description">
+          <xs:annotation>
+            <xs:documentation>
+              an items description consist of two 30 character strings.
+              This is the core description of the product in inventory.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SectionDescription" type="DescriptionType" nillable="true">
+                <xs:annotation>
+                  <xs:documentation>
+                    Part 1 of the items inventory description. The description
+                    is a string up to 30 characters in length.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ProductDescription" type="DescriptionType" nillable="true">
+                <xs:annotation>
+                  <xs:documentation>
+                    Part 2 of the items inventory description. The description
+                    is a string up to 30 characters in length.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="FamilyTree" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <Claim>ItemFamilyTree</Claim>
+            </xs:appinfo>
+            <xs:documentation>
+              The family tree within this item resides
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ID" minOccurs="1" maxOccurs="1" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    This is the unique ID that represents the full hierarchy (at its greatest depth) that the item resides under.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Nodes">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Node" type="FamilyTreeNodeType" maxOccurs="unbounded" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="UnspscCode" minOccurs="0" maxOccurs="1" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              This is the UNSPSC code that represents the type of item.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="StartDate" type="xs:dateTime">
+          <xs:annotation>
+            <xs:documentation>
+              The date time this item starts in the system.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="EndDate" type="xs:dateTime" minOccurs="0" nillable="true">
+          <xs:annotation>
+            <xs:documentation>
+              an item is end dated when all stores no long stock/sell this item.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="LastUpdate" type="xs:dateTime">
+          <xs:annotation>
+            <xs:documentation>
+              The date time this item was last updated.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TaxInformation" type="TaxInformationType" />
+        <xs:element name="ItemType" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              The type of item in the store, descriptively this is normally Expense or Inventory
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="MinimumGrades" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MinimumGrade" type="MinimumGradeType" minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="SaleUnitOfMeasure" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              The unit of measure this item is sold in, EACH, L/M ...
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ProductOffer" type="ProductOfferType" default="Standard" minOccurs="0" nillable="true" />
+        <xs:element name="Barcodes">
+          <xs:annotation>
+            <xs:documentation>
+              The complete set of barcodes connected to this item.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Barcode" type="BarcodeDetailType" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Sourcing" minOccurs="0" nillable="true">
+          <xs:annotation>
+            <xs:appinfo>
+              <Claim>Supplier</Claim>
+            </xs:appinfo>
+            <xs:documentation>
+              This node holds information about how Bunnings sources this product this.
+              Node will not be present in the document if the client doesn't have the supplier claim
+              in the access token.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Suppliers">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Supplier" type="SupplierType" maxOccurs="unbounded" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="OverridingSuppliers" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="OverridingSupplier" type="SupplierOverrideType" maxOccurs="unbounded" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ZoningInformation" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Zone" type="ZoneDetails" maxOccurs="unbounded"></xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <xs:element name="ItemBatch">
+    <xs:annotation>
+      <xs:documentation>
+        Used to deliver a batch of items
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BatchHeader">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ExtractTime" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>
+                    The time this batch was created.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Version" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The version of the schema this message is generated for. Newer version may have more fields added
+                    with additional information.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Country" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The country this batch of items belong to. a batch can only return items from a single
+                    country.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Items">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Item" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ 
+  <!--
+  TYPE DEFINITIONS
+  -->
+ 
+  <xs:simpleType name="DescriptionType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="30" />
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:simpleType name="BarcodeType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="8"/>
+      <xs:maxLength value="14" />
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:simpleType name="LocationType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{4}" />
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:simpleType name="ItemNumberType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{7}" />
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:complexType name="TaxInformationType">
+    <xs:sequence>
+      <xs:element name="TaxCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The tax code for this product. Using the tax code a tax rate for a period can be established.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TaxRate" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>
+            Current tax rate of the item.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="SupplierBaseType">
+    <xs:annotation>
+      <xs:appinfo>
+        <Claim>Supplier</Claim>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SupplierCode" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            This is the unique identifier of a supplier for this product.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="StartDate" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>
+            the date this supplier starts supplying this item to any locations
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EndDate" type="xs:dateTime" minOccurs="0" maxOccurs="1" nillable="true">
+        <xs:annotation>
+          <xs:documentation>
+            the date this supplier stops suppling this item to all locations
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PackQty" minOccurs="1" maxOccurs="1" nillable="false" type="xs:decimal">
+        <xs:annotation>
+          <xs:documentation>
+            the number of UOM units that this supplier requires an order to be a multiple of.
+            i.e. the supplier supplies boxes of 12 hammers (PackQty=12) so you can order 12 hammers or 24 hammers
+            but not 6 or 15 hammers.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SupplierBarcodes">
+        <xs:annotation>
+          <xs:documentation>
+            the list of this products barcodes that this supplier recognises.
+            and a flag to indicate which is the barcode to use when interacting with the
+            supplier for this product (Primary) e.g. the barcode on purchase orders.
+            the barcodes in the supplier barcode list must all exist in the items
+            barcode list however not all barcodes in the items barcode list must be
+            available to all suppliers.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Barcode" minOccurs="1" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>
+                  A bar code that belongs to this item that this supplier uses.
+                </xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Number" type="BarcodeType">
+                    <xs:annotation>
+                      <xs:documentation>
+                        The bar code number for this product. A bar code can be 8 to 13 digits
+                        for the item bar code itself. And package bar codes can be 14 digits.
+                      </xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="Primary" type="xs:boolean">
+                    <xs:annotation>
+                      <xs:documentation>
+                        The primary bar code for this item for this supplier only one bar code for an item
+                        supplier can be the primary.
+                      </xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="SupplierType">
+    <xs:complexContent>
+      <xs:extension base="SupplierBaseType">
+        <xs:sequence>
+          <xs:element name="Costs" minOccurs="0">
+            <xs:annotation>
+              <xs:appinfo>
+                <Claim>ItemCosts</Claim>
+              </xs:appinfo>
+              <xs:documentation>
+                This node holds information about how costs of a product from a supplier
+                Node will not be present in the document if the client doesn't have the ItemCosts claim
+                in the access token.
+              </xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="CostDetail" minOccurs="1" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="CostZone" type="xs:string" maxOccurs="1" minOccurs="1">
+                        <xs:annotation>
+                          <xs:documentation>
+                            This is the descriptive cost zone that the cost is for
+                          </xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="Cost" type="xs:double" maxOccurs="1" minOccurs="1">
+                        <xs:annotation>
+                          <xs:documentation>
+                            This is the cost for an item in its appropriate cost zone for Bunnings from the supplier
+                          </xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:complexType name="SupplierOverrideType">
+    <xs:complexContent>
+      <xs:extension base="SupplierBaseType">
+        <xs:sequence>
+          <xs:element name="Reason" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>
+                The reason for this supplier overriding
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:complexType name="UOMType">
+    <xs:sequence>
+      <xs:element name="UnitOfMeasure" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="UOMDimensionType">
+    <xs:complexContent>
+      <xs:extension base="UOMType">
+        <xs:sequence>
+          <xs:element name="Length" type="xs:decimal" minOccurs="0" />
+          <xs:element name="Width" type="xs:decimal" minOccurs="0" />
+          <xs:element name="Height" type="xs:decimal" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:complexType name="UOMVolumeType">
+    <xs:complexContent>
+      <xs:extension base="UOMType">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:decimal" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:complexType name="UOMWeightType">
+    <xs:complexContent>
+      <xs:extension base="UOMType">
+        <xs:sequence>
+          <xs:element name="Net" type="xs:decimal" minOccurs="0" />
+          <xs:element name="Gross" type="xs:decimal" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:simpleType name="RestrictionTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="RESTRICTED">
+        <xs:annotation>
+          <xs:documentation>
+            Item is for sale at restricted locations however is visible to all locations
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="EXCLUSIVE">
+        <xs:annotation>
+          <xs:documentation>
+            Item is for exclusive sale at restricted locations (e.g. Trade Centre only items), all other locations are unable to see or sell this product
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:simpleType name="ProductOfferType">
+    <xs:annotation>
+      <xs:documentation>
+        This is the different methods in which a product is offered
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Standard" />
+      <xs:enumeration value="Custom Made" />
+      <xs:enumeration value="Made To Order" />
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:complexType name="FamilyTreeNodeType">
+    <xs:annotation>
+      <xs:documentation>
+        Describes of each branch in the family tree, this is open opposed to the strict 5 level
+        structure that we currently employ
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Name" minOccurs="1" maxOccurs="1" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Name of the family tree level e.g. Category or Department
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Level" minOccurs="1" maxOccurs="1" type="xs:integer">
+        <xs:annotation>
+          <xs:documentation>
+            The level number, this should be unique, e.g. Category = Level 1, Department = Level 2
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Value" minOccurs="1" maxOccurs="1" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Value for this family tree node e.g. Building Material
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+ 
+  <xs:simpleType name="PriceType">
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2" fixed="true" />
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:simpleType name="BarcodeLevelType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Consumer">
+        <xs:annotation>
+          <xs:documentation>
+            A Consumer barcode is a barcode on the item that will be sold to the consumer.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Case">
+        <xs:annotation>
+          <xs:documentation>
+            is a barcode on a shipping carton containing x number of the consumer item.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+ 
+  <xs:complexType name="BarcodeDetailType">
+    <xs:annotation>
+      <xs:documentation>
+        A bar code that belongs to this item.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Number" type="BarcodeType">
+        <xs:annotation>
+          <xs:documentation>
+            The bar code number for this product. A bar code can be 8 to 13 digits
+            for the item bar code itself. And package bar codes can be 14 digits.
+            the barcode is a GTIN globally unique number that will be encoded in barcodes for this product.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Level" type="BarcodeLevelType">
+        <xs:annotation>
+          <xs:documentation>
+            Is this a barcode for one unit of this item or a case of them.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Packaging" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Packaging information regarding the number, size, volume, weight of the components that make up the item.
+            Packaging information is at manufacturer level, manufacturers are allocated barcodes not suppliers.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Box" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Part" type="xs:integer" />
+                  <xs:element name="Dimension" type="UOMDimensionType" minOccurs="0" />
+                  <xs:element name="Volume" type="UOMVolumeType" minOccurs="0" />
+                  <xs:element name="Weight" type="UOMWeightType" minOccurs="0" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="CommercialPricingType">
+    <xs:annotation>
+      <xs:appinfo>
+        <Claim>BaseCommercialPricing</Claim>
+      </xs:appinfo>
+      <xs:documentation>
+        Commercial price calculation is based upon RegularRetail price.  This will generate the maximum commercial price.
+        Individual customer pricing may vary, this is not appropriate for actions such as (but not limited to):
+        - ordering
+        - enquiries
+        - customer price searching
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="BaseDiscountPercent" type="xs:double">
+        <xs:annotation>
+          <xs:documentation>
+            CommercialDiscountBase is the lowest within the RetailZone/Region
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CommercialSegments" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            If no segments exist then the discount percentage is not restricted to a segment
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Segment" maxOccurs="unbounded" type="xs:string"></xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="RestrictionType">
+    <xs:annotation>
+      <xs:documentation>
+        Any restrictions to the item within the RetailZone/Region
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Type" type="RestrictionTypeEnum" />
+      <xs:element name="Locations" minOccurs="0" nillable="true">
+        <xs:annotation>
+          <xs:documentation>
+            list of locations that are applicable from this restriction. if this list in empty then no locations are applicable from this restriction.
+            e.g. Type = 'EXCLUSIVE' Locations list is empty then no locations can trade this item within this zone
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Location" type="LocationType" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="WebCommerceAttributeType">
+    <xs:annotation>
+      <xs:appinfo>
+        <Claim>WebAttributes</Claim>
+      </xs:appinfo>
+      <xs:documentation>
+        List of attributes specifically associated to website data presentation
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Visible" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item visible on the web
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Transactable" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item transactable on the web
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="InstorePickup" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item available for in-store pickup
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AvailableForDelivery" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item available for delivery
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Comment" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Comment on the item that is web applicable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="PriceDetailType">
+    <xs:annotation>
+      <xs:appinfo>
+        <Claim>Pricing</Claim>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="BestRetail">
+        <xs:annotation>
+          <xs:documentation>
+            The best retail price based upon RegularRetail, Promotion and Markdown
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Price" type="PriceType"></xs:element>
+            <xs:element name="IsMarkdown" type="xs:boolean" default="false" minOccurs="0"></xs:element>
+            <xs:element name="PromotionId" type="xs:string" minOccurs="0"></xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="RegularRetail" type="PriceType"></xs:element>
+      <xs:element name="TeamMember" type="PriceType" minOccurs="0">
+        <xs:annotation>
+          <xs:appinfo>
+            <Claim>TeamMemberPricing</Claim>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Commercial" type="CommercialPricingType" minOccurs="0">
+        <xs:annotation>
+          <xs:appinfo>
+            <Claim>BaseCommercialPricing</Claim>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="DeliveryFreightItemType">
+    <xs:sequence>
+      <xs:element name="Code" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Code for the type of delivery/freight used by this for this item.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Description" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Description of the above.  This is required as this is most likely to have
+            the comment if it is a direct delivery item number.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="FulfilmentDetailsType">
+    <xs:annotation>
+      <xs:documentation>
+        It is assumed all values are in days and is calculated based upon calculated Rank 1 Supplier.
+        This element contains logistical information for the item.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="DeliveryType" type="DeliveryFreightItemType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The details to use for delivery charges.
+             
+            Delivery is the charges to deliver this item to the customer.
+            To determine if an item is available for delivery, DeliveryType must have a value or IsDiectDelivery is true.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="FreightType" type="DeliveryFreightItemType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Item details to use for freight charges
+             
+            Freight is the charges paid to the supplier for them to ship the item to the destination e.g. bunnings store or customer.
+            FreightType will have a value of POA if it is a POA item.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="IsDirectDelivery" type="xs:boolean" default="false" minOccurs="0" nillable="true">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item available for direct delivery only.
+            If IsDirectDelivery is true and FreightType is blank then it is the Direct Delivery item that doesn't incur freight charges.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LeadTimes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="SupplierDispatch" type="xs:nonNegativeInteger" minOccurs="0" nillable="true">
+              <xs:annotation>
+                <xs:documentation>
+                  Time taken for the supplier to process the order ready for shipment to destination
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="SupplierToBunnings" type="xs:nonNegativeInteger" minOccurs="0" nillable="true">
+              <xs:annotation>
+                <xs:documentation>
+                  Time for shipment from supplier to Bunnings Location, i.e. transit time
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="SupplierToCustomer" type="xs:nonNegativeInteger" minOccurs="0" nillable="true">
+              <xs:annotation>
+                <xs:documentation>
+                  This is the Direct Delivery shipment Lead time. From supplier to customer location
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="BunningsDispatch" type="xs:nonNegativeInteger" minOccurs="0" nillable="true">
+              <xs:annotation>
+                <xs:documentation>
+                  Duration taken for Bunnings loaction to deliver item to customer location once item has been recieved by the store.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="ZoneDetails">
+    <xs:annotation>
+      <xs:documentation>
+        A Zone represents the intersection of a RetailZone and a Region.  The most practical example of this is where
+        * RetailZone = RZ 1
+        but has two geographic regions
+        * Region = NSW Metro
+        * Region = ACT
+ 
+        Prices are the highest within the RetailZone/Region
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="RetailZone" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Collection of stores that have the same base price/attributes
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Region" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Geographic Region for applicable data, this is not equivalent to political regions
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Status" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Status of the item
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Pricing" type="PriceDetailType" minOccurs="0">
+        <xs:annotation>
+          <xs:appinfo>
+            <Claim>Pricing</Claim>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Restrictions" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Restriction" type="RestrictionType" minOccurs="1" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>
+                  At most there can only be one restriction of each type see RestrictionTypeEnum.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+       
+      <xs:element name="FulfilmentDetails" type="FulfilmentDetailsType" minOccurs="0">
+        <xs:annotation>
+          <xs:appinfo>
+            <Claim>FulfilmentDetails</Claim>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="WebCommerceAttributes" type="WebCommerceAttributeType" minOccurs="0">
+        <xs:annotation>
+          <xs:appinfo>
+            <Claim>WebAttributes</Claim>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+ 
+  <xs:complexType name="MinimumGradeType">
+    <xs:annotation>
+      <xs:documentation>
+        Minimum grade of an item based on location types
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="LocationType" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The location type this grade is related for.  Examples Warehouse, Trade Centre, FrameAndTruss, DC
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Grade" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Grade level descriptor
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+   
+</xs:schema>

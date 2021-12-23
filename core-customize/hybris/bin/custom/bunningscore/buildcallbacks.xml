@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+--><!--
+ All hybris buildcallbacks.xml macrodefinitions:
+ 
+ Build/Documentation
+ 
+	 before/after ant macro "clean"
+		 <macrodef name="bunningscore_before_clean"/>
+		 <macrodef name="bunningscore_after_clean"/>
+
+	 before/after ant macro "build"
+		 <macrodef name="bunningscore_before_build"/>
+		 <macrodef name="bunningscore_after_build"/>
+
+	 before/after ant macro "compile_core" - the core module of the extension
+		 <macrodef name="bunningscore_before_compile_core">
+		 <macrodef name="bunningscore_after_compile_core">
+
+	 before/after ant macro "compile_web" - the web module of the extension
+		 <macrodef name="bunningscore_before_compile_web" />
+		 <macrodef name="bunningscore_after_compile_web" />
+ 
+ Preparing extension
+ 
+	 will be called in the beginning of the ant call and only once (also when using multiple 
+	 ant targets e.g. ant build yunittest)
+		 <macrodef name="bunningscore_only_once_prepare"/>
+ 
+ Creating ear module/production
+ 
+	 before/after ant macro "ear"
+		 <macrodef name="bunningscore_before_ear"/>
+		 <macrodef name="bunningscore_after_ear"/>
+
+	 before/after ant macro "production" - for hybris server only
+		 <macrodef name="bunningscore_before_production" />
+		 <macrodef name="bunningscore_after_production" />
+ 
+ JUnit Test
+ 
+	 before/after ant macro "yunitinit" 
+		 <macrodef name="bunningscore_before_yunitinit" />
+		 <macrodef name="bunningscore_after_yunitinit" />
+
+	 before/after ant macro "yunit"
+		 <macrodef name="bunningscore_before_yunit" />
+		 <macrodef name="bunningscore_after_yunit" /> 
+
+ Distribution package
+ 
+ 	 before/after ant macro "dist" - internal target; only for use when platform is available in source code
+		 <macrodef name="bunningscore_after_dist"/>
+		 <macrodef name="bunningscore_before_dist"/>
+
+	 before/after ant macro "dist_copy" - internal target; only for use when platform is available in source code
+		 <macrodef name="bunningscore_before_dist_copy"/>
+		 <macrodef name="bunningscore_after_dist_copy"/>
+
+-->
+<project name="bunningscore_buildcallbacks">
+
+
+    <macrodef name="bunningscore_before_clean">
+        <sequential>
+            <if>
+                <available file="${ext.core.path}/lib/log4j-core-2.9.1.jar"/>
+                <then>
+                    <delete file="${ext.core.path}/lib/log4j-core-2.9.1.jar"/>
+                    <copy file="${ext.bunningscore.path}/platformReplacementlib/log4j-core-2.17.0.jar"
+                          tofile="${ext.core.path}/lib/log4j-core-2.17.0.jar"/>
+                </then>
+            </if>
+            <if>
+                <available file="${ext.core.path}/lib/log4j-api-2.9.1.jar"/>
+                <then>
+                    <delete file="${ext.core.path}/lib/log4j-api-2.9.1.jar"/>
+                    <copy file="${ext.bunningscore.path}/platformReplacementlib/log4j-api-2.17.0.jar"
+                          tofile="${ext.core.path}/lib/log4j-api-2.17.0.jar"/>
+
+                </then>
+            </if>
+            <if>
+                <available file="${ext.core.path}/lib/log4j-slf4j-impl-2.9.1.jar"/>
+                <then>
+                    <delete file="${ext.core.path}/lib/log4j-slf4j-impl-2.9.1.jar"/>
+                    <copy file="${ext.bunningscore.path}/platformReplacementlib/log4j-slf4j-impl-2.17.0.jar"
+                          tofile="${ext.core.path}/lib/log4j-slf4j-impl-2.17.0.jar"/>
+
+                </then>
+            </if>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="bunningscore_before_build">
+        <sequential>
+            <echo level="info" message=" " />
+            <echo level="info" message="*************************************************" />
+            <echo level="info" message="- log4j-core-2.17.0.jar upgrade verification" />
+            <echo level="info" message="-------------------------------------------------" />
+            <echo level="info" message="- ext.core.path :                    ${ext.core.path}" />
+            <echo level="info" message="- ext.bunningscore.path :            ${ext.bunningscore.path}" />
+            <if>
+                <available file="${ext.bunningscore.path}/platformReplacementlib/log4j-core-2.17.0.jar"/>
+
+                <then>
+                    <echo message="target log4j-core-2.17.0.jar file exists" level="info"/>
+                </then>
+                <else>
+                 <echo message="target log4j-core-2.17.0.jar file not exists" level="info"/>
+            </else>
+            </if>
+       
+            <echo level="info" message="check  log4j-core-2.9.1.jar file " />
+            <if>
+                <available file="${ext.core.path}/lib/log4j-core-2.9.1.jar"/>
+                <then>
+                    <echo message="Original log4j-core-2.9.1.jar file exists" level="info"/>
+                    <delete file="${ext.core.path}/lib/log4j-core-2.9.1.jar"/>
+                    <copy file="${ext.bunningscore.path}/platformReplacementlib/log4j-core-2.17.0.jar"
+                          tofile="${ext.core.path}/lib/log4j-core-2.17.0.jar"/>
+                </then>
+                         <else>
+                <echo message="Original log4j-core-2.9.1.jar file not exists" level="info"/>
+            </else>         
+   
+            </if>
+            <if>
+                <available file="${ext.core.path}/lib/log4j-api-2.9.1.jar"/>
+                <then>
+                    <echo message="Original log4j-api-2.9.1.jar file exists" level="info"/>
+                    <delete file="${ext.core.path}/lib/log4j-api-2.9.1.jar"/>
+                    <copy file="${ext.bunningscore.path}/platformReplacementlib/log4j-api-2.17.0.jar"
+                          tofile="${ext.core.path}/lib/log4j-api-2.17.0.jar"/>
+                </then>
+            
+             <else>
+                <echo message="Original log4j-api-2.9.1.jar file not exists" level="info"/>
+            </else>
+            </if>
+            <if>
+                <available file="${ext.core.path}/lib/log4j-slf4j-impl-2.9.1.jar"/>
+                <then>
+                    <echo message="Original log4j-slf4j-impl-2.9.1.jarfile exists" level="info"/>
+                    <delete file="${ext.core.path}/lib/log4j-slf4j-impl-2.9.1.jar"/>
+                    <copy file="${ext.bunningscore.path}/platformReplacementlib/log4j-slf4j-impl-2.17.0.jar"
+                          tofile="${ext.core.path}/lib/log4j-slf4j-impl-2.17.0.jar"/>
+
+                </then>
+            
+             <else>
+                <echo message="Original log4j-slf4j-impl-2.9.1.jarfile not exists" level="info"/>
+            </else>
+</if>
+            <echo level="info" message="*************************************************" />
+            <echo level="info" message=" " />
+        </sequential>
+    </macrodef>
+
+
+
+    <macrodef name="bunningscore_after_build">
+
+        <sequential>
+
+            <impexGenerate extname="bunningscore"/>
+
+        </sequential>
+
+    </macrodef>
+
+    <macrodef name="bunningscore_after_clean">
+
+        <sequential>
+
+            <delete failonerror="false" file="${ext.bunningscore.path}/resources-lang/touch_impexgen"/>
+
+        </sequential>
+
+    </macrodef>
+
+
+    <!-- exclude impex files from localization -->
+
+
+    <patternset id="bunningscore.localization.pattern">
+
+        <patternset refid="localization.defaultpattern"/>
+
+        <exclude name="**/*.impex"/>
+
+    </patternset>
+
+
+</project>

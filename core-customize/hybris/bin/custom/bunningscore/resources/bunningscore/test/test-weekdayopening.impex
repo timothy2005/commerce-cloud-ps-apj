@@ -1,0 +1,14 @@
+INSERT_UPDATE OpeningSchedule;code[unique=true]
+;5181
+;5182
+;5183
+;5184
+;5185
+
+INSERT_UPDATE WeekdayOpeningDay;feedLineReference;openingSchedule(code);code[unique=true];name;dayOfWeek(code)[unique=true][cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];sequenceId
+;5181;5181;5181AU;Monday;Monday;5179
+;5182;5182;5182AU;Monday;Monday;5185
+;5183;5183;5183AU;Monday;Monday;1619319940891
+;5184;5184;5184AU;Monday;Monday;1619319
+;5185;5185;5185AU;Monday;Monday;
+

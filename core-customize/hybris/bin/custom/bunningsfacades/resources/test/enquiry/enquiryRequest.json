@@ -1,0 +1,56 @@
+{
+  "options": {
+    "saveAddress": true,
+    "saveAddressAsDefault": true
+  },
+  "customerOrderReferences": {
+    "jobNo": "J776",
+    "orderNo": "xxxxx"
+  },
+  "totalsForLines": {
+    "subtotal": 11.07,
+    "discount": 0.00,
+    "total": 11.07,
+    "tax": 1.01
+  },
+  "fulfilments":
+  {
+    "lines": [
+      {
+        "lineNumber": 1,
+        "itemNumber": "1110138",
+        "lineTotal": 10.00,
+        "class": "powerpass",
+        "price": "S1:AU:16911c50-ad1b-4e6a-b937-763a52a15cec",
+        "units": [
+          {
+            "quantity": 2
+          }
+        ]
+      }
+    ],
+    "fulfilmentType": "DeliveryToCustomer | CustomerToCollect",
+    "preferredContactMethod": "EMAIL",
+    "contactName": "Firstname lastname",
+    "contact": {
+      "mobilePhoneNumber": "+61436735264",
+      "email": "jsmith@work.example.com"
+    },
+    "instructions": "Leave in front of the garage door.",
+    "delivery": {
+      "address": {
+        "streetNumber": "5",
+        "streetName": "Action",
+        "streetType": "Follow",
+        "locality": "Midland",
+        "postCode": "6019",
+        "state": "WA",
+        "country": "AU"
+      },
+      "deliveryDate": "9999-12-31"
+    },
+    "collection": {
+      "collectionDate": "2020-04-15"
+    }
+  }
+}

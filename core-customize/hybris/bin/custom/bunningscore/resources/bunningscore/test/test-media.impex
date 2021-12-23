@@ -1,0 +1,83 @@
+$pcmCatalog = BunningsPCMCatalog
+$version = Staged
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$baseProduct = baseProduct(code, $catalogVersion)[unique=true]
+$approvalStatus = approvalstatus(code)[default='approved'][unique=true]
+$variantType = variantType(code)[default='GenericVariantProduct']
+$gallery = galleryImages(qualifier, $catalogVersion)
+$languages = en, en_AU, en_NZ
+$picture = picture(code, $catalogVersion)
+$supercategories = supercategories(code, $catalogVersion)[unique=true, PRODUCTINDEX_1 mode=append]
+
+# Product Bunnings Catalog
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode)
+                            ; $pcmCatalog               ; Online                ; true  ; $languages
+                            ; $pcmCatalog               ; Staged                ; false ; $languages
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE
+                      ; en                    ; sample      ; TRUE
+
+INSERT_UPDATE UserGroup; uid[unique = true]
+                       ; admingroup
+                       ; employeegroup
+                       ; customergroup
+
+INSERT_UPDATE VariantCategory; code[unique = true]                     ; $catalogVersion; name[lang = en];
+                             ; no_variant_cat                          ;                ; no_variant_cat
+                             ; COLOUR_VARIANT                          ;                ; Colour
+                             ; SIZE_VARIANT                            ;                ; Size
+                             ; OPTION_VARIANT                          ;                ; Option
+                             ; TIME_VARIANT                            ;                ; Time
+                             ; SIZE_WIDTH_VARIANT                      ;                ; Width (mm)
+                             ; SIZE_HEIGHT_VARIANT                     ;                ; Height (mm)
+                             ; SIZE_LENGTH_VARIANT                     ;                ; Length/Depth (mm)
+                             ; SIZE_AREA_WIDTH_HEIGHT_VARIANT          ;                ; Area - Width x Heigth (mm)
+                             ; SIZE_AREA_WIDTH_LENGTH_VARIANT          ;                ; Area - Width x Length/Depth (mm)
+                             ; SIZE_VOLUME_WIDTH_HEIGHT_LENGTH_VARIANT ;                ; Volume - Width x Heigth x  Length/Depth (mm)
+                             ; SIZE_VOLUME_LITRES_VARIANT              ;                ; Volume (litres)
+                             ; SIZE_VOLUME_WEIGHT_VARIANT              ;                ; Volume (Weight)
+
+INSERT_UPDATE VariantValueCategory; sequence; code[unique = true]; name          ; $supercategories; order; $catalogVersion; allowedPrincipals(uid)[default = 'customergroup']
+                                  ; 1000    ; COLOUR_#ffffff     ; White         ; COLOUR_VARIANT  ; 1    ;
+                                  ; 1001    ; COLOUR_#162219     ; Black Granite ; COLOUR_VARIANT  ; 2    ;
+                                  ; 1002    ; COLOUR_#C4C2BC     ; Riverstone    ; COLOUR_VARIANT  ; 3    ;
+                                  ; 1003    ; COLOUR_#A9A9AE     ; Marble        ; COLOUR_VARIANT  ; 4    ;
+
+INSERT_UPDATE Product[disable.interceptor.types = validate]; name[lang = en]             ; code[unique = true]; $supercategories; $variantType; $approvalStatus; $catalogVersion; batchCountry[unique = true, default = 'AU']
+                                                           ; Hume Oakfield Internal Door ; W810001            ; COLOUR_VARIANT  ;             ;                ;                ;
+
+INSERT_UPDATE GenericVariantProduct; code[unique = true]; $approvalStatus; $catalogVersion; name           ; $baseProduct; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; lastUpdate[dateformat = dd.MM.yyyy HH:mm:ss]; $supercategories; batchCountry[unique = true, default = 'AU']; $picture; manufacturerName[default = 'aeg-brand']
+                                   ; AUW810010          ;                ;                ; Sample variant ; W810001     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; COLOUR_#162219  ;                                            ;         ;
+                                   ; AUW810011          ;                ;                ; Sample variant ; W810001     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; COLOUR_#162219  ;                                            ;         ;
+                                   ; AUW810012          ;                ;                ; Sample variant ; W810001     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; COLOUR_#162219  ;                                            ;         ;
+                                   ; AUW810017          ;                ;                ; Sample variant ; W810001     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; COLOUR_#162219  ;                                            ;         ;
+                                   ; AUW810021          ;                ;                ; Sample variant ; W810001     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; COLOUR_#162219  ;                                            ;         ; dewalt-brand
+                                   ; AUW810022          ;                ;                ; Sample variant ; W810001     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; COLOUR_#162219  ;                                            ;         ; dewalt-brand
+
+INSERT_UPDATE Media; code[unique = true]   ; $catalogVersion; altText                    ; removable; primaryAssetUrl                                                                                                       ; rackSpaceGuid; mediaFormat(qualifier); mime       ; associatedTo(code)[unique = true]; products(code, $catalogVersion)
+                   ; aeg-logo              ;                ; AEG logo                   ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/aeglogo?v=bcd13892                                     ; 10001-AU     ;                       ; image/jpeg ;
+                   ; bosch-logo            ;                ; Bosch logo                 ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/boschlogo?v=843b831a                                   ; 10001-AU     ;                       ; image/jpeg ;
+                   ; dewalt-logo           ;                ; DeWalt logo                ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/dewaltlogo?v=d5b175f9                                  ; 10002-AU     ;                       ; image/jpeg ;
+                   ; irwin-logo            ;                ; Irwin logo                 ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/irwinlogo?v=e19ec343                                   ;              ;                       ; image/jpeg ;
+                   ; kincrome-logo         ;                ; Kincrome logo              ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/kincromelogo?v=7c5a49dd                                ;              ;                       ; image/jpeg ;
+                   ; makita-logo           ;                ; Makita logo                ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/makitalogo?v=0eedc71a                                  ;              ;                       ; image/jpeg ;
+                   ; paslode-logo          ;                ; Paslode logo               ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/paslodelogo?v=4acc0630                                 ;              ;                       ; image/jpeg ;
+                   ; ryobi-logo            ;                ; Ryobi logo                 ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/ryobibrandlogo?v=fee92ef1                   ;              ;                       ; image/jpeg ;
+                   ; clark_tanks-logo      ;                ; Clark Tanks Logo           ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/98d090efaace4cf0a2de6127ac5a960a?v=a05ea692 ;              ;                       ; image/jpeg ;
+                   ; rossi_boots-logo      ;                ; Rossi Boots Logo           ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/98d090efaace4cf0a2de6127ac5a960a?v=a05ea692 ;              ;                       ; image/jpeg ;
+                   ; hard_yakka-logo       ;                ; Hard Yakka Logo            ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/4348eab006154a9293ff090c2442cdb0?v=18649111 ;              ;                       ; image/jpeg ;
+                   ; hume_doorstimber-logo ;                ; Hume Doors and Timber Logo ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/54bf3ed9018948bf88597aa7fe886007?v=f5cefcc2 ;              ;                       ; image/jpeg ;
+                   ; syneco-logo           ;                ; Syneco Logo                ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/2dd9eb48fe1c4a738348ee5a6ec9ef29?v=b6491532 ;              ;                       ; image/jpeg ;
+                   ; AUW810010-logo        ;                ; PowerTrain Logo            ; TRUE     ; https://delivery-qa.bunningscontenthub.bunnings.com.au/api/public/content/8a5ab757222b4adf94ba4ef150f32282?v=078bf06a ;              ;                       ; video      ; USERGUIDE                        ; AUW810010
+                   ; AUW810011_Document3   ;                ; test Document              ; TRUE     ; https://scholar.harvard.edu/files/torman_personal/files/samplepptx.ppt                                                ;              ;                       ; ppt        ; WARRANTY                         ; AUW810011
+                   ; AUW810011_Document2   ;                ; sample doc                 ; TRUE     ; http://mtskheta.gov.ge/public/img/1530793528.xlsx                                                                     ;              ;                       ; text/xlxs  ; WARRANTY                         ; AUW810011
+                   ; AUW810012_Document3   ;                ; sample doc                 ; TRUE     ; https://scholar.harvard.edu/files/torman_personal/files/samplepptx.ppt                                                ;              ;                       ; ppt        ; SPECIFICATION                    ; AUW810012
+                   ; AUW810017_Document4   ;                ; sample doc                 ; TRUE     ; http://africau.edu/images/default/sample.csv                                                                          ;              ;                       ; csv        ; BROCHURE                         ; AUW810017
+                   ; AUW810021_Document5   ;                ; sample doc                 ; TRUE     ; http://africau.edu/images/default/sample.pdf                                                                          ;              ;                       ; pdf        ; INSTRUCTIONS                     ; AUW810021
+                   ; AUW810022_Document6   ;                ; sample doc                 ; TRUE     ; http://africau.edu/images/default/sample.pdf                                                                          ;              ;                       ; pdf        ; USERGUIDE                        ; AUW810022
+ 				   

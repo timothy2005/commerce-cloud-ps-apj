@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!--
+    <context:annotation-config/>
+    
+    <alias name="bunningsCommerceProductService" alias="commerceProductService"/>
+    <bean id="bunningsCommerceProductService"  class="com.bunnings.core.category.service.impl.BunningsCommerceProductService"
+          parent="defaultCommerceProductService"/>
+
+    <alias name="defaultBunningsProductService" alias="bunningsProductService"/>
+    <bean id="defaultBunningsProductService"
+          class="com.bunnings.core.product.impl.DefaultBunningsProductService"  >
+        <property name="bunningsProductServiceDAO" ref="bunningsProductServiceDAO" />
+        <property name="defaultPattern" value="/{product-name}"/>
+    </bean>
+
+    <alias name="defaultBunningsProductServiceDAO" alias="bunningsProductServiceDAO"/>
+    <bean id="defaultBunningsProductServiceDAO"
+          class="com.bunnings.core.product.daos.impl.DefaultBunningsProductDAO">
+        <property name="flexibleSearchService" ref="flexibleSearchService"/>
+    </bean>
+
+
+    <alias name="defaultBunningsClassificationAttributeDAO" alias="bunningsClassificationAttributeDao"/>
+    <bean id="defaultBunningsClassificationAttributeDAO"
+          class="com.bunnings.core.classification.dao.impl.DefaultBunningsClassificationAttributeDAO">
+        <property name="flexibleSearchService" ref="flexibleSearchService"/>
+    </bean>
+
+    <bean id="bunningsBundleProductDao" class="com.bunnings.core.product.daos.impl.BunningsBundleProductDAOImpl">
+        <constructor-arg value="BundleProduct"/>
+	</bean>
+
+    <bean id="bunningsBundleProductService" class="com.bunnings.core.product.BunningsBundleProductServiceImpl">
+    	<property name="bunningsBundleProductDao" ref="bunningsBundleProductDao"/>
+    </bean>
+    
+    <alias name="bunningsBundleCommerceAddToCartStrategy" alias="commerceAddToCartStrategy"/>
+	<bean id="bunningsBundleCommerceAddToCartStrategy"
+		class="com.bunnings.core.commerce.strategies.impl.BunningsBundleCommerceAddToCartStrategyImpl"
+		parent="bundleCommerceAddToCartStrategy"/>
+
+-->
+    <!--<alias alias="productService" name="bunningsDefaultProductService"/>
+    <bean id="bunningsDefaultProductService" class="com.bunnings.services.product.impl.BunningDefaultProductService"
+          parent="defaultProductService">
+        <property name="productDao" ref="productDao"/>
+        <property name="unitDao" ref="unitDao"/>
+        <property name="sessionService" ref="sessionService"/>
+        <property name="configurationService" ref="configurationService"/>
+    </bean>-->
+
+<!--
+    <alias alias="variantToBaseProductCloneStrategy" name="bunningsVariantToBaseProductCloneStrategy"/>
+    <bean id = "bunningsVariantToBaseProductCloneStrategy"
+          class ="com.bunnings.core.product.strategies.impl.BunningsVariantToBaseProductCloneStrategy"/>
+    
+    <alias alias="orderDao" name="defaultBunningsOrderDao"/>
+    <bean id="defaultBunningsOrderDao" class="com.bunnings.core.order.daos.impl.BunningsOrderDAOImpl" parent="defaultOrderDao"/>
+
+    <alias name="bunningsCatalogVersionServiceImpl" alias="catalogVersionService"/>
+    <bean id="bunningsCatalogVersionServiceImpl"
+          class="com.bunnings.core.catalog.impl.BunningsCatalogVersionServiceImpl"
+          parent="defaultCatalogVersionService"/>
+
+    <alias alias="priceQueryProvider" name="bunningsPriceQueryProvider"/>
+    <bean id="bunningsPriceQueryProvider" class="com.bunnings.core.price.impl.BunningsPriceQueryProvider"
+          parent="defaultPriceQueryProvider">
+        <property name="pdtEnumGroupsHelper" ref="pdtEnumGroupsHelper"/>
+    </bean>
+    
+    <alias alias="posEventListener" name="posEventListener"/>
+    <bean id="posEventListener" class="com.bunnings.core.PointOfServiceCreationEventListener">
+        <property name="bunningsCoveoAttributesService" ref="bunningsCoveoAttributesService"/>
+    </bean>
+
+    <alias alias="posEventListener" name="posEventListener"/>
+    <bean id="classificationAttributeEventListener" class="com.bunnings.core.event.ClassificationAttributeCreationEventListener">
+        <property name="bunningsCoveoAttributesService" ref="bunningsCoveoAttributesService"/>
+    </bean>
+
+
+    <alias alias="bunningsCoveoAttributesService" name="bunningsCoveoAttributesService"/>
+    <bean id="bunningsCoveoAttributesService" class="com.bunnings.core.coveo.service.impl.BunningsCoveoAttributesServiceImpl"/>
+    
+    <alias alias="bunningsOrderService" name="bunningsOrderService"/>
+    <bean id="bunningsOrderService" class="com.bunnings.core.services.impl.BunningsOrderServiceImpl">
+        <property name="orderDao" ref="orderDao"/>
+    </bean>
+
+	<alias alias="bunningsMiraklService" name="bunningsMiraklService"/>
+	<bean id="bunningsMiraklService" class="com.bunnings.core.services.marketlink.impl.BunningsMarketLinkServiceImpl"/>
+
+	<alias alias="bunningsMiraklDao" name="bunningsMiraklDao"/>
+	<bean id="bunningsMiraklDao" class="com.bunnings.core.dao.marketlink.impl.BunningsMarketLinkDAOImpl"/>
+		    
+	<alias name="defaultBunningsProductPriceService" alias="priceService"/>
+    <bean id="defaultBunningsProductPriceService"
+          class="com.bunnings.core.price.impl.DefaultBunningsProductPriceService" parent="defaultPriceService"/>
+
+    <alias name="defaultBunningsFindPriceValueInfoStrategy" alias="findPriceValueInfoStrategy"/>
+    <bean id="defaultBunningsFindPriceValueInfoStrategy"
+          class="com.bunnings.core.price.impl.DefaultBunningsFindPriceValueInfoStrategy"
+          parent="defaultFindPriceValueInfoStrategy"/>
+
+    <alias alias="bunningsStoreWorkingScheduleCleanupJob" name="bunningsStoreWorkingScheduleCleanupJob"/>
+    <bean id="bunningsStoreWorkingScheduleCleanupJob" class="com.bunnings.core.job.BunningsStoreWorkingScheduleCleanupJob" parent="abstractJobPerformable">
+        <property name="bunningsStoreScheduleCleanUpService" ref="bunningsStoreScheduleCleanUpService" />
+        <property name="configurationService" ref="configurationService" />
+    </bean>
+
+    <alias alias="bunningsStoreScheduleCleanUpService" name="bunningsStoreScheduleCleanUpService"/>
+    <bean id="bunningsStoreScheduleCleanUpService" class="com.bunnings.core.store.impl.DefaultBunningsStoreScheduleCleanUpService">
+        <property name="bunningsStoreCleanUpDao" ref="bunningsStoreCleanUpDao"/>
+    </bean>
+
+    <alias alias="bunningsStoreCleanUpDao" name="bunningsStoreCleanUpDao"/>
+    <bean id="bunningsStoreCleanUpDao" class="com.bunnings.core.store.dao.impl.BunningsStoreCleanUpDaoImpl">
+        <property name="configurationService" ref="configurationService"/>
+        <property name="flexibleSearchService" ref="flexibleSearchService"/>
+    </bean>
+
+    <bean id="bunItemAuditRecordDao" class="com.bunnings.core.dao.impl.BunItemAuditRecordDaoImpl">
+        <constructor-arg value="BunItemAuditRecord"/>
+    </bean>
+
+    <bean id="bunItemAuditRecordService" class="com.bunnings.core.services.impl.BunItemAuditRecordServiceImpl">
+    </bean>
+-->
+</beans>

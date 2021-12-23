@@ -1,0 +1,56 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+#
+# Import AutomatedWorkflow for Brand/Product
+
+INSERT_UPDATE WorkflowTemplate;code[unique=true]       ;name[lang=en]          ;owner(uid);description[lang=en];activationscript;visibleForPrincipals(uid);;;
+                       ;ProductCreated                 ;Product Approval       ;admin     ;                    ;                       ;bunningssuppliergroup    ;;;
+                       ;BrandCreated                   ;Brand Approval         ;admin     ;                    ;                       ;bunningssuppliergroup    ;;;
+                       
+
+INSERT_UPDATE WorkflowActionTemplate;code[unique=true];name[lang=en]                  ;description[lang=en];principalAssigned(uid);workflow(code)[unique=true];sendEmail;emailAddress;rendererTemplate(code);actionType(code)
+                                    ;SUP_REVIEW       ;Supplier to Review      ;                    ;bunningssuppliergroup ;ProductCreated       ;false    ;            ;                      ;start
+                                    ;PRO_REVIEW       ;PM to Review            ;                    ;merchandisergroup     ;ProductCreated       ;false    ;            ;                      ;normal
+                                    ;PRO_END          ;Product END             ;                    ;merchandisergroup     ;ProductCreated       ;false    ;            ;                      ;end
+                                    ;BR_SUP_REVIEW    ;Supplier to Review      ;                    ;bunningssuppliergroup ;BrandCreated         ;false    ;            ;                      ;start
+                                    ;BR_REVIEW        ;PM to Review            ;                    ;merchandisergroup     ;BrandCreated         ;false    ;            ;                      ;normal
+                                    ;BR_END           ;Product END             ;                    ;merchandisergroup     ;BrandCreated         ;false    ;            ;                      ;end
+                                    
+INSERT_UPDATE AutomatedWorkflowActionTemplate;code[unique=true];name[lang=en]             ;description[lang=en];principalAssigned(uid);workflow(code)[unique=true];sendEmail;emailAddress;rendererTemplate(code);actionType(code);jobHandler
+                                      ;SUP_CONF_PM      ;Submitted by Supplier     ;                    ;bunningssuppliergroup        ;ProductCreated             ;false    ;            ;                      ;normal          ;productConfirmationSupActionJob
+                                      ;PRO_CONF_PM      ;Approved by PM            ;                    ;merchandisergroup            ;ProductCreated             ;false    ;            ;                      ;normal          ;productConfirmationPMActionJob
+                                      ;PRO_REJ_PM       ;Rejected by PM            ;                    ;bunningssuppliergroup        ;ProductCreated             ;false    ;            ;                      ;normal          ;productRejectedPMActionJob
+                                      ;BR_SUP_CONF_PM   ;Submitted by Supplier     ;                    ;bunningssuppliergroup        ;BrandCreated             ;false    ;            ;                      ;normal            ;brandConfirmationSupActionJob
+                                      ;BR_CONF_PM       ;Approved by PM            ;                    ;merchandisergroup            ;BrandCreated             ;false    ;            ;                      ;normal            ;brandConfirmationPMActionJob
+                                      ;BR_REJ_PM        ;Rejected by PM            ;                    ;bunningssuppliergroup        ;BrandCreated             ;false    ;            ;                      ;normal            ;brandRejectedPMActionJob
+                                      
+INSERT_UPDATE WorkflowDecisionTemplate;code[unique=true];name[lang=en];actionTemplate(code);description[allownull=true];;;;;;
+                               ;PRO_REV                 ;SUBMITTED    ;SUP_REVIEW;;;;;;;
+                               ;PM_REVIEW               ;AUTOMATED    ;SUP_CONF_PM;;;;;;;
+                               ;PM_REJECT               ;REJECTED     ;PRO_REVIEW;;;;;;;
+                               ;PRO_REJ                 ;AUTOMATED    ;PRO_REJ_PM;;;;;;;
+                               ;PM_VALIDATE             ;VALIDATE     ;PRO_REVIEW;;;;;;;
+                               ;PRO_END                 ;END          ;PRO_CONF_PM;;;;;;; 
+                               ;BR_REV                  ;SUBMITTED    ;BR_SUP_REVIEW;;;;;;;
+                               ;BR_PM_REVIEW            ;AUTOMATED    ;BR_SUP_CONF_PM;;;;;;;
+                               ;BR_PM_REJECT            ;REJECTED     ;BR_REVIEW;;;;;;;
+                               ;BR_REJ                  ;AUTOMATED    ;BR_REJ_PM;;;;;;;
+                               ;BR_PM_VALIDATE          ;APPROVED     ;BR_REVIEW;;;;;;;
+                               ;BR_PRO_END              ;END          ;BR_CONF_PM;;;;;;; 
+                               
+INSERT_UPDATE WorkflowActionTemplateLinkTemplateRelation;source(code)[unique=true];target(code)[unique=true];andConnectionTemplate;qualifier;;;;;;;
+                                                        ;PRO_REV                  ;SUP_CONF_PM              ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;PM_REVIEW                ;PRO_REVIEW               ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;PM_REJECT                ;PRO_REJ_PM               ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;PRO_REJ                  ;SUP_REVIEW               ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;PM_VALIDATE              ;PRO_CONF_PM              ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;PRO_END                  ;PRO_END                  ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;BR_REV                   ;BR_SUP_CONF_PM           ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;BR_PM_REVIEW             ;BR_REVIEW                ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;BR_PM_REJECT             ;BR_REJ_PM                ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;BR_REJ                   ;BR_SUP_REVIEW            ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;BR_PM_VALIDATE           ;BR_CONF_PM               ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        ;BR_PRO_END               ;BR_END                   ;false                 ;WorkflowActionTemplateLinkTemplateRelation;;;;;;;
+                                                        
+                                                        

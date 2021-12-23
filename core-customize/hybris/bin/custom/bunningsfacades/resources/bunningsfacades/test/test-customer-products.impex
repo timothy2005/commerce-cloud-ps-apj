@@ -1,0 +1,591 @@
+$pcmCatalog = BunningsPCMCatalog
+$version = Online
+$version1 = Online
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$cv = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version1])[unique=true, default=$pcmCatalog:$version1]
+$superCategory = supercategories(code, $cv)[unique=true, mode=append]
+$superCategories = supercategories(code, $catalogVersion)[unique=true, mode=append]
+$picture = picture(code, $catalogVersion)
+$baseProduct = baseProduct(code, $catalogVersion)[unique=true]
+$approvalStatus = approvalstatus(code)[default='approved'][unique=true]
+$variantType = variantType(code)[default='GenericVariantProduct']
+$languages = en, en_AU, en_NZ
+$defaultPassword = 12341234
+$base = baseProduct(code, $cv)[unique=true]
+$storeUid = BunnningsStoreAU
+$siteId = AUBaseSite
+$vendor = defaultVendor
+$unit = unit(code)[default=each]
+$classificationCatalog = BunningsClassification
+$classCatalogVersion = catalogversion(catalog(id[default=$classificationCatalog]), version[default=1.0])[unique=true, default=$classificationCatalog:1.0]
+$classSuperCategories = superCategories(code, $classCatalogVersion)[mode=append]
+$lang = en
+$classSystemVersion = systemVersion(catalog(id[default=$classificationCatalog]), version[default=1.0])[unique=true]
+$class = classificationClass(ClassificationClass.code, $classCatalogVersion)[unique=true]
+$attribute = classificationAttribute(code, $classSystemVersion)[unique=true]
+$attributeValues = attributeValues(code, $classSystemVersion)[unique=true]
+$clAttrModifiers = system='BunningsClassification', version='1.0', translator=de.hybris.platform.catalog.jalo.classification.impex.ClassificationAttributeTranslator, lang=en
+
+# Bunnings Classification catalog
+INSERT_UPDATE ClassificationSystem; id[unique = true]
+                                  ; $classificationCatalog
+# Insert Classifications System Version
+INSERT_UPDATE ClassificationSystemVersion;catalog(id)[unique=true];version[unique=true];active;inclPacking[virtual=true,default=true];inclDuty[virtual=true,default=true];inclFreight[virtual=true,default=true];inclAssurance[virtual=true,default=true]
+                                         ;$classificationCatalog;1.0;true
+INSERT_UPDATE ClassificationClass; name[lang = $lang]                           ; code[unique = true]                          ; $classCatalogVersion; allowedPrincipals(uid)[default = 'customergroup']; isAccessory[default = false]; showStockLevel[default = true]; productDimensionTerm(code)[default = L]; ; ;
+                                 ; 100L MINI TANKS SC                           ; 100l-mini-tanks-sc                           ;                     ;                                                  ;                             ;                               ;                                        ; ; ;
+                                 ; 10AMP                                        ; 10amp                                        ;                     ;                                                  ;                             ;                               ;                                        ; ; ;
+                                 ; 12 STATION CONTROLLERS                       ; 12-station-controllers                       ;                     ;                                                  ;                             ;                               ;                                        ; ; ;
+ 
+
+# Product Bunnings Catalog
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+# Product Unit
+INSERT_UPDATE Unit; code[unique = true]; unitType  ; conversion; name
+                  ; Yes/No             ; Multi     ; 1         ; Yes/No
+                  ; each               ; Each      ; 1         ; each
+                  ; M3                 ; Volume    ; 1         ; M3
+                  ; MM                 ; Dimension ; 1         ; MM
+                  ; KG                 ; Weight    ; 1         ; KG
+                  ; G                  ; Weight    ; 1         ; G
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE
+                      ; en                    ; sample      ; TRUE
+
+INSERT_UPDATE UserGroup; uid[unique = true]
+                       ; admingroup
+                       ; employeegroup
+                       ; customergroup
+
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode)
+                            ; $pcmCatalog               ; Staged                ; false ; $languages
+                            ; $pcmCatalog               ; Online                ; true  ; $languages
+
+# Currencies
+INSERT_UPDATE Currency; isoCode[unique = true]; name              ; active; symbol
+                      ; AUD                   ; AUSTRALIAN DOLLAR ; TRUE  ; $
+                      ; NZD                   ; NEWZEALAND DOLLAR ; TRUE  ; $
+
+INSERT_UPDATE Customer; uid[unique = true]   ; customerID           ; password[default = $defaultPassword]; name           ; description; sessionLanguage(isocode); sessionCurrency(isocode); groups(uid)   ; loginDisabled[default = false]
+                      ; 00u318izsmA7CmVnS4x6 ; 00u318izsmA7CmVnS4x6 ;                                     ; dummy Customer ;            ; en_NZ                   ; NZD                     ; customergroup ; ;
+
+
+INSERT_UPDATE VariantCategory; code[unique = true]; $catalogVersion; name[lang = en]  ; $superCategories
+                             ; size               ;                ; size             ;
+                             ; color              ;                ; color            ;
+                             ; weight             ;                ; weight           ;
+                             ; volume             ;                ; volume           ;
+                             ; time               ;                ; time             ;
+                             ; length x breadth   ;                ; length x breadth ;
+
+INSERT_UPDATE VariantValueCategory; sequence; code[unique = true]; name                         ; $superCategories; order; $catalogVersion; allowedPrincipals(uid)[default = 'customergroup']
+                                  ; 1       ; size_Small         ; S                            ; size            ; 1    ;
+                                  ; 2       ; size_Medium        ; M                            ; size            ; 2    ;
+                                  ; 3       ; size_Large         ; L                            ; size            ; 3    ;
+                                  ; 4       ; size_XL            ; XL                           ; size            ; 4    ;
+                                  ; 5       ; size_1XL           ; 1XL                          ; size            ; 5    ;
+                                  ; 6       ; size_2XL           ; 2XL                          ; size            ; 6    ;
+                                  ; 7       ; size_3XL           ; 3XL                          ; size            ; 7    ;
+                                  ; 8       ; size_4XL           ; 4XL                          ; size            ; 8    ;
+                                  ; 9       ; size_5XL           ; 5XL                          ; size            ; 9    ;
+                                  ; 1       ; color_#000000      ; Black                        ; color           ; 1    ;
+                                  ; 2       ; color_#A52A2A      ; Brown                        ; color           ; 2    ;
+                                  ; 3       ; color_#A9A9A9      ; Dark Grey                    ; color           ; 3    ;
+                                  ; 4       ; color_#EAD300      ; Yellow                       ; color           ; 4    ;
+                                  ; 5       ; color_#FFFFFF      ; White                        ; color           ; 5    ;
+                                  ; 6       ; color_#F5DEB3      ; Wheat                        ; color           ; 6    ;
+                                  ; 7       ; color_#F5F5DC      ; Beige                        ; color           ; 7    ;
+                                  ; 8       ; color_#654321      ; Dark Brown                   ; color           ; 8    ;
+                                  ; 9       ; color_#808000      ; Olive                        ; color           ; 9    ;
+                                  ; 10      ; color_#0000FF      ; Blue                         ; color           ; 10   ;
+                                  ; 1       ; weight_1Kg         ; 1 Kg                         ; weight          ; 1    ;
+                                  ; 2       ; weight_2Kg         ; 2 Kg                         ; weight          ; 2    ;
+                                  ; 3       ; weight_3Kg         ; 3 Kg                         ; weight          ; 3    ;
+                                  ; 1       ; volume_1Litre      ; 1 Litre                      ; volume          ; 1    ;
+                                  ; 2       ; volume_2Litre      ; 2 Litre                      ; volume          ; 2    ;
+                                  ; 3       ; volume_3Litre      ; 3 Litre                      ; volume          ; 3    ;
+                                  ; 1       ; time_1hr           ; 1hr - first 15kms included   ; time            ; 1    ;
+                                  ; 2       ; time_2hr           ; 2hr - km charge applies      ; time            ; 2    ;
+                                  ; 3       ; time_24hr          ; 24hr - first 100kms included ; time            ; 3    ;
+                                  ; 4       ; time_3Plus         ; 3+ Days - km charge applies  ; time            ; 4    ;
+
+INSERT_UPDATE Product[disable.interceptor.types = validate]; name[lang = en]             ; code[unique = true]; $superCategories; $variantType; $approvalStatus; $catalogVersion; batchCountry[unique = true, default = 'AU'];classificationCode(code)
+                                                           ; Hume Oakfield Internal Door ; W810001            ; size            ;             ;                ;                ;;100l-mini-tanks-sc
+                                                           ; Hume Oakfield Internal Door ; W810002            ; size            ;             ;                ;                ;;100l-mini-tanks-sc
+                                                           ; Hume Oakfield Internal Door ; 8100002            ; size            ;             ;                ;                ;;10amp
+
+
+INSERT_UPDATE GenericVariantProduct[disable.interceptor.types = validate]; code[unique = true]; $approvalStatus; $catalogVersion; name                  ; $baseProduct;        ; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; lastUpdate[dateformat = dd.MM.yyyy HH:mm:ss]; $superCategories; batchCountry[unique = true, default = 'AU']; IsWorkflowRequired; origin(code)[default = OPERATOR]; shortName;isActive[default=true];unit(code)[default=KG]
+                                                                         ; AUW810010          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810011          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810012          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810013          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810014          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810015          ;                ;                ; sampleproduct         ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;                                 ; Short Name for Product AUW810015
+                                                                         ; AUW810016          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810017          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810018          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810019          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810020          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810021          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810022          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810023          ;                ;                ; Sample variant        ; W810001     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810024          ;                ;                ; Sample variant        ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; AUW810025          ;                ;                ; sampleproduct-testing ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ;
+                                                                         ; 8100025            ;                ;                ; sampleproduct-testing ; 8100002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ; MARKETPLACE
+                                                                         ; 8100026            ;                ;                ; sampleproduct-testing ; 8100002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ; MARKETPLACE
+                                                                         ; 8100027            ;                ;                ; sampleproduct-testing ; 8100002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ; MARKETPLACE
+                                                                         ; 8100028            ;                ;                ; sampleproduct-testing ; 8100002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ; MARKETPLACE
+                                                                         ; 8100029            ;                ;                ; sampleproduct-testing ; 8100002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ; MARKETPLACE
+                                                                         ; 8100030            ;                ;                ; sampleproduct-testing ; 8100002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false             ; MARKETPLACE
+                                                                         ; AUW810026          ;                ;                ; sampleproduct-testing ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false
+                                                                         ; AUW810027          ;                ;                ; sampleproduct-testing ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false
+                                                                         ; AUW900000          ;                ;                ; sampleproduct-testing ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false
+                                                                         ; AUW900001          ;                ;                ; sampleproduct-testing ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false
+                                                                         ; AUW900002          ;                ;                ; sampleproduct-testing ; W810002     ; RETAIL ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; size_Large      ;                                            ; false
+
+
+INSERT_UPDATE PriceRow[disable.interceptor.types = prepare]; priceId      ; cor[unique = true]; corseq; productId[unique = true]; price[translator = de.hybris.platform.acceleratorservices.dataimport.batch.converter.PriceTranslator]; priority; startTime[dateformat = 'yyyy-MM-dd''T''HH:mm:ss']; endTime[dateformat = 'yyyy-MM-dd''T''HH:mm:ss']; locationCode[unique = true]; minqtd[default = 1]; ug(code); $unit; currency(isocode)[unique = true]
+                                                           ; 111:566:9876 ; 100001            ; 2     ; AUW810010               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100002            ; 2     ; AUW810011               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100003            ; 2     ; AUW810012               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100004            ; 2     ; AUW810013               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100005            ; 2     ; AUW810014               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100006            ; 2     ; AUW810015               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100001            ; 2     ; AUW810016               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; AUD
+                                                           ; 111:566:9876 ; 100002            ; 2     ; AUW810017               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100003            ; 2     ; AUW810018               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100004            ; 2     ; AUW810019               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100005            ; 2     ; AUW810020               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9877 ; 145264            ; 2     ; AU9110010               ; 1120                                                                                                 ; 1       ;                                                  ;                                                ; 2010                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9878 ; 145265            ; 3     ; AU9110013               ; 1140                                                                                                 ; 1       ;                                                  ;                                                ; 9156                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9879 ; 145266            ; 4     ; AU9110030               ; 1160                                                                                                 ; 1       ;                                                  ;                                                ; 9159                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100005            ; 2     ; AUW810021               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100005            ; 2     ; AUW810022               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 111:566:9876 ; 100005            ; 2     ; AUW810023               ; 1100                                                                                                 ; 1       ;                                                  ;                                                ; 9150                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9880 ; 145267            ; 5     ; AUBUNDLE_810001         ; 1180                                                                                                 ; 1       ;                                                  ;                                                ; 9152                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9881 ; 145268            ; 6     ; AUBUNDLE_810002         ; 1200                                                                                                 ; 1       ;                                                  ;                                                ; 9161                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9882 ; 145269            ; 7     ; AUBUNDLE_810003         ; 1220                                                                                                 ; 1       ;                                                  ;                                                ; 9160                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9883 ; 145270            ; 7     ; AUW810025               ; 1221                                                                                                 ; 1       ;                                                  ;                                                ; 9160                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9883 ; 145271            ; 7     ; AUW810026               ; 1221                                                                                                 ; 1       ;                                                  ;                                                ; 9160                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9883 ; 145272            ; 7     ; AUW810027               ; 1221                                                                                                 ; 1       ;                                                  ;                                                ; 9160                       ;                    ;         ;      ; NZD
+                                                           ; 211:566:9884 ; 145273            ; 7     ; AUW900000               ; 1221                                                                                                 ; 1       ;                                                  ;                                                ; 1158                       ;                    ;         ;      ; AUD
+                                                           ; 211:566:9885 ; 145274            ; 7     ; AUW900001               ; 1221                                                                                                 ; 1       ;                                                  ;                                                ; 1158                       ;                    ;         ;      ; AUD
+                                                           ; 211:566:9886 ; 145275            ; 7     ; AUW900002               ; 1221                                                                                                 ; 1       ;                                                  ;                                                ; 1158                       ;                    ;         ;      ; AUD
+
+
+INSERT_UPDATE PriceRow[disable.interceptor.types=prepare]; priceId      ; cor[unique = true]; corseq; productId[unique = true]; price[translator = de.hybris.platform.acceleratorservices.dataimport.batch.converter.PriceTranslator]; priority; startTime[dateformat = yyyy-MM-dd hh:mm:ss]; endTime[dateformat = yyyy-MM-dd hh:mm:ss]; locationCode[unique = true]; minqtd[default = 1]; ug(code); $unit; currency(isocode)[unique = true]
+                      ; 131:566:9876 ; 150001            ; 13    ; AUW810010               ; 428                                                                                                  ; 1       ;                                            ;                                          ; 9154                       ;                    ;         ;      ; AUD
+                      ; 131:566:9876 ; 150002            ; 14    ; AUW810010               ; 418                                                                                                  ; 1       ; 2020-09-13 10:10:15                        ; 2022-09-13 10:10:15                      ; 9154                       ;                    ;         ;      ; AUD
+                      ; 131:566:9876 ; 150003            ; 15    ; AUW810011               ; 438                                                                                                  ; 10      ;                                            ;                                          ; 9154                       ;                    ;         ;      ; AUD
+                      ; 131:566:9876 ; 150004            ; 16    ; AUW810011               ; 448                                                                                                  ; 1       ;                                            ;                                          ; 9154                       ;                    ;         ;      ; AUD
+                      ; 131:566:9876 ; 150005            ; 17    ; AUW810012               ; 348                                                                                                  ; 1       ; 2020-09-13 10:10:15                        ; 2022-09-13 10:10:15                      ; 9154                       ;                    ;         ;      ; AUD
+                      ; 131:566:9876 ; 150005            ; 17    ; AU9110010               ; 348                                                                                                  ; 1       ;                                            ;                                          ; 9150                       ;                    ;         ;      ; AUD
+
+INSERT_UPDATE Vendor; name[lang = en]; code[unique = true];
+                    ; Default Vendor ; defaultVendor      ;
+
+INSERT_UPDATE Warehouse; code[unique = true]; name[lang = en]         ; vendor(code); default
+                       ; AU9150               ; Bunnings warehouse 9150 ; $vendor     ; true
+                       ; AU9151               ; Bunnings warehouse 9151 ; $vendor     ; true
+                       ; AU9152               ; Bunnings warehouse 9152 ; $vendor     ; true
+                       ; AU9153               ; Bunnings warehouse 9153 ; $vendor     ; true
+                       ; AU9154               ; Bunnings warehouse 9154 ; $vendor     ; true
+                       ; AU9155               ; Bunnings warehouse 9155 ; $vendor     ; true
+                       ; AU9156               ; Bunnings warehouse 9156 ; $vendor     ; true
+                       ; AU9157               ; Bunnings warehouse 9157 ; $vendor     ; true
+                       ; AU9158               ; Bunnings warehouse 9158 ; $vendor     ; true
+                       ; AU1156               ; Bunnings warehouse 9156 ; $vendor     ; true
+                       ; AU1157               ; Bunnings warehouse 9157 ; $vendor     ; true
+                       ; AU1158               ; Bunnings warehouse 9158 ; $vendor     ; true
+                       ; BunningsWarehouse  ; BunningsWarehouse       ; $vendor     ; true
+
+
+INSERT_UPDATE StockLevel; warehouse(code)[unique = true]; productCode[unique = true]; available; inStockStatus(code); nextDeliveryTime[dateformat = dd-MM-yyyy]
+                        ; AU9150                          ; AUW810010                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810011                 ; 1000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810012                 ; 2000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810013                 ; 3000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810014                 ; 1000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810015                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810016                 ; 6000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810017                 ; 7000     ; AMBER              ; 29-04-2021
+                        ; AU9150                          ; AUW810018                 ; 8100     ; RED                ; 29-04-2021
+                        ; AU9150                          ; AUW810019                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810020                 ; 0        ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810021                 ; 1000     ; RED                ; 29-04-2021
+                        ; AU9152                          ; AUW810021                 ; 1000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810022                 ; 1000     ; RED                ; 29-04-2021
+                        ; AU9151                          ; AUW810022                 ; 10       ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810023                 ; 10       ; GREEN              ; 29-04-2021
+                        ; AU9156                          ; AUW810023                 ; 10       ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810025                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU1156                          ; AUW810013                 ; 10       ; GREEN              ; 29-04-2021
+                        ; AU1157                          ; AUW810013                 ; 10       ; GREEN              ; 29-04-2021
+                        ; AU1158                          ; AUW810013                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU1156                          ; AUW810014                 ; 10       ; GREEN              ; 29-04-2021
+                        ; AU1157                          ; AUW810014                 ; 10       ; GREEN              ; 29-04-2021
+                        ; AU1158                          ; AUW810014                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU1156                          ; AUW810015                 ; 10       ; RED                ; 29-04-2021
+                        ; AU1158                          ; AUW810015                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810026                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU9150                          ; AUW810027                 ; 5000     ; GREEN              ; 29-04-2021
+                        ; AU1158 ; AUW900000 ; 5000 ; GREEN ; 29-04-2021
+                        ; AU1158 ; AUW900002 ; 100 ; GREEN   ; 29-04-2021
+
+
+
+#INSERT_UPDATE MediaContainer; qualifier[unique = true]; name                          ; $catalogVersion
+#                            ; 5560224                 ; Hammer Club Estwing container ;
+
+INSERT_UPDATE MediaFormat; qualifier[unique = true]; name[lang = $languages];
+                         ; 96Wx96H                 ; 96Wx96H
+
+
+INSERT_UPDATE Media; code[unique = true]; $catalogVersion; removable; URL                                                                                  ; mediaFormat(qualifier); primaryAssetUrl; mime; duration; sequence
+                   ; DoorSampleImage    ;                ; TRUE     ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/cfGrinder4?v=00010940 ; 96Wx96H               ;                ;     ;         ; 1
+
+
+INSERT_UPDATE Country; isocode[unique = true]; name[lang = en]; active; ; ; ; ; ;
+                     ; NZ                    ; NZ             ; true  ; ; ; ; ; ;
+                     ; AU                    ; AU             ; true  ; ; ; ; ; ;
+
+
+INSERT_UPDATE BaseStore; uid[unique = true]; name       ; catalogs(id)
+                       ; $storeUid         ; Test Store ; $pcmCatalog
+
+INSERT_UPDATE CMSSite; uid[unique = true]; stores(uid);
+                     ; $siteId           ; $storeUid  ;
+
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; ACT                   ; ACT            ; AU
+                    ; NSW                   ; NSW            ; AU
+                    ; QLD                   ; QLD            ; AU
+                    ; SA                    ; SA             ; AU
+                    ; NORTH ISLAND          ; NORTH ISLAND   ; NZ
+                    ; SOUTH ISLAND          ; SOUTH ISLAND   ; NZ
+                    ; Test                  ; Test           ; NZ
+                    ; WA                    ; WA             ; AU
+                    ; TAS                   ; TAS            ; AU
+                    ; NQ                    ; FNQ            ; AU
+                    ; NT                    ; NT             ; AU
+                    ; NI                    ; NORTH ISLAND   ; NZ
+                    ; SI                    ; SOUTH ISLAND   ; NZ
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 3            ; AU                ; VIC
+                  ; NZ RZ 10           ; NZ                ; Test
+
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 2            ; AU                ; ACT,NSW
+                  ; AU RZ 4            ; AU                ; SA
+                  ; AU RZ 5            ; AU                ; WA
+                  ; AU RZ 6            ; AU                ; TAS
+                  ; AU RZ 8            ; AU                ; NQ
+                  ; AU RZ 9            ; AU                ; WA
+                  ; AU RZ 10           ; AU                ; NT
+                  ; AU RZ 7 - 1        ; AU                ; VIC
+                  ; AU RZ 7 - 2        ; AU                ; NSW
+                  ; AU RZ 7 - 3        ; AU                ; QLD
+                  ; AU RZ 7 - 4        ; AU                ; SA
+                  ; AU RZ 7 - 5        ; AU                ; WA
+
+INSERT_UPDATE PricingRegion; code[unique = true]; retailZone[unique = true]; name                          ; region(isoCode)
+                           ; VICMetro           ; AU RZ 1                  ; VIC Metro                     ; VIC
+                           ; ACT                ; AU RZ 2                  ; ACT                           ; ACT
+                           ; NSWMetro           ; AU RZ 2                  ; NSW Metro                     ; NSW
+                           ; QLDMetro           ; AU RZ 3                  ; QLD Metro                     ; QLD
+                           ; SAMetro            ; AU RZ 4                  ; SA Metro                      ; SA
+                           ; WAMetro            ; AU RZ 5                  ; WA Metro                      ; WA
+                           ; TASMetro           ; AU RZ 6                  ; TAS Metro                     ; TAS
+                           ; VICRegional        ; AU RZ 7 - 1              ; VIC Regional                  ; VIC
+                           ; NSWRegional        ; AU RZ 7 - 2              ; NSW Regional                  ; NSW
+                           ; QLDRegional        ; AU RZ 7 - 3              ; QLD Regional                  ; QLD
+                           ; SARegional         ; AU RZ 7 - 4              ; SA Regional                   ; SA
+                           ; WARegional         ; AU RZ 7 - 5              ; WA Regional                   ; WA
+                           ; FNQ                ; AU RZ 8                  ; FNQ                           ; NQ
+                           ; WARemote           ; AU RZ 9                  ; WA Remote                     ; WA
+                           ; NTMetro            ; AU RZ 10                 ; NT Metro                      ; NT
+
+INSERT_UPDATE RegionalProductDetails; &restrictionId; itemNumber[unique = true]; regionDetails(isoCode)[unique = true]; status  ; visible; transactable; instorePickup; availableForDelivery; isDirectDelivery; isTradeOnly[default = false]; 		; zone(code)[unique = true];            ; batchCountry[unique = true, default = 'AU']
+                                    ; AUW810010A    ; AUW810010                ; ACT                                  ; CSO     ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; FALSE           ;                             ;       ; AU RZ 3                  ; POA->POA	;
+                                    ; AUW810011B    ; AUW810011                ; ACT                                  ; Live    ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ;                             ;       ; AU RZ 3                  ; POA->POA	;
+                                    ; AUW810012C    ; AUW810012                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ;                             ;       ; AU RZ 3                  ; POA->POA	;
+                                    ; AUW810013D    ; AUW810013                ; ACT                                  ; CSO ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810014E    ; AUW810014                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810015F    ; AUW810015                ; ACT                                  ; Live ; TRUE  ; TRUE        ; TRUE        ; FALSE               ; FALSE           ;                             ;       ; AU RZ 3
+                                    ; AUW810016G    ; AUW810016                ; ACT                                  ; CSO ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 2
+                                    ; AUW810017H    ; AUW810017                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810018I    ; AUW810018                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810020J    ; AUW810020                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810023K    ; AUW810023                ; ACT                                  ; Deleted ; FALSE  ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AU9110013L    ; AU9110013                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AU9110030M    ; AU9110030                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810021N    ; AUW810021                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810022O    ; AUW810022                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 3
+                                    ; AUW810010P    ; AUW810010                ; VIC                                  ; CSO     ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; FALSE           ;                             ;       ; AU RZ 1
+                                    ; AUW810011Q    ; AUW810011                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; FALSE               ; FALSE           ;                             ;       ; AU RZ 1
+                                    ; AUW810012R    ; AUW810012                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; FALSE           ;                             ;       ; AU RZ 1
+                                    ; AUW810013S    ; AUW810013                ; VIC                                  ; CSO ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW810014T    ; AUW810014                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW810015U    ; AUW810015                ; VIC                                  ; Live ; TRUE  ; TRUE        ; TRUE        ; TRUE               ; FALSE           ;                             ;       ; AU RZ 1
+                                    ; AUW810016V    ; AUW810016                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW810017W    ; AUW810017                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW810018X    ; AUW810018                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW810020Y    ; AUW810020                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW810023Z    ; AUW810023                ; VIC                                  ; Deleted ; FALSE  ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AU91100131    ; AU9110013                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AU91100302    ; AU9110030                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW8100213    ; AUW810021                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW8100224    ; AUW810022                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AU91100105    ; AU9110010                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AU91100136    ; AU9110013                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW8100257    ; AUW810025                ; VIC                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ;                             ;       ; AU RZ 1
+                                    ; AUW8100138    ; AUW810013                ; WA                                   ; Deleted ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ;       ; AU RZ 5
+                                    ; AUW8100139    ; AUW810013                ; WA                                   ; Deleted ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1156  ; AU RZ 7 - 5
+                                    ; AUW810A013    ; AUW810013                ; WA                                   ; Deleted ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1158  ; AU RZ 9
+                                    ; AUW810B014    ; AUW810014                ; WA                                   ; CSO     ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1157  ; AU RZ 5
+                                    ; AUW810C014    ; AUW810014                ; WA                                   ; CSO     ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1157  ; AU RZ 7 - 5
+                                    ; AUW810D014    ; AUW810014                ; WA                                   ; Live    ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1157  ; AU RZ 9
+                                    ; AUW810E015    ; AUW810015                ; WA                                   ; Live    ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1157  ; AU RZ 5
+                                    ; AUW810F015    ; AUW810015                ; WA                                   ; Live    ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1157  ; AU RZ 7 - 5
+                                    ; AUW810G015    ; AUW810015                ; WA                                   ; Live    ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; TRUE            ; true                        ; 1158  ; AU RZ 9
+
+INSERT_UPDATE ProductRestricted; regionalProductDetail(&restrictionId)[unique = true]; restrictionType(code)[unique = true]; location[unique = true]; maxLength; maxQuantity; minimumAge
+                               ; AUW810010A                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810011B                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810012C                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810013D                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810014E                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810015F                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810016G                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810017H                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810018I                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810020J                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810023K                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AU9110013L                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AU9110030M                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810021N                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810022O                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810010P                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810011Q                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810012R                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810013S                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810014T                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810015U                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810016V                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810017W                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810018X                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810020Y                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810023Z                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AU91100131                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AU91100302                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW8100213                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW8100224                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AU91100105                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AU91100136                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW8100257                                          ; AGE                                 ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW8100138                                          ; RESTRICTED                          ; 2210                   ; 12       ; 14         ; 18 ;
+                               ; AUW8100139                                          ; RESTRICTED                          ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810A013                                          ; RESTRICTED                          ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810B014                                          ; RESTRICTED                          ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810C014                                          ; RESTRICTED                          ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810D014                                          ; RESTRICTED                          ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810E015                                          ; RESTRICTED                          ; 9150                   ; 12       ; 14         ; 18 ;
+                               ; AUW810F015                                          ; RESTRICTED                          ; 2210                   ; 12       ; 14         ; 18 ;
+                               ; AUW810G015                                          ; RESTRICTED                          ; 9150                   ; 12       ; 14         ; 18 ;
+
+INSERT_UPDATE RegionalProductDetails; itemNumber[unique = true]; regionDetails(isoCode)[unique = true]; status  ; visible; transactable; instorePickup; availableForDelivery; isDirectDelivery; zone(code)[unique = true]; batchCountry[unique = true, default = 'AU']
+                                    ; AUW810026                ; VIC                                  ; CSO     ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1
+                                    ; AUW810027                ; VIC                                  ; CSO     ; TRUE   ; FALSE       ; TRUE         ; TRUE                ; TRUE            ; AU RZ 1
+INSERT_UPDATE RegionalProductDetails; &restrictionId;&itemNumber; itemNumber[unique = true]; regionDetails(isoCode)[unique = true]; status  ; visible; transactable; instorePickup; availableForDelivery; isDirectDelivery; isTradeOnly[default = false]; ; zone(code)[unique = true]; batchCountry[unique = true, default = 'AU']
+                                    ; AUW810G016    ;AUW900000; AUW900000                ; WA                                   ; Live    ; TRUE   ; TRUE        ; TRUE        ; TRUE                ; TRUE            ; true                        ; 1158               ; AU RZ 9;
+                                    ; AUW810G017    ;AUW900001; AUW900001                ; WA                                   ; CSO    ; TRUE   ; TRUE        ; TRUE        ; TRUE                ; TRUE            ; true                        ; 1158               ; AU RZ 9;
+                                    ; AUW810G018    ;AUW900002; AUW900002                ; WA                                   ; CSO    ; TRUE   ; TRUE        ; TRUE        ; TRUE                ; TRUE            ; true                        ; 1158               ; AU RZ 9;
+
+
+#INSERT_UPDATE RestrictionForLocations; regionalProductDetails(&itemNumber)[unique = true]; restrictedLocation
+#                                     ; AUW900000                                        ; 1158
+#                                     ; AUW900001                                        ; 1158
+#                                     ; AUW900002                                        ; 9150
+
+INSERT_UPDATE ItemLocationAttributes; itemNumber[unique = true]; locationCode; itemStatus; primaryBarcode; isRanged(code); batchCountry[unique = true, default = 'AU']
+                                    ; AUW810011                ; 9150        ; Live      ; 9312753970884 ; LOCATED       ;
+                                    ; AUW810012                ; 9150        ; Live      ; 9312753970885 ; LOCATED       ;
+                                    ; AUW810013                ; 9150        ; Live      ; 9312753970886 ; LOCATED       ;
+                                    ; AUW810014                ; 9150        ; Live      ; 9312753970887 ; LOCATED       ;
+                                    ; AUW810015                ; 9150        ; Live      ; 9312753970887 ; LOCATED       ;
+                                    ; AUW810016                ; 9150        ; Live      ; 9312753970887 ; LOCATED       ;
+                                    ; AUW810017                ; 9150        ; Live      ; 9312753970887 ; LOCATED       ;
+                                    ; AUW810018                ; 9150        ; Live      ; 9312753970887 ; LOCATED       ;
+                                    ; AUW810022                ; 9150        ; Live      ; 9312753970887 ; LOCATED       ;
+                                    ; AUW810025                ; 9150        ; Live      ; 9312753970887 ; LOCATED       ;
+
+INSERT_UPDATE InStoreLocation; inStoreLocation[unique = true]                                                                                                                   ; itemLocationAttributes(itemNumber)[unique = true]
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810011 ;
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810012 ;
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810013 ;
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810014 ;
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810015 ;
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810016 ;
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810017 ;
+                             ; Aisle-42|As|,Sequence-2|Aisle-130|AisleDescription-Outside Front of Store, Foyer & Promo Areas|Bay-10,Sequence-9002|Aisle-28|Aisl & Chairs|Bay-8 ; AUW810018 ;
+
+INSERT_UPDATE VariantCategory; code[unique = true]; $cv; name[lang = en]; $superCategory
+                             ; colour             ;    ; colour         ;
+
+INSERT_UPDATE VariantValueCategory; sequence; code[unique = true]; name  ; $superCategory; order; $cv; allowedPrincipals(uid)[default = 'customergroup']
+                                  ; 1       ; colour_#000001     ; White ; colour        ; 1    ;
+
+INSERT_UPDATE Product[disable.interceptor.types = validate]; code[unique = true]   ; $superCategory; manufacturerName; manufacturerAID; ean; $variantType; unit(code)[default = each]; $cv; batchCountry[unique = true, default = 'AU']
+                                                           ; base_AU_DEFAULT910001 ; colour        ;                 ;                ;    ;             ;                           ;
+                                                           ; base_AU_DEFAULT910002 ; colour        ;                 ;                ;    ;             ;                           ;
+                                                           ; base_AU_DEFAULT910003 ; colour        ;                 ;                ;    ;             ;                           ;
+
+INSERT_UPDATE GenericVariantProduct[disable.interceptor.types = validate]; code[unique = true]; lastUpdate[dateformat = dd-MM-yyyy]; $approvalStatus; $cv; name           ; $base                 ;        ; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; $superCategory ; batchCountry; bmieProductDescription; bmieSectionDescription ; unspscCode;  unit(code);
+                                                                         ; AU9110010          ; 10-02-2019                         ;                ;    ; Sample variant ; base_AU_DEFAULT910001 ; RETAIL ; 24.01.2019 00:00:00                        ; colour_#000001 ; AU          ; 2040X620X35 OAK HC2   ; DOOR INTERNAL OAKFIELD ; 30171504  ;  each      ;
+                                                                         ; AU9110013          ; 20-04-2020                         ;                ;    ; Sample variant ; base_AU_DEFAULT910001 ; RETAIL ; 24.01.2019 00:00:00                        ; colour_#000001 ; AU          ; 2040X620X35 OAK HC2   ; DOOR INTERNAL OAKFIELD ; 30171504  ;  each      ;
+                                                                         ; AU9110030          ; 10-02-2020                         ;                ;    ; Sample variant ; base_AU_DEFAULT910003 ; RETAIL ; 24.01.2019 00:00:00                        ; colour_#000001 ; AU          ; 2040X620X35 OAK HC2   ; DOOR INTERNAL OAKFIELD ; 30171504  ;  each      ;
+
+INSERT_UPDATE StockLevel; warehouse(code)[unique = true]; productCode[unique = true]; available; inStockStatus(code); nextDeliveryTime[dateformat = dd-MM-yyyy]
+                        ; AU9150                          ; AU9110010                 ; 1000     ; RED                ; 31-11-2029
+                        ; AU9151                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9152                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9153                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9154                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9155                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9156                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9157                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9158                          ; AU9110010                 ; 5000     ; GREEN              ; 31-11-2029
+                        ; AU9152                          ; AU9110013                 ; 1000     ; GREEN              ; 31-11-2029
+                        ; AU9151                          ; AU9110013                 ; 1000     ; GREEN              ; 31-11-2029
+                        ; AU9153                          ; AU9110013                 ; 2000     ; GREEN              ; 31-11-2029
+                        ; AU9154                          ; AU9110013                 ; 3000     ; GREEN              ; 31-11-2029
+                        ; AU9155                          ; AU9110013                 ; 4000     ; GREEN              ; 31-11-2029
+                        ; AU9156                          ; AU9110013                 ; 5000     ; GREEN              ; 31-11-2029
+
+INSERT_UPDATE BundleProduct[disable.interceptor.types = validate]; code[unique = true]; name                         ; $cv; isVisibleInAllRegion; basicBundle; disclaimer   ; fullyInstalled; bestSeller;                                                                                                        ; $approvalStatus; batchCountry[unique = true, default = 'AU']
+                                                                 ; AUBUNDLE_810001    ; Wardrobe Oak Sliding Package ;    ; TRUE                ; TRUE       ; Disclaimer 1 ; FALSE         ; FALSE     ; One piece drop forged steel,Moulded shock reduction grip,Fully polished face,Blue UV coating for long lasting finish 23 ;                ;
+                                                                 ; AUBUNDLE_810002    ; Wardrobe Oak Sliding Package ;    ; FALSE               ; FALSE      ; Disclaimer 2 ; TRUE          ; TRUE      ; One piece drop forged steel,Moulded shock reduction grip,Fully polished face,Blue UV coating for long lasting finish 23 ;                ;
+                                                                 ; AUBUNDLE_810003    ; Wardrobe Oak Sliding Package ;    ; TRUE                ; TRUE       ; Disclaimer 3 ; FALSE         ; FALSE     ; One piece drop forged steel,Moulded shock reduction grip,Fully polished face,Blue UV coating for long lasting finish 23 ;                ;
+
+INSERT_UPDATE Cart; user(uid)            ; code[unique = true]; currency(isocode); date[dateformat = dd.MM.yyyy HH:mm:ss]; net   ; calculated; site(uid); store(uid); guid   ; ; ; ;
+                  ; 00u318izsmA7CmVnS4x6 ; 000001             ; NZD              ; 27.04.2010 00:00:01                   ; false ; false     ; $siteId  ; $storeUid ; 000001 ; ; ; ;
+
+INSERT_UPDATE ProductReference; qualifier ; source(code, $cv)[unique = true]; target(code, $cv)[unique = true]; quantity; description ; sequenceId[unique = true]; preselected[default = true]; active[default = true]; referenceType(code)[default = SIMILAR];
+                              ; qualifier ; AUW810010                       ; AUW810011                       ; 1       ; Description ; 1                        ;                            ;                       ;                                       ;
+                              ; qualifier ; AUW810010                       ; AUW810012                       ; 1       ; Description ; 2                        ;                            ;                       ;                                       ;
+
+INSERT_UPDATE Shop; id[unique = true]; name         ; description ; returnPolicy   ; freeShipping;
+                  ; seller_1         ; Frank Hudson ; description ; Return Policyl ; TRUE        ;
+                  ; seller_2         ; Shop 2       ; description ; Return Policyl ; TRUE        ;
+                  ; seller_3         ; Shop 3       ; description ; Return Policyl ; TRUE        ;
+                  ; seller_4         ; Shop 4       ; description ; Return Policyl ; TRUE        ;
+                  ; seller_5         ; Shop 5       ; description ; Return Policyl ; TRUE        ;
+                  ; seller_6         ; Shop 6       ; description ; Return Policyl ; TRUE        ;
+                  ; seller_7         ; Shop 4       ; description ; Return Policyl ; TRUE        ;
+                  ; seller_8         ; Shop 5       ; description ; Return Policyl ; TRUE        ;
+                  ; seller_9         ; Shop 6       ; description ; Return Policyl ; TRUE        ;
+
+INSERT_UPDATE Offer; productCode[unique = true]; id[unique = true]; shop(id) ; active[default = TRUE]; totalPrice; price; discountStartDate[dateformat = dd-MM-yyyy]; discountEndDate[dateformat = dd-MM-yyyy]; discountPrice; quantity; currency(isocode)[unique = true][default= 'AUD']
+                   ; 8100025                   ; offer_001        ; seller_1 ; TRUE                  ; 120       ; 120  ;                                           ;                                         ;              ; 100     ;
+                   ; 8100025                   ; offer_002        ; seller_1 ; TRUE                  ; 82        ; 82   ; 12-12-2020                                ; 12-12-2036                              ; 60           ; 100     ;
+
+                   ; 8100026                   ; offer_003        ; seller_4 ; TRUE                  ; 40        ; 40   ;                                           ;                                         ;              ; 100     ;
+                   ; 8100026                   ; offer_004        ; seller_2 ; TRUE                  ; 70        ; 70   ; 12-12-2020                                ; 12-12-2050                              ; 40           ; 100     ;
+                   ; 8100026                   ; offer_008        ; seller_2 ; TRUE                  ; 30        ; 30   ;                                           ;                                         ;              ; 100     ;
+                   ; 8100026                   ; offer_009        ; seller_2 ; TRUE                  ; 60        ; 60   ; 12-12-2020                                ;                                         ; 70           ; 100     ;
+
+                   ; 8100027                   ; offer_005        ; seller_3 ; TRUE                  ; 45        ; 45   ;                                           ;                                         ;              ; 50      ;
+                   ; 8100027                   ; offer_006        ; seller_3 ; TRUE                  ; 42        ; 42   ; 12-12-2020                                ; 12-12-2040                              ;              ; 100     ;
+                   ; 8100029                   ; offer_007        ; seller_3 ; TRUE                  ; 98        ; 98   ;                                           ; 12-12-2040                              ;              ; 100     ;
+                   ; 8100030                   ; offer_017        ; seller_3 ; TRUE                  ; 98        ; -5   ; 12-12-2020                                          ; 12-12-2040                              ;              ; 100     ;
+
+INSERT_UPDATE ShippingZoneDetails; offer(id)[unique = true]; logisticClassCode[unique = true]; sellerId ; shippingZoneCode   ;
+                                 ; offer_001               ; 123                             ; seller_1 ; QLD_BRISBANE_METRO ;
+                                 ; offer_001               ; 124                             ; seller_1 ; QLD_REGIONAL_MID   ;
+                                 ; offer_001               ; 125                             ; seller_1 ; NT_METRO_REGIONAL  ;
+                                 ; offer_001               ; 126                             ; seller_1 ; ACT_CANBERRA       ;
+                                 ; offer_001               ; 127                             ; seller_1 ; NSW_REGIONAL       ;
+                                 ; offer_001               ; 128                             ; seller_1 ; VIC_GREATER_MELBOURNE ;
+                                 ; offer_008               ; 128                             ; seller_1 ; QLD_REGIONAL_NORTH ;
+                                 ; offer_009               ; 128                             ; seller_1 ; QLD_REGIONAL_NORTH ;
+
+                                 ; offer_002               ; 123                             ; seller_1 ; QLD_BRISBANE_METRO ;
+                                 ; offer_002               ; 124                             ; seller_1 ; QLD_REGIONAL_MID   ;
+                                 ; offer_002               ; 125                             ; seller_1 ; NT_METRO_REGIONAL  ;
+                                 ; offer_002               ; 126                             ; seller_1 ; ACT_CANBERRA       ;
+                                 ; offer_002               ; 127                             ; seller_1 ; NSW_REGIONAL       ;
+                                 ; offer_002               ; 128                             ; seller_1 ; QLD_REGIONAL_NORTH ;
+
+                                 ; offer_003               ; 123                             ; seller_1 ; QLD_BRISBANE_METRO ;
+                                 ; offer_003               ; 124                             ; seller_1 ; QLD_REGIONAL_MID   ;
+                                 ; offer_003               ; 125                             ; seller_1 ; NT_METRO_REGIONAL  ;
+                                 ; offer_003               ; 126                             ; seller_1 ; ACT_CANBERRA       ;
+                                 ; offer_003               ; 127                             ; seller_1 ; NSW_REGIONAL       ;
+                                 ; offer_003               ; 128                             ; seller_1 ; QLD_REGIONAL_NORTH ;
+
+                                 ; offer_004               ; 123                             ; seller_1 ; QLD_BRISBANE_METRO ;
+                                 ; offer_004               ; 124                             ; seller_1 ; QLD_REGIONAL_MID   ;
+                                 ; offer_004               ; 125                             ; seller_1 ; NT_METRO_REGIONAL  ;
+                                 ; offer_004               ; 126                             ; seller_1 ; ACT_CANBERRA       ;
+                                 ; offer_004               ; 127                             ; seller_1 ; NSW_REGIONAL       ;
+                                 ; offer_004               ; 128                             ; seller_1 ; QLD_REGIONAL_NORTH ;
+
+                                 ; offer_005               ; 123                             ; seller_1 ; QLD_BRISBANE_METRO ;
+                                 ; offer_005               ; 124                             ; seller_1 ; QLD_REGIONAL_MID   ;
+                                 ; offer_005               ; 125                             ; seller_1 ; NT_METRO_REGIONAL  ;
+                                 ; offer_005               ; 126                             ; seller_1 ; ACT_CANBERRA       ;
+                                 ; offer_005               ; 127                             ; seller_1 ; NSW_REGIONAL       ;
+                                 ; offer_005               ; 128                             ; seller_1 ; QLD_REGIONAL_NORTH ;
+
+                                 ; offer_006               ; 123                             ; seller_1 ; QLD_BRISBANE_METRO ;
+                                 ; offer_006               ; 124                             ; seller_1 ; QLD_REGIONAL_MID   ;
+                                 ; offer_006               ; 125                             ; seller_1 ; NT_METRO_REGIONAL  ;
+                                 ; offer_006               ; 126                             ; seller_1 ; ACT_CANBERRA       ;
+                                 ; offer_006               ; 127                             ; seller_1 ; NSW_REGIONAL       ;
+                                 ; offer_006               ; 128                             ; seller_1 ; QLD_REGIONAL_NORTH ;
+
+                                 ; offer_017               ; 123                             ; seller_3 ; QLD_BRISBANE_METRO ;
+                                 ; offer_017               ; 124                             ; seller_3 ; QLD_REGIONAL_MID   ;
+                                 ; offer_017               ; 125                             ; seller_3 ; NT_METRO_REGIONAL  ;
+                                 ; offer_017               ; 126                             ; seller_3 ; ACT_CANBERRA       ;
+                                 ; offer_017               ; 127                             ; seller_3 ; NSW_REGIONAL       ;
+                                 ; offer_017               ; 128                             ; seller_3 ; QLD_REGIONAL_NORTH ;
+
+INSERT_UPDATE ShippingZoneRegions; shippingZoneCode[unique = true]; webPricingRegionCode
+                                 ; ACT_CANBERRA                   ; ACT
+                                 ; NSW_GOSFORD                    ; NSWMetro
+                                 ; NSW_GREATER_SYDNEY             ; NSWMetro
+                                 ; NSW_NEWCASTLE                  ; NSWMetro
+                                 ; NSW_REGIONAL                   ; NSWRegional
+                                 ; NSW_SYDNEY_METRO               ; NSWMetro
+                                 ; NSW_VIC_ALBURY_WODONGA         ; VICRegional
+                                 ; NSW_WOLLONGONG                 ; NSWMetro
+                                 ; NT_METRO_REGIONAL              ; NTMetro
+                                 ; NT_REMOTE                      ; NTMetro
+                                 ; QLD_BRISBANE_METRO             ; QLDMetro
+                                 ; QLD_GREATER_BRISBANE           ; QLDMetro
+                                 ; QLD_NSW_GOLD_COAST             ; QLDMetro
+                                 ; QLD_REGIONAL_MID               ; QLDRegional
+                                 ; QLD_REGIONAL_NEAR              ; QLDRegional
+                                 ; QLD_REGIONAL_NORTH             ; FNQ
+                                 ; VIC_GEELONG                    ; VICMetro
+                                 ; VIC_GREATER_MELBOURNE          ; VICMetro
+
+INSERT_UPDATE ShippingZonePostCodes; shippingZoneCode   ; postCode[unique = true]
+                                   ; ACT_CANBERRA       ; 200
+                                   ; QLD_BRISBANE_METRO ; 4000
+                                   ; QLD_REGIONAL_MID   ; 4454
+                                   ; NT_METRO_REGIONAL  ; 800
+                                   ; NSW_REGIONAL       ; 2264
+                                   ; QLD_REGIONAL_NORTH ; 4806

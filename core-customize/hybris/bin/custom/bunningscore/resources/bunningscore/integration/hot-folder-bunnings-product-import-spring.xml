@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:int="http://www.springframework.org/schema/integration"
+	   xmlns:file="http://www.springframework.org/schema/integration/file"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config/>
+
+	<bean id="baseDirectoryBunningsProducts" class="java.lang.String">
+		<constructor-arg value="#{baseDirectory}/${tenantId}/product" />
+	</bean>
+
+	
+	<!-- Step 3: Service Activatior for Header Setup Task -->
+	<int:service-activator input-channel="batchFilesProductsProc" output-channel="bunningsBatchProductFilesHeaderInit"
+						   ref="bunningsProdHeaderSetupTask"
+						   method="execute" />
+
+	<!-- Step 4: Service Activatior for Header Init Task -->
+	<int:service-activator input-channel="bunningsBatchProductFilesHeaderInit" output-channel="bunningsProductFileTransform"
+						   ref="bunningsHeaderInitTask"
+						   method="execute" />
+
+	<!-- Step 5: Chain for Recon Data Setup Task, XML Validation Task and XML Processing Task -->
+	<int:chain input-channel="bunningsProductFileTransform" output-channel="bunningsProductBatchFilesTran">
+		<int:service-activator ref="bunningsProductReconDataSetupTask" method="execute" />
+		<!-- to activate the xsd based validation un-comment bunningsXmlValidationTask service activator below -->
+		<!--	<int:service-activator ref="bunningsXmlValidationTask" method="execute" /> -->
+		<int:service-activator ref="bunningsProductXmlProcessingTask" method="execute" />
+	</int:chain>
+
+	<!-- Step 6: Service Activator for Impex File Processing Task-->
+	<int:service-activator input-channel="bunningsProductBatchFilesTran" output-channel="bunningsProductBatchFilesImp" ref="bunningsProductBatchRunnerTask" method="execute" />
+	<bean id="bunningsProductBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+		<property name="sessionService" ref="sessionService" />
+		<property name="importService" ref="importService" />
+		<lookup-method name="getImportConfig" bean="importConfig" />
+	</bean>
+
+	<!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+	<int:service-activator input-channel="bunningsProductBatchFilesImp" ref="bunningsProductBatchCleanupTask" method="execute" />
+	<bean id="bunningsProductBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+		<property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+	</bean>
+	
+
+	<bean id="bunningsProdHeaderSetupTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask">
+		<property name="catalog" value="BunningsPCMCatalog" />
+		<property name="net" value="false" />
+		<property name="storeBaseDirectory" ref="baseDirectoryBunningsProducts" />
+		<property name="fileType" value="ITEM" />
+	</bean>
+
+
+
+	<bean id="bunningsHeaderInitTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+		<property name="sequenceIdParser" ref="bunningsBatchSequenceIdParser"/>
+		<property name="languageParser" ref="batchLanguageParser"/>
+		<property name="fallbackLanguage" value="en" />
+	</bean>
+
+	<bean id="bunningsBatchSequenceIdParser" class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+		<property name="parser">
+			<bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+				<property name="regex" value="${bunnings.hotfolder.sequenceId.xml.regex.name}" />
+			</bean>
+		</property>
+	</bean>
+
+
+	<bean id="bunningsProductReconDataSetupTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+		<property name="batchValidationEnabledKey" value="bunnings.product.feed.import.batch.validation.enabled"/>
+		<property name="bunningsReconSAXParserHandlerName" value="bunningsProductReconSAXParserHandler"/>
+		<property name="bunningsReconService" ref="bunningsReconService"/>
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
+
+	<bean id="bunningsProductReconSAXParserHandler" class="com.bunnings.core.dataimport.BunningsReconSAXParserHandler" scope="prototype">
+		<property name="primaryEntityNode" value="Item"/>
+	</bean>
+
+	<bean id="bunningsProductXmlProcessingTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask">
+		<property name="xmlToImpexProcessManager" ref="productXMLToImpexProcessManager"/>
+	</bean>
+
+	<bean id="productXMLToImpexProcessManager"
+		  class="com.bunnings.core.dataimport.XMLtoImpexProcessManager">
+		<property name="encoding" value="UTF-8" />
+		<property name="bunningsXMLParser" ref="bunningsProductXMLParser"/>
+	</bean>
+
+	<bean id="bunningsProductXMLParser" class="com.bunnings.core.dataimport.impl.BunningsXMLParserImpl">
+		<property name="saxParserHandlerBeanName" value="bunningsProductSAXParserHandler"/>
+	</bean>
+	<bean id = "bunningsProductSAXParserHandler" class="com.bunnings.core.dataimport.BunningsSAXParserHandler" scope="prototype">
+		<!-- <property name="parentNode" value="products"/> -->
+		<property name="primaryEntityNode" value="Item"/>
+		<property name="collectionNodesKeySet" ref="otherStartEndNodes"/>
+		<property name="xmlRowValidationManager" ref="xmlProductRowValidationManager"/>
+		<property name="impexStreamManager" ref="productImpexStreamManager"/>
+		<property name="rowTransalationManager" ref="defaultProductRowTransalationManager"/>
+		<property name="recordReferenceKey" value="Item/ItemNumber/"/>
+	</bean>
+
+	<util:set id="otherStartEndNodes" value-type="java.lang.String">
+	    <value>Item/Sourcing/Suppliers/Supplier/</value>
+	    <value>Item/ZoningInformation/Zone/</value>
+	    <value>Item/ZoningInformation/Zone/Pricing/</value>
+		<value>Item/ZoningInformation/Zone/Restrictions/Restriction/</value>
+	    <value>Item/FamilyTree/Nodes/Node/</value>
+	    <value>Item/Barcodes/Barcode/Packaging/Box/</value>
+		<value>Item/Barcodes/Barcode/</value>
+		<value>Item/MinimumGrades/MinimumGrade/</value>
+    </util:set>
+
+
+	<bean id="xmlProductRowValidationManager" class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+		<property name="validators" ref="productValidators"></property>
+	</bean>
+
+	<util:list id="productValidators">
+		<ref bean="xmlNodeManadatoryElementValidator"/>
+		<ref bean="xmlCountryManadatoryElementValidator"/>
+	</util:list>
+
+	<bean id="xmlNodeManadatoryElementValidator" class="com.bunnings.core.dataimport.xml.validators.XmlNodeManadatoryElementValidator">
+		<property name="key" value="Item/ItemNumber/" />
+	</bean>
+
+	<bean id="xmlCountryManadatoryElementValidator" class="com.bunnings.core.dataimport.xml.validators.XmlNodeManadatoryElementValidator">
+		<property name="key" value="ItemBatch/BatchHeader/Country/" />
+	</bean>
+
+	<alias name="bunningsMinimumGradeTranslator" alias="minGradeTranslator" />
+	<bean id="bunningsMinimumGradeTranslator" class="com.bunnings.core.dataimport.xml.translators.MinGradesTranslator"/>
+
+	<alias name="bunningsRegionalProductDetailCodeTranslator" alias="regionalProductDetailCodeTranslator" />
+	<bean id="bunningsRegionalProductDetailCodeTranslator" class="com.bunnings.core.dataimport.xml.translators.RegionalProductDetailCodeTranslator"/>
+
+	<alias name="bunningsDeliveryFreightTranslator" alias="deliveryFreightTranslator" />
+	<bean id="bunningsDeliveryFreightTranslator" class="com.bunnings.core.dataimport.xml.translators.DeliveryFreightTranslator"/>
+
+	<alias name="bunningsBrandTranslator" alias="brandTranslator" />
+	<bean id="bunningsBrandTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningsBrandTranslator"/>
+
+	<alias name="bunningsProductRestrictedTranslator" alias="productRestrictedTranslator" />
+	<bean id="bunningsProductRestrictedTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningsProductRestrictedTranslator"/>
+
+
+	<alias name="bunningssFamilyTreeeSubClassTranslator" alias="familyTreeeSubClassTranslator" />
+	<bean id="bunningssFamilyTreeeSubClassTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningssFamilyTreeeSubClassTranslator"/>
+	
+		
+	<util:list id="productRowTransalators" value-type="com.bunnings.core.dataimport.XMLRowTransalator">
+		<ref bean="brandTranslator"/>
+		<ref bean="minGradeTranslator"/>
+		<ref bean="regionalProductDetailCodeTranslator"/>
+		<ref bean="deliveryFreightTranslator"/>
+		<ref bean="productRestrictedTranslator"/>
+		<ref bean="familyTreeeSubClassTranslator"/>
+	</util:list>
+
+	<bean id="defaultProductRowTransalationManager" class="com.bunnings.core.dataimport.impl.XMLRowTransalationManagerImpl">
+		<property name="rowTransalators" ref="productRowTransalators"/>
+	</bean>
+
+
+
+	<bean id="productImpexStreamManager" class="com.bunnings.core.dataimport.ImpexStreamManagerImpl">
+		<property name="handlers" ref="productHandlers"/>
+	</bean>
+
+	<util:list id="productHandlers">
+		<ref bean="bunningsFamilyTreeStreamHandler"/>
+		<ref bean="bunningsFamilyTreeSubClassStreamHandler"/>
+		<ref bean="bunningsProductBrandStreamHandler"/>
+		<ref bean="bunningsGenericVariantProductStreamHandler"/>
+		<ref bean="bunningsPackageStreamHandler"/>
+		<ref bean="bunningsProductZoneStreamHandler"/>
+		<ref bean="bunningsProductSupplierStreamHandler"/>
+		<ref bean="bunningsProductSupplierBrandStreamHandler"/>
+		<ref bean="bunningsProductRestrictedStreamHandler"/>		
+		<ref bean="bunningsProductDeliveryStreamHandler"/>
+		<ref bean="bunningsProductFreightStreamHandler"/>
+		<ref bean="bunningsMinGradeStreamHandler"/>	
+	</util:list>
+
+
+	<bean id="bunningsFamilyTreeStreamHandler"
+		  class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+		  scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                $catalogVersion=catalogVersion(catalog(id[default=BunningsPCMCatalog]),version[default='Staged'])[unique=true,default='BunningsPCMCatalog:Staged']
+                $approved=approvalstatus(code)[default='NEW']
+                $defaultBaseProduct=baseProduct(code,batchCountry,$catalogVersion)
+                $bmieItemType=bmieItemType(code)[default='RETAIL',cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator']
+
+                # Insert Category
+                INSERT_UPDATE FamilyTreeCategory;code[unique=true];batchCountry[unique=true];name[lang=en];navLevel(code);familyTreeNodeType(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];@familyTreeSuperCategories[translator=com.bunnings.core.dataimport.xml.translators.BunningsFamilyTreeSuperCategoryTranslator];feedLineReference;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/FamilyTree/Nodes/Node$/Code/;ItemBatch/BatchHeader/Country/;Item/FamilyTree/Nodes/Node$/CategoryName/;Item/FamilyTree/Nodes/Node$/CategoryLevel/;Item/FamilyTree/Nodes/Node$/NameForLevel/;Item/FamilyTree/Nodes/Node$/SuperCategories/;Item/ItemNumber/;ItemBatch/BatchHeader/ExtractTime/</value>
+		</property>
+		<property name="priority" value="1"/>
+	</bean>
+	
+	<bean id="bunningsFamilyTreeSubClassStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE FamilyTreeSubClass;code[unique=true];batchCountry[unique=true];name;classifications(code,catalogVersion(catalog(id),version));treeCategory(code,batchCountry);feedLineReference;familyTreeStructure[unique=true];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/FamilyTree/SubClass/FamilyTreeCode/;ItemBatch/BatchHeader/Country/;Item/FamilyTree/SubClass/CategoryName/;Item/Classification/Catalog/Version/;Item/FamilyTree/SubClass/SuperCategory/;Item/ItemNumber/;Item/FamilyTree/SubClass/FamilyTreeStructure/;ItemBatch/BatchHeader/ExtractTime/</value>
+		</property>
+		<property name="priority" value="2"/>
+	</bean>
+	
+
+	     <bean id="bunningsProductBrandStreamHandler"
+               class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+			 <property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE Brand;brandCode[unique=true];name;isLeadingBrand[default=FALSE];isTradeBrand[default=FALSE];isMarketPlaceBrand[default=FALSE];$catalogVersion;feedLineReference;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/BrandCode/;Item/Brand/;S;S;S;S;Item/ItemNumber/;ItemBatch/BatchHeader/ExtractTime/</value>
+		</property>
+		<property name="priority" value="3"/>
+	</bean>
+	
+	 <bean id="bunningsProductSupplierBrandStreamHandler"
+           class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		 <property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE SupplierBrand;supplierCode[unique=true];brandCode[unique=true];feedLineReference;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/Sourcing/Suppliers/Supplier$/BrandSupplierCode/;Item/SupplierBrandCode/;Item/ItemNumber/;ItemBatch/BatchHeader/ExtractTime/</value>
+		</property>
+		<property name="priority" value="4"/>
+	</bean>
+
+	<bean id="bunningsGenericVariantProductStreamHandler"
+		  class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+		  scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE GenericVariantProduct;code[unique=true];batchCountry[unique=true];$catalogVersion;unit(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingGVPCellDecorator',default='EA'];$defaultBaseProduct;lastUpdate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];itemTypeForBmie;startDate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];endDate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];supercategories[translator=com.bunnings.core.dataimport.xml.translators.BunningsProductSuperCategoriesTranslator];bmieSectionDescription;bmieProductDescription;UnspscCode;productOffers;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference;familyTreeStructure
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/ItemNumber/;ItemBatch/BatchHeader/Country/;S;Item/SaleUnitOfMeasure/;Item/FamilyTree/Subclass/BaseProduct/;Item/LastUpdate/;Item/ItemType/;Item/StartDate/;Item/EndDate/;Item/DefaultVariantCategory/;Item/Description/SectionDescription/;Item/Description/ProductDescription/;Item/UnspscCode/;Item/ProductOffer/;ItemBatch/BatchHeader/ExtractTime/;Item/ItemNumber/;Item/FamilyTree/SubClass/FamilyTreeStructure/</value>
+		</property>
+		<property name="priority" value="6"/>
+	</bean>
+	
+	<bean id="bunningsPackageStreamHandler"
+		  class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+		  scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Packaging Details
+                INSERT_UPDATE PackagingDetails;code[unique=true];itemNumber[unique=true];part;batchCountry[unique=true];dimensionUOM;volumeUOM;weightUOM;dimensionLength;dimensionHeight;dimensionWidth;netWeight;grossWeight;volume;barCodeNumber[unique=true];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/Barcodes/Barcode$/Packaging/Box$/Code/;Item/ItemNumber/;Item/Barcodes/Barcode$/Packaging/Box$/Part/;ItemBatch/BatchHeader/Country/;Item/Barcodes/Barcode$/Packaging/Box$/Dimension/UnitOfMeasure/;Item/Barcodes/Barcode$/Packaging/Box$/Volume/UnitOfMeasure/;Item/Barcodes/Barcode$/Packaging/Box$/Weight/UnitOfMeasure/;Item/Barcodes/Barcode$/Packaging/Box$/Dimension/Length/;Item/Barcodes/Barcode$/Packaging/Box$/Dimension/Height/;Item/Barcodes/Barcode$/Packaging/Box$/Dimension/Width/;Item/Barcodes/Barcode$/Packaging/Box$/Weight/Net/;Item/Barcodes/Barcode$/Packaging/Box$/Weight/Gross/;Item/Barcodes/Barcode$/Packaging/Box$/Volume/Value/;Item/Barcodes/Barcode$/Number/;ItemBatch/BatchHeader/ExtractTime/;Item/ItemNumber/</value>
+		</property>
+		<property name="priority" value="7"/>
+	</bean>
+
+	<bean id="bunningsProductSupplierStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE SupplierDetails;itemNumber[unique=true];supplierCode[unique=true];batchCountry[unique=true];startDate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];endDate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];packUom;packQty;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/ItemNumber/;Item/Sourcing/Suppliers/Supplier$/SupplierCode/;ItemBatch/BatchHeader/Country/;Item/Sourcing/Suppliers/Supplier$/StartDate/;Item/Sourcing/Suppliers/Supplier$/EndDate/;Item/Sourcing/Suppliers/Supplier$/PackUom/;Item/Sourcing/Suppliers/Supplier$/PackQty/;ItemBatch/BatchHeader/ExtractTime/;Item/ItemNumber/</value>
+		</property>
+		<property name="priority" value="8"/>
+	</bean>
+	
+	
+	<bean id="bunningsProductDeliveryStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE DeliveryTypeDetails;code[unique=true];description;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/ZoningInformation/Zone$/FulfilmentDetails/DeliveryType/Code/;Item/ZoningInformation/Zone$/FulfilmentDetails/DeliveryType/Description/;ItemBatch/BatchHeader/ExtractTime/</value>
+		</property>
+		<property name="priority" value="9"/>
+	</bean>
+	
+		<bean id="bunningsProductFreightStreamHandler"
+              class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE FreightTypeDetails;code[unique=true];description;@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/ZoningInformation/Zone$/FulfilmentDetails/FreightType/Code/;Item/ZoningInformation/Zone$/FulfilmentDetails/FreightType/Description/;ItemBatch/BatchHeader/ExtractTime/</value>
+		</property>
+		<property name="priority" value="10"/>
+	</bean>
+	
+
+	<bean id="bunningsProductZoneStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE RegionalProductDetails;itemNumber[unique=true];batchCountry;regionDetails(isoCode)[unique=true];restrictedLocation[translator='com.bunnings.core.dataimport.xml.translators.BunningsRestrictedLocationsTranslator'];isTradeOnly;status;visible;transactable;instorePickup;availableForDelivery;isDirectDelivery;deliveryTypeDetails(code);freightTypeDetails(code);supplierDispatch;supplierToBunnings;supplierToCustomer;bunningsDispatch;zone(code)[unique=true];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/ItemNumber/;ItemBatch/BatchHeader/Country/;Item/ZoningInformation/Zone$/Region/;Item/ZoningInformation/Zone$/Locations/Location/;Item/ZoningInformation/Zone$/IsTradeOnly/;Item/ZoningInformation/Zone$/Status/;Item/ZoningInformation/Zone$/WebCommerceAttributes/Visible/;Item/ZoningInformation/Zone$/WebCommerceAttributes/Transactable/;Item/ZoningInformation/Zone$/WebCommerceAttributes/InStorePickup/;Item/ZoningInformation/Zone$/WebCommerceAttributes/AvailableForDelivery/;Item/ZoningInformation/Zone$/FulfilmentDetails/IsDirectDelivery/;Item/ZoningInformation/Zone$/FulfilmentDetails/DeliveryType/Code/;Item/ZoningInformation/Zone$/FulfilmentDetails/FreightType/Code/;Item/ZoningInformation/Zone$/FulfilmentDetails/LeadTimes/SupplierDispatch/;Item/ZoningInformation/Zone$/FulfilmentDetails/LeadTimes/SupplierToBunnings/;Item/ZoningInformation/Zone$/FulfilmentDetails/LeadTimes/SupplierToCustomer/;Item/ZoningInformation/Zone$/FulfilmentDetails/LeadTimes/BunningsDispatch/;Item/ZoningInformation/Zone$/RetailZone/;ItemBatch/BatchHeader/ExtractTime/;Item/ItemNumber/</value>
+		</property>
+		<property name="priority" value="11"/>
+	</bean>
+	
+
+	<bean id="bunningsProductRestrictedStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Products
+                INSERT_UPDATE ProductRestricted;restrictionType(code)[unique=true];locationRestrictions(code);location;maxQuantity;maxLength;minimumAge;regionalProductDetail(itemNumber,regionDetails(isoCode),zone(code),batchCountry)[unique=true];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/ZoningInformation/Zone$/Restrictions/Restriction$/Type/;Item/ZoningInformation/Zone$/Restrictions/Restriction$/LocationRestrictions/;Item/ZoningInformation/Zone$/Restrictions/Restriction$/Locations/Location/;Item/ZoningInformation/Zone$/Restrictions/Restriction$/SaleQuantity/RestrictionSizing/MaxQuantity/;Item/ZoningInformation/Zone$/Restrictions/Restriction$/SaleQuantity/RestrictionSizing/MaxLength/;Item/ZoningInformation/Zone$/Restrictions/Restriction$/MinimumAge/;Item/ZoningInformation/Zone$/RegionalProductDetails/Value/;ItemBatch/BatchHeader/ExtractTime/;Item/ItemNumber/</value>
+		</property>
+		<property name="priority" value="12"/>
+	</bean>
+	
+	<bean id="bunningsMinGradeStreamHandler"
+		  class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+		  scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                $products = products(code[unique=true],batchCountry[unique = true], $catalogVersion)
+                # Insert Bunnings Products
+                INSERT_UPDATE MinimumGradesAttributes;code[unique=true];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];locationType;grade;$products
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Item/MinimumGrades/MinimumGrade$/Item/MinimumGrades/MinimumGrade/ConcatenatedCode/;ItemBatch/BatchHeader/ExtractTime/;Item/MinimumGrades/MinimumGrade$/LocationType/;Item/MinimumGrades/MinimumGrade$/Grade/;Item/ItemNumber/BatchCountry/</value>
+		</property>
+		<property name="priority" value="14"/>
+	</bean>
+
+	
+</beans>

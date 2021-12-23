@@ -1,0 +1,30 @@
+$pcmCatalog = BunningsPCMCatalog
+$version = Staged
+
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$supercategories = supercategories(code, $catalogVersion)[unique=true,PRODUCTINDEX_1 mode=append]
+$variantType = variantType(code)[default='GenericVariantProduct']
+$approvalStatus = approvalstatus(code)[default='approved'][unique=true]
+$baseProduct = baseProduct(code, $catalogVersion)[unique=true]
+
+INSERT_UPDATE GenericVariantProduct; code[unique = true]; $approvalStatus; $catalogVersion; name; $baseProduct; startDate[dateformat = dd.MM.yyyy HH:mm:ss]; lastUpdate[dateformat = dd.MM.yyyy HH:mm:ss]; $supercategories; batchCountry[unique = true, default = 'AU']; origin(code)[default='MARKETPLACE']; isActive[default=true]
+                                   ; ML-TEST-0001           ;                ;                ; Sample variant ; ML-BASE-0000     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; ML_TEST_COLOUR_162219
+                                   ; ML-TEST-0002           ;                ;                ; Sample variant ; ML-BASE-0000     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; ML_TEST_COLOUR_162219
+                                   ; ML-TEST-0003           ;                ;                ; Sample variant ; ML-BASE-0000     ; 24.01.2019 00:00:00                        ; 07.01.2019 00:00:00                         ; ML_TEST_COLOUR_162219
+
+INSERT_UPDATE Offer[disable.interceptor.types = validate]; productCode[unique = true]; id[unique = true]; active[default = TRUE]
+                                                         ; ML-TEST-0001                  ; offer_005        ; FALSE
+                                                         ; ML-TEST-0001                  ; offer_006        ;
+                                                         ; ML-TEST-0002                  ; offer_007        ; FALSE
+                                                         ; ML-TEST-0002                  ; offer_008        ; FALSE
+                                                         ; ML-TEST-0002                  ; offer_009        ; FALSE
+
+INSERT_UPDATE Product[disable.interceptor.types = validate]; name[lang = en]             ; code[unique = true]; $supercategories                        ; $variantType; $approvalStatus; $catalogVersion; batchCountry[unique = true, default = 'AU']
+                                                           ; Hume Oakfield Internal Door ; ML-BASE-0000            ; ML_TEST_COLOUR_VARIANT                          ;             ;                ;                ;
+
+INSERT_UPDATE VariantCategory; code[unique = true]; $catalogVersion; name[lang = en];
+                             ; ML_TEST_COLOUR_VARIANT;; Colour
+
+INSERT_UPDATE VariantValueCategory; sequence; code[unique = true]; name; $supercategories; order; $catalogVersion; allowedPrincipals(uid)[default = 'customergroup']
+                                  ; 999; ML_TEST_COLOUR_162219; Black Granite; ML_TEST_COLOUR_VARIANT; 2;
+

@@ -1,0 +1,415 @@
+{
+  "shoppingLocation": "8437",
+  "paymentLocation": "8437",
+  "totalsForLines": {
+    "subtotal": 40.16,
+    "discount": 0.00,
+    "total": 40.16,
+    "tax": 3.65
+  },
+  "lines": [
+    {
+      "lineNo": 1,
+      "lineType": "Item",
+      "unitPrice": 9.76,
+      "sellPrice": 9.76,
+      "lineTotal": 9.76,
+      "total": 9.76,
+      "tax": 0.89,
+      "lineCalculationMethod": "UnitPriceIncludeGst",
+      "priceId": "S1:AU:c173f9d0-43c6-4ce7-a9ef-75a7656692ac"
+    },
+    {
+      "lineNo": 2,
+      "lineType": "Item",
+      "unitPrice": 9.48,
+      "sellPrice": 9.48,
+      "lineTotal": 9.48,
+      "total": 9.48,
+      "tax": 0.86,
+      "lineCalculationMethod": "UnitPriceIncludeGst",
+      "priceId": "S1:AU:2638af53-3106-48aa-82cd-276b44cba48a"
+    },
+    {
+      "lineNo": 3,
+      "lineType": "Item",
+      "unitPrice": 9.98,
+      "sellPrice": 9.98,
+      "lineTotal": 9.98,
+      "total": 9.98,
+      "tax": 0.91,
+      "lineCalculationMethod": "UnitPriceIncludeGst",
+      "priceId": "S1:AU:8d03082f-f08e-41d9-9130-57baa4817101"
+    },
+    {
+      "lineNo": 4,
+      "lineType": "Item",
+      "unitPrice": 10.94,
+      "sellPrice": 10.94,
+      "lineTotal": 10.94,
+      "total": 10.94,
+      "tax": 0.99,
+      "lineCalculationMethod": "UnitPriceIncludeGst",
+      "priceId": "S1:AU:55f3a3e0-8f0a-4dba-98c9-d6fb42f5073e"
+    }
+  ],
+  "fulfilmentOptions": [
+    {
+      "rank": 1,
+      "optionTotalPriceForFulfilment": 56.16,
+      "earliestFulfilmentPromiseMin": "2020-12-09T00:00:00+10:00",
+      "basketTotalForOption": {
+        "subtotal": 56.16,
+        "discount": 0.00,
+        "total": 56.16,
+        "tax": 5.11
+      },
+      "fulfilments": [
+        {
+          "fulfilmentType": "DeliveryToCustomer",
+          "deliveryDetail": {
+            "deliveryType": "Bunnings",
+            "shipmentToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDczNTEzNjUsImp0aSI6ImUwMjlmMWZiLWI5MjAtNDRmOS05ZGE1LWI1YWY1YmE1MGFlYiIsImRlbGl2ZXJ5LW9wdGlvbnMiOiJ7XCJhc3Npc3RhbmNlUmVxdWlyZWRcIjpmYWxzZSxcInNoaXBtZW50Q2xhc3NcIjpcIk5leHREYXlcIixcIml0ZW1zXCI6W3tcIml0ZW1EZXNjcmlwdGlvblwiOlwiUGFyY2VsIERlbGl2ZXJ5XCIsXCJkZWxpdmVyeUl0ZW1UeXBlXCI6MCxcIml0ZW1OdW1iZXJcIjpcIjAwMTEyNjNcIixcInF1YW50aXR5XCI6MSxcInByaWNlSWRcIjpcIlMxOkFVOmQzNTkzMTQ0LWUyNzgtNGJlNC1iMWVjLTgyYmZhN2Q2YWFiNFwifV0sXCJhcHBseU9yZGVyQWN0aW9uTGVhZFRpbWVcIjpmYWxzZX0iLCJzaGlwbWVudC1oYXNoIjoiVTFtL2RnTjEvUkswYS9RKzFwVDNqd29RcW9tZ0s5NGk2UHVhRWtaaVJUczFZRDQ3cktaSTdNSUpwYUpKZEo2OUxrRmdGTHRCN2haNnpFdjRId0Z1S2c9PSIsIm5iZiI6MTYwNzM1MTM2NSwiZXhwIjoxNjA3MzU0OTY1fQ.GEEXXn0yJl7S35gk7rizuFS86f5bIf8wIvJRQLLMKyJcCaF_RZpLTdg7IQ9GcZc8mVLI-nBFM6B6fUQwfB1HvxS3BYNuO90puruY5pTO7R8KrK7VGwMES190c2a-3h4QregSPVc3KLnSwBzu9U52DFWod5uGliv0e4hpyjB9EUcsbBw5X0xJUkCEwKyMMXIB8UR5bLGredURjprSQN2Hi3F5sgYGewlwn_K7WgXIxTMaTql3mJsrOd7qmztosH3cXgjUd4drwRWWjewmBmJC6PYzDabnWcJWnoP1nwswuTS-w6uarWOuDsV7Be_rWy3--1qRdxRYnWilBKLX78ouXIYU8yHpMKhKeSqrKUdNpV7UE5v-oIfHguvP1GX0usXoy1FvfDOl9BpuCXwhRMOzqykQTxuI4T6jeCFspMDJ3Iu4jJMni0Q6Z1kqjbfGBCaGOjuzKgGNMKgaupmfXsQU6cxDqjPfLLxVl-v59dmoXhs5SytgiCR5uwuMiRo6gdTqv7tQ-OPFkpS19eo138-zKhk5DkEe6T_NNrGI26vOtAnbeBqRn5qHsUeJRhTw8ZN745JS_b8klqA4aCyDHLlU9GICUIRfQa1SOqEuy3Shij10d-Ag6B-pkHoGRL_Oc7CpyOtm1IaskQfAJ-bLsIi6MHSg4ZCIOEHk8CuABLzXV7s",
+            "shipmentClass": "NextDay",
+            "lineTotal": 8.0,
+            "total": 8.0,
+            "tax": 0.73
+          },
+          "priceOnApplication": false,
+          "promise": {
+            "message": "Delivered between Thu 17 - Mon 28 Dec",
+            "minimumDate": "2020-12-17T00:00:00+10:00",
+            "maximumDate": "2020-12-28T00:00:00+10:00"
+          },
+          "sourcingDetail": {
+            "lineTotal": 0,
+            "total": 0,
+            "tax": 0
+          },
+          "lineRefs": [
+            {
+              "lineNo": 4,
+              "fulfilmentSpecificLine": {
+                "lineNo": 4,
+                "lineType": "Item",
+                "unitPrice": 10.94,
+                "sellPrice": 10.94,
+                "lineTotal": 10.94,
+                "total": 10.94,
+                "tax": 0.99,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:55f3a3e0-8f0a-4dba-98c9-d6fb42f5073e"
+              }
+            }
+          ]
+        },
+        {
+          "fulfilmentType": "DeliveryToCustomer",
+          "deliveryDetail": {
+            "deliveryType": "Bunnings",
+            "shipmentToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDczNTEzNjUsImp0aSI6ImY0YWYyNGE2LWIyNDItNGNmZi04ZmEzLWRmNDFiN2Y1MzU0ZiIsImRlbGl2ZXJ5LW9wdGlvbnMiOiJ7XCJhc3Npc3RhbmNlUmVxdWlyZWRcIjpmYWxzZSxcInNoaXBtZW50Q2xhc3NcIjpcIk5leHREYXlcIixcIml0ZW1zXCI6W3tcIml0ZW1EZXNjcmlwdGlvblwiOlwiUGFyY2VsIERlbGl2ZXJ5XCIsXCJkZWxpdmVyeUl0ZW1UeXBlXCI6MCxcIml0ZW1OdW1iZXJcIjpcIjAwMTEyNjNcIixcInF1YW50aXR5XCI6MSxcInByaWNlSWRcIjpcIlMxOkFVOmQzNTkzMTQ0LWUyNzgtNGJlNC1iMWVjLTgyYmZhN2Q2YWFiNFwifV0sXCJhcHBseU9yZGVyQWN0aW9uTGVhZFRpbWVcIjpmYWxzZX0iLCJzaGlwbWVudC1oYXNoIjoiZ1lWcXR0T0tBeXRhMEgwWXA4ckNBTExvUWhHU1pMS3hvQllPU2xOZVRsdlYxaUVVSXlveVdVa1R4ckp3N3NGOUxuUm4rUlRXNlVReWxTSEROanpqbWc9PSIsIm5iZiI6MTYwNzM1MTM2NSwiZXhwIjoxNjA3MzU0OTY1fQ.ZmoOPvAgXLthHLadXv5IjhMRNZ5G6gPS6W2yHp2Y_5-EsSHKWW2cuuH50c2ZMAoTPKb9SKyliW4_0HUUwq4pcIGW7zmKBeT6aPukh0ak1rlSZ1tRoZNsxoFjixHzEtSHPi2vEIQ6Cu2OqnSBe2On-R2w21VyVGhktxF01CiqmCAThOkPaj7thRtt9--_63M0_i7YYuMNepWE0qdzVSGd8lHqzO5yGxCpm4wF60Glnc937ses0HGsDvAzsJM82_EzkyEB91NRwtkKA13d6L_lZBTordA3GT78rXD2dvdgySTeGLqVU1i1UPDt6Gm__JEyD-5JKqcRQvPQpYcNt6puKMeIdAvHrkM5SbMG9AEDu28uobfAwyc6XyBO7bNY031vUG3-W7ov9_HKbL3mEGq1vO_TJnK2ekFST3DdZ9YpOBrT1E8rn985v7P1Rd41HeNzUXg6EzZMNqzkzjxr40T0plodJHgl_P2P8P_YumYM4CNKd0owEmBe6hsTPEu3ZgKogFTZy0srLIjjmqh0xcQAPAm2KZD8QrZnN2Ord7v_RXu9QGe2ooYs5bzLXMBtkiPa6O2xoFquGg-2QmXbYH4Ks9J0ijeiNh-poBkM8SrhuqzXx8xB0ok0VfEKgZ4NiEFaPCu1_Fke2Pb_yPVhCawZW8Pi7CoVGKp4G10Z11y8d2k",
+            "shipmentClass": "NextDay",
+            "lineTotal": 8.0,
+            "total": 8.0,
+            "tax": 0.73
+          },
+          "priceOnApplication": false,
+          "promise": {
+            "message": "Delivered by Wed 9 Dec",
+            "minimumDate": "2020-12-09T00:00:00+10:00",
+            "maximumDate": "2020-12-10T00:00:00+10:00"
+          },
+          "sourcingDetail": {
+            "lineTotal": 0,
+            "total": 0,
+            "tax": 0
+          },
+          "lineRefs": [
+            {
+              "lineNo": 1,
+              "fulfilmentSpecificLine": {
+                "lineNo": 1,
+                "lineType": "Item",
+                "unitPrice": 9.76,
+                "sellPrice": 9.76,
+                "lineTotal": 9.76,
+                "total": 9.76,
+                "tax": 0.89,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:c173f9d0-43c6-4ce7-a9ef-75a7656692ac"
+              }
+            },
+            {
+              "lineNo": 2,
+              "fulfilmentSpecificLine": {
+                "lineNo": 2,
+                "lineType": "Item",
+                "unitPrice": 9.48,
+                "sellPrice": 9.48,
+                "lineTotal": 9.48,
+                "total": 9.48,
+                "tax": 0.86,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:2638af53-3106-48aa-82cd-276b44cba48a"
+              }
+            },
+            {
+              "lineNo": 3,
+              "fulfilmentSpecificLine": {
+                "lineNo": 3,
+                "lineType": "Item",
+                "unitPrice": 9.98,
+                "sellPrice": 9.98,
+                "lineTotal": 9.98,
+                "total": 9.98,
+                "tax": 0.91,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:8d03082f-f08e-41d9-9130-57baa4817101"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "optionTotalPriceForFulfilment": 56.16,
+      "earliestFulfilmentPromiseMin": "2020-12-10T00:00:00+10:00",
+      "basketTotalForOption": {
+        "subtotal": 56.16,
+        "discount": 0.00,
+        "total": 56.16,
+        "tax": 5.11
+      },
+      "fulfilments": [
+        {
+          "fulfilmentType": "DeliveryToCustomer",
+          "deliveryDetail": {
+            "deliveryType": "Bunnings",
+            "shipmentToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDczNTEzNjUsImp0aSI6ImViYTFkYzczLWJhYTQtNDhlYi05OGEwLWFmYWRhYWVkY2MwYyIsImRlbGl2ZXJ5LW9wdGlvbnMiOiJ7XCJhc3Npc3RhbmNlUmVxdWlyZWRcIjpmYWxzZSxcInNoaXBtZW50Q2xhc3NcIjpcIk5leHREYXlcIixcIml0ZW1zXCI6W3tcIml0ZW1EZXNjcmlwdGlvblwiOlwiUGFyY2VsIERlbGl2ZXJ5XCIsXCJkZWxpdmVyeUl0ZW1UeXBlXCI6MCxcIml0ZW1OdW1iZXJcIjpcIjAwMTEyNjNcIixcInF1YW50aXR5XCI6MSxcInByaWNlSWRcIjpcIlMxOkFVOmQzNTkzMTQ0LWUyNzgtNGJlNC1iMWVjLTgyYmZhN2Q2YWFiNFwifV0sXCJhcHBseU9yZGVyQWN0aW9uTGVhZFRpbWVcIjpmYWxzZX0iLCJzaGlwbWVudC1oYXNoIjoiVTFtL2RnTjEvUkswYS9RKzFwVDNqd29RcW9tZ0s5NGk2UHVhRWtaaVJUczFZRDQ3cktaSTdNSUpwYUpKZEo2OUxrRmdGTHRCN2haNnpFdjRId0Z1S2c9PSIsIm5iZiI6MTYwNzM1MTM2NSwiZXhwIjoxNjA3MzU0OTY1fQ.vS9-1x8ELqSY34J8FlD_Bsg_AGNAoIxC2MElQpwVp_k2bHjSJiywhAx1Ff3uNStdd1xdFxxmmjDsiASspWDsmBP8o_lfyoj_V3AZ0LCMBghTLHzEF26tuZlZctnSP4R1T76_IM55Exbb5Y_tOlxJpgCzZlfCVR-Xw1PgyQ1r7YnjpN2AeGlkXV-IMlxps7EhrGi02p-KirS1jrl8_RsPSH_U4VTNB3t9jk0nhPYUsDyKoEbPPcuGdTP2JWl0GGrdq_JUreGITV5zkezraj4xZeJotIpH6twJTWTYQqKulscg5RKwmBw8U23S5IM9D4nVEM8qb-Br8aQXw_i_IFAovh54OVtsCPY_lB9HfiIDloQT3Gg-wslweexFr24A56SplhrdKRmXpXxg4D6gB53QnHD39MFpYqb7frJNZ5_D_wIVMYFp3zlE_fr5oYKnTtWj21Ys2ZO65xhAH6L1jumsWGxuf68mAVwAP-g0tfxitUXT5RU1McPW83nutLzLpOZ5mydTgE6fcyiexudE9oBTmI6Vt9KwnOXePTYz8QobAPB1ZuV07pXwPjy0CQRLxI4HO0C4g6WMYCChdpNi-xLqH8SATiLcZGrcuzf2cvZNluXsAqXwEkRuzEFFNGXm1MYoY-PQdOueEU0Kqazn_Ob_1PmIffMQJcZOk67Yuq8i6xQ",
+            "shipmentClass": "NextDay",
+            "lineTotal": 8.0,
+            "total": 8.0,
+            "tax": 0.73
+          },
+          "priceOnApplication": false,
+          "promise": {
+            "message": "Delivered between Thu 17 - Mon 28 Dec",
+            "minimumDate": "2020-12-17T00:00:00+10:00",
+            "maximumDate": "2020-12-28T00:00:00+10:00"
+          },
+          "sourcingDetail": {
+            "lineTotal": 0,
+            "total": 0,
+            "tax": 0
+          },
+          "lineRefs": [
+            {
+              "lineNo": 4,
+              "fulfilmentSpecificLine": {
+                "lineNo": 4,
+                "lineType": "Item",
+                "unitPrice": 10.94,
+                "sellPrice": 10.94,
+                "lineTotal": 10.94,
+                "total": 10.94,
+                "tax": 0.99,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:55f3a3e0-8f0a-4dba-98c9-d6fb42f5073e"
+              }
+            }
+          ]
+        },
+        {
+          "fulfilmentType": "DeliveryToCustomer",
+          "deliveryDetail": {
+            "deliveryType": "Bunnings",
+            "shipmentToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDczNTEzNjUsImp0aSI6IjMwNTkzNjE4LWMyMDMtNDk3ZS1hOThiLTJiYTg3NmM3NWNkZSIsImRlbGl2ZXJ5LW9wdGlvbnMiOiJ7XCJhc3Npc3RhbmNlUmVxdWlyZWRcIjpmYWxzZSxcInNoaXBtZW50Q2xhc3NcIjpcIkVjb25vbXlcIixcIml0ZW1zXCI6W3tcIml0ZW1EZXNjcmlwdGlvblwiOlwiUGFyY2VsIERlbGl2ZXJ5XCIsXCJkZWxpdmVyeUl0ZW1UeXBlXCI6MCxcIml0ZW1OdW1iZXJcIjpcIjAwMTEyNjNcIixcInF1YW50aXR5XCI6MSxcInByaWNlSWRcIjpcIlMxOkFVOmQzNTkzMTQ0LWUyNzgtNGJlNC1iMWVjLTgyYmZhN2Q2YWFiNFwifV0sXCJhcHBseU9yZGVyQWN0aW9uTGVhZFRpbWVcIjpmYWxzZX0iLCJzaGlwbWVudC1oYXNoIjoiZ1lWcXR0T0tBeXRhMEgwWXA4ckNBTExvUWhHU1pMS3hvQllPU2xOZVRsdlYxaUVVSXlveVdVa1R4ckp3N3NGOUxuUm4rUlRXNlVReWxTSEROanpqbWc9PSIsIm5iZiI6MTYwNzM1MTM2NSwiZXhwIjoxNjA3MzU0OTY1fQ.XHMWK3k4OGhhych7amp5mY_kOxniTgCA69ud_d4t6mv2em07XmuIx1d9zLM7tkBYX_X1v6b0iwpxhRSyVXr21BzzGPNioe3bjwhLdQTcDjhbdJSQEowXlnTgn6gQtULjurE2hseYe6yglP-3M-IRIjEqm1mClVZhFa7pf9NLzHLXhIOaxECvqCk4b9TemoSzcavw7Y091kpTSVwMJTgHr2HPZVHn6tRE7grtV5xv5EvadWWO3nsj2VpLxwdS-_lkY9MIqcW-UFwv0HO4jjswXWtVOxII5LrC7lP76SHR4FIgwKQoJ0L1Ux1NaVL2ngmtuCQExePZH6umRJXypIK0iKWhgtGsjnCFPveN6tYepYC2G9IWuNoBBfG5Cvv9IzGmF_bryKmUWUREQgFgcgLqhscfR3Dl9hXqStUwgvD0u3qZb68K7RbjkjWJjGcOjsvE2urf0kpk2S1xBzkgySMSJs69sENAqZpb5SYZb6f49vA1dGss5EuBpsym-u3mctrXkfeezDIRphyXkEvhwyPmZ0XpZR02jld_NWXjTaN2mmkFyRDu3MpL_rjBaLsGTDM6ASzeCeUPY8LaKgxWWJsm5oAMlQAtK4VIBM9i8511GL0AsKiwXIZjTrD_MMcqTY6vGArMNT24sEH3kpwCYZWoHAkp07o9HyDTP3vet53YIVc",
+            "shipmentClass": "Economy",
+            "lineTotal": 8.0,
+            "total": 8.0,
+            "tax": 0.73
+          },
+          "priceOnApplication": false,
+          "promise": {
+            "message": "Delivered between Thu 10 - Tue 15 Dec",
+            "minimumDate": "2020-12-10T00:00:00+10:00",
+            "maximumDate": "2020-12-15T00:00:00+10:00"
+          },
+          "sourcingDetail": {
+            "lineTotal": 0,
+            "total": 0,
+            "tax": 0
+          },
+          "lineRefs": [
+            {
+              "lineNo": 1,
+              "fulfilmentSpecificLine": {
+                "lineNo": 1,
+                "lineType": "Item",
+                "unitPrice": 9.76,
+                "sellPrice": 9.76,
+                "lineTotal": 9.76,
+                "total": 9.76,
+                "tax": 0.89,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:c173f9d0-43c6-4ce7-a9ef-75a7656692ac"
+              }
+            },
+            {
+              "lineNo": 2,
+              "fulfilmentSpecificLine": {
+                "lineNo": 2,
+                "lineType": "Item",
+                "unitPrice": 9.48,
+                "sellPrice": 9.48,
+                "lineTotal": 9.48,
+                "total": 9.48,
+                "tax": 0.86,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:2638af53-3106-48aa-82cd-276b44cba48a"
+              }
+            },
+            {
+              "lineNo": 3,
+              "fulfilmentSpecificLine": {
+                "lineNo": 3,
+                "lineType": "Item",
+                "unitPrice": 9.98,
+                "sellPrice": 9.98,
+                "lineTotal": 9.98,
+                "total": 9.98,
+                "tax": 0.91,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:8d03082f-f08e-41d9-9130-57baa4817101"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "optionTotalPriceForFulfilment": 60.66,
+      "earliestFulfilmentPromiseMin": "2020-12-08T00:00:00+10:00",
+      "basketTotalForOption": {
+        "subtotal": 60.66,
+        "discount": 0.00,
+        "total": 60.66,
+        "tax": 4.38
+      },
+      "fulfilments": [
+        {
+          "fulfilmentType": "DeliveryToCustomer",
+          "deliveryDetail": {
+            "deliveryType": "Bunnings",
+            "shipmentToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDczNTEzNjUsImp0aSI6ImZmMDFjMmNlLWQ4YjQtNGIyNy1iM2FlLWYxMGJjMzdjMDNmNyIsImRlbGl2ZXJ5LW9wdGlvbnMiOiJ7XCJhc3Npc3RhbmNlUmVxdWlyZWRcIjpmYWxzZSxcInNoaXBtZW50Q2xhc3NcIjpcIk5leHREYXlcIixcIml0ZW1zXCI6W3tcIml0ZW1EZXNjcmlwdGlvblwiOlwiUGFyY2VsIERlbGl2ZXJ5XCIsXCJkZWxpdmVyeUl0ZW1UeXBlXCI6MCxcIml0ZW1OdW1iZXJcIjpcIjAwMTEyNjNcIixcInF1YW50aXR5XCI6MSxcInByaWNlSWRcIjpcIlMxOkFVOmQzNTkzMTQ0LWUyNzgtNGJlNC1iMWVjLTgyYmZhN2Q2YWFiNFwifV0sXCJhcHBseU9yZGVyQWN0aW9uTGVhZFRpbWVcIjpmYWxzZX0iLCJzaGlwbWVudC1oYXNoIjoiVTFtL2RnTjEvUkswYS9RKzFwVDNqd29RcW9tZ0s5NGk2UHVhRWtaaVJUczFZRDQ3cktaSTdNSUpwYUpKZEo2OUxrRmdGTHRCN2haNnpFdjRId0Z1S2c9PSIsIm5iZiI6MTYwNzM1MTM2NSwiZXhwIjoxNjA3MzU0OTY1fQ.grMP_EY-WJl1KlCGdEAX2ksgGOiJf52CHWRV-KSynX73f8VTKEuR3wgIpODZrjRBPsJfu4-Uugv3nAkWVdDWdjBEyLyd9Ai-yvD5ewOsY6vu6vqv1xjyvxptwg6xXHy-J76ZUfenqgrdoel3UG6ETEZ7O0jWImdiY2Z2bZZVASgmEM0AyQ2UIoR_HwAWrK3jtAU2GV2jJZQXkT45oo82Pfeb93mM1asu6HKfpPhE63-sJ336cUHVnaSumIWoW9hWNZsc6Px7XshcKXN3-yNfL1AfF_UJFk4T1A3N28WjrznmjPd7p0oMtsX8XoW4d4F8NGXMuuNtJqUZUS7gw3no_wXpoa59WpMxjnNSKlrvR_2k-VYg2rJHrE5JQhg-oB_GPFwC7ii6L0TR53AUr0PObrhL0vEUPjPL1lkpIl8ooUTGNnKCZUFiUBAYQbtk0W9y-fikMw2IiScjAMo8n7rJ91VtQ2TJ5CdP8yi6vjIo33D-inC8OXJDiyhvoXC9-UzjFDfJgc2Q4uzhZ0hfsPy0V7qIe5d-D5wqQyN-A7iIYlofI1ESSqwnEZ7YY9KDgedRgowrLK9JegvCulTu9vMV71XcouzgFFKLbY5ser95m15UcsQx0gVstA76iyxfNXjaE5T4f4aCoDQxuRiF2O5VqCbkurr_gZoxayYFcC-2dyU",
+            "shipmentClass": "NextDay",
+            "lineTotal": 8.0,
+            "total": 8.0,
+            "tax": 0.73
+          },
+          "priceOnApplication": false,
+          "promise": {
+            "message": "Delivered between Thu 17 - Mon 28 Dec",
+            "minimumDate": "2020-12-17T00:00:00+10:00",
+            "maximumDate": "2020-12-28T00:00:00+10:00"
+          },
+          "sourcingDetail": {
+            "lineTotal": 0,
+            "total": 0,
+            "tax": 0
+          },
+          "lineRefs": [
+            {
+              "lineNo": 4,
+              "fulfilmentSpecificLine": {
+                "lineNo": 4,
+                "lineType": "Item",
+                "unitPrice": 10.94,
+                "sellPrice": 10.94,
+                "lineTotal": 10.94,
+                "total": 10.94,
+                "tax": 0.99,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:55f3a3e0-8f0a-4dba-98c9-d6fb42f5073e"
+              }
+            }
+          ]
+        },
+        {
+          "fulfilmentType": "DeliveryToCustomer",
+          "deliveryDetail": {
+            "deliveryType": "Bunnings",
+            "shipmentToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDczNTEzNjYsImp0aSI6IjkzNjVjNmY2LWUwYTMtNGVlYi05MzY3LTU3M2EwMGI4N2JhYiIsImRlbGl2ZXJ5LW9wdGlvbnMiOiJ7XCJhc3Npc3RhbmNlUmVxdWlyZWRcIjpmYWxzZSxcInNoaXBtZW50Q2xhc3NcIjpcIlNhbWVEYXlcIixcIml0ZW1zXCI6W3tcIml0ZW1EZXNjcmlwdGlvblwiOlwiUGFyY2VsIERlbGl2ZXJ5XCIsXCJkZWxpdmVyeUl0ZW1UeXBlXCI6MCxcIml0ZW1OdW1iZXJcIjpcIjAwMTEyNjJcIixcInF1YW50aXR5XCI6MSxcInByaWNlSWRcIjpcIlMxOkFVOmJlNmRkYjU4LWUxZmMtNDM4NC04YTE3LTIyODY2NTlhNjU3MVwifV0sXCJhcHBseU9yZGVyQWN0aW9uTGVhZFRpbWVcIjpmYWxzZX0iLCJzaGlwbWVudC1oYXNoIjoiZ1lWcXR0T0tBeXRhMEgwWXA4ckNBTExvUWhHU1pMS3hvQllPU2xOZVRsdlYxaUVVSXlveVdVa1R4ckp3N3NGOUxuUm4rUlRXNlVReWxTSEROanpqbWc9PSIsIm5iZiI6MTYwNzM1MTM2NiwiZXhwIjoxNjA3MzU0OTY2fQ.PURKFXae-h_zD9Nl4YT7476fkqqk2SOnoAebVl6qpDMJZXQ_Bo7lxkHbqOavrD1RXDniFev0z8eMFdrjkpYY7a6gsRp6wbj552p9cf51tDKbuczx492BiRZ1EHgCUEHXmweR9asTTfHn610aq2n8M_9IsQYOgEeCNPooB3kQlJiQypHh2nQc092KSNji2m2dpBO3HQsclt4C7sEpu2HAm5OCyG7Yp4Ya3BBGEh-ZpVeqOX5j43NAzQ4a7VqxK4hMwrnpwSlUHUWpYcIc-uGwKN7dn_u-EmifNV4LRaN5d3hHMsDVCckgOtZTuDxYLnfeWHv562CV2KeqYQqudw9uAzOxDCkLg2TZpOt5yLGfGe1eRq4HQhPCrqbKiAO17sNiyUUlwymePSLnRHXtuW_qVAjJuRXpHj1v6RNAkgoMLXQ1Dd9sh1Eu0HyQKfM_fQe9BAobxxmSHOLtDy294cAQL30qtNdm_gPwEWwS8UQhzMbBaCMhxN9dR146gGcll5mky91eYPwZTd0rkcQvwEYCnvmil_wT6mlMTYKxKRKn0GHPWr33hJV9hG5u4ezoeidFx05Amo1V_LxF3x4jHyVeWEUMkjW1XZ1zHcjjvw7cnz5pYsyFw040qQpFfY2B7sJ_IQN753PGZ2FROnp34sq5dKqAuYY-CADsaeb1TalH7Zk",
+            "shipmentClass": "SameDay",
+            "lineTotal": 12.5,
+            "total": 12.5,
+            "tax": 0.0
+          },
+          "priceOnApplication": false,
+          "promise": {
+            "message": "Delivered by Tue 8 Dec",
+            "minimumDate": "2020-12-08T00:00:00+10:00",
+            "maximumDate": "2020-12-09T00:00:00+10:00"
+          },
+          "sourcingDetail": {
+            "lineTotal": 0,
+            "total": 0,
+            "tax": 0
+          },
+          "lineRefs": [
+            {
+              "lineNo": 1,
+              "fulfilmentSpecificLine": {
+                "lineNo": 1,
+                "lineType": "Item",
+                "unitPrice": 9.76,
+                "sellPrice": 9.76,
+                "lineTotal": 9.76,
+                "total": 9.76,
+                "tax": 0.89,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:c173f9d0-43c6-4ce7-a9ef-75a7656692ac"
+              }
+            },
+            {
+              "lineNo": 2,
+              "fulfilmentSpecificLine": {
+                "lineNo": 2,
+                "lineType": "Item",
+                "unitPrice": 9.48,
+                "sellPrice": 9.48,
+                "lineTotal": 9.48,
+                "total": 9.48,
+                "tax": 0.86,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:2638af53-3106-48aa-82cd-276b44cba48a"
+              }
+            },
+            {
+              "lineNo": 3,
+              "fulfilmentSpecificLine": {
+                "lineNo": 3,
+                "lineType": "Item",
+                "unitPrice": 9.98,
+                "sellPrice": 9.98,
+                "lineTotal": 9.98,
+                "total": 9.98,
+                "tax": 0.91,
+                "lineCalculationMethod": "UnitPriceIncludeGst",
+                "priceId": "S1:AU:8d03082f-f08e-41d9-9130-57baa4817101"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    
+  },
+  "_links": [
+    
+  ]
+}

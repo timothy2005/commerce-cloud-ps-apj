@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:int="http://www.springframework.org/schema/integration"
+	   xmlns:file="http://www.springframework.org/schema/integration/file"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config/>
+
+	<bean id="baseDirectoryBunningsRating" class="java.lang.String">
+		<constructor-arg value="#{baseDirectory}/${tenantId}/bvratingau" />
+	</bean>
+
+	<!-- Step 3: Service Activatior for Header Setup Task -->
+	<int:service-activator input-channel="batchFilesRatingProc" output-channel="bunningsBatchRatingFilesHeaderInit"
+						   ref="bunningsRatingHeaderSetupTask"
+						   method="execute" />
+
+	<!-- Step 4: Service Activatior for Header Init Task -->
+	<int:service-activator input-channel="bunningsBatchRatingFilesHeaderInit" output-channel="bunningsRatingBatchFileTransform"
+						   ref="bunningsRatingHeaderInitTask"
+						   method="execute" />
+
+	<!-- Step 5: Chain for XML Validation Task and XML Processing Task -->
+	<int:chain input-channel="bunningsRatingBatchFileTransform" output-channel="bunningsAuRatingBatchFilesTran">
+		<int:service-activator ref="bunningsRatingReconDataSetupTask" method="execute" />
+		<!-- to activate the xsd based validation un-comment bunningsXmlValidationTask service activator below -->
+		<int:service-activator ref="bunningsXmlValidationTask" method="execute" />
+		<int:service-activator ref="bunningsRatingXmlProcessingTask" method="execute" />
+	</int:chain>
+
+
+	<!-- Step 6: Service Activator for Impex File Processing Task-->
+	<int:service-activator input-channel="bunningsAuRatingBatchFilesTran" output-channel="bunningsAuRatingBatchFilesImp" ref="bunningsAuRatingBatchRunnerTask" method="execute" />
+	<bean id="bunningsAuRatingBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+		<property name="sessionService" ref="sessionService" />
+		<property name="importService" ref="importService" />
+		<lookup-method name="getImportConfig" bean="importConfig" />
+	</bean>
+
+	<!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+	<int:service-activator input-channel="bunningsAuRatingBatchFilesImp" ref="bunningsAuRatingBatchCleanupTask" method="execute" />
+	<bean id="bunningsAuRatingBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+		<property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+	</bean>
+
+	<bean id="bunningsRatingHeaderSetupTask" class="com.bunnings.core.dataimport.batch.task.BunningsGzipHeaderSetupTask">
+		<property name="catalog" value="BunningsPCMCatalog" />
+		<property name="net" value="false" />
+		<property name="storeBaseDirectory" ref="baseDirectoryBunningsRating" />
+		<property name="fileType" value="RATING" />
+	</bean>
+
+
+
+	<bean id="bunningsRatingHeaderInitTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+		<property name="sequenceIdParser" ref="bunningsRatingBatchSequenceIdParser"/>
+		<property name="languageParser" ref="batchLanguageParser"/>
+		<property name="fallbackLanguage" value="en" />
+	</bean>
+
+	<bean id="bunningsRatingBatchSequenceIdParser" class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+		<property name="parser">
+			<bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+				<property name="regex" value="${bunnings.hotfolder.sequenceId.xml.regex.name}" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="bunningsRatingReconDataSetupTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+		<property name="batchValidationEnabledKey" value="bunnings.ratings.feed.import.batch.validation.enabled"/>
+		<property name="bunningsReconSAXParserHandlerName" value="bunningsRatingReconSAXParserHandler"/>
+		<property name="bunningsReconService" ref="bunningsReconService"/>
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
+
+	<bean id="bunningsRatingReconSAXParserHandler" class="com.bunnings.core.dataimport.BunningsReconSAXParserHandler" scope="prototype">
+		<property name="primaryEntityNode" value="Product"/>
+	</bean>
+
+	<bean id="bunningsRatingXmlProcessingTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask">
+		<property name="xmlToImpexProcessManager" ref="ratingXMLToImpexProcessManager"/>
+	</bean>
+
+	<bean id="ratingXMLToImpexProcessManager"
+		  class="com.bunnings.core.dataimport.XMLtoImpexProcessManager">
+		<property name="encoding" value="UTF-8" />
+		<property name="bunningsXMLParser" ref="bunningsRatingXMLParser"/>
+	</bean>
+
+	<bean id="bunningsRatingXMLParser" class="com.bunnings.core.dataimport.impl.BunningsXMLParserImpl">
+		<property name="saxParserHandlerBeanName" value="bunningsRatingSAXParserHandler"/>
+	</bean>
+	<bean id = "bunningsRatingSAXParserHandler" class="com.bunnings.core.dataimport.BunningsSAXParserHandler" scope="prototype">
+		<!-- <property name="parentNode" value="products"/> -->
+		<property name="primaryEntityNode" value="Product"/>
+		<property name="collectionNodesKeySet" ref="ratingOtherStartEndNodes"/>
+		<property name="xmlRowValidationManager" ref="xmlAustRatingRowValidationManager"/>
+		<property name="impexStreamManager" ref="ratingImpexStreamManager"/>
+		<property name="rowTransalationManager" ref="defaultRatingRowTransalationManager"/>
+	</bean>
+
+	<bean id="xmlAustRatingRowValidationManager" class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+		<property name="validators" ref="austRationValidators"></property>
+	</bean>
+
+	<util:list id="austRationValidators">
+	</util:list>
+
+	<util:set id="ratingOtherStartEndNodes" value-type="java.lang.String">
+	    <value>Product/Reviews/Review/</value>
+	    <value>Product/ReviewStatistics/LocaleDistribution/LocaleDistributionItem/</value>
+    </util:set>
+
+	<alias name="bunningsRatingLastPublishTranslator" alias="ratingLastPublishTranslator" />
+	<bean id="bunningsRatingLastPublishTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningsRatingLastPublishTranslator">
+		<property name="country" value="AU"/>
+	</bean>
+
+	<util:list id="ratingRowTransalators" value-type="com.bunnings.core.dataimport.XMLRowTransalator">
+		<ref bean="ratingLastPublishTranslator"/>
+	</util:list>
+
+	<bean id="defaultRatingRowTransalationManager" class="com.bunnings.core.dataimport.impl.XMLRowTransalationManagerImpl">
+		<property name="rowTransalators" ref="ratingRowTransalators"/>
+	</bean>
+
+	<bean id="ratingImpexStreamManager" class="com.bunnings.core.dataimport.ImpexStreamManagerImpl">
+		<property name="handlers" ref="ratingHandlers"/>
+	</bean>
+
+	<util:list id="ratingHandlers">
+		<ref bean="bunningsRatingStreamHandler"/>
+	</util:list>
+
+
+	<bean id="bunningsRatingStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="header">
+			<value>
+				$catalogVersion=catalogVersion(catalog(id[default=BunningsPCMCatalog]),version[default='Staged'])[unique=true,default='BunningsPCMCatalog:Staged']
+				# Insert Bunnings Products
+				UPDATE GenericVariantProduct;code[unique=true];$catalogVersion;batchCountry[unique=true];reviewCount;reviewRating;lastReviewPublishTime[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssXXX'];notRecommendedCount;recommendedCount;
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>Product/id/;S;Product/batchCountry$/;Product/ReviewStatistics/TotalReviewCount$/;Product/ReviewStatistics/AverageOverallRating$/;Product/Reviews/LastPublishTime/;Product/ReviewStatistics/NotRecommendedCount$/;Product/ReviewStatistics/RecommendedCount$/;</value>
+		</property>
+		<property name="priority" value="1"/>
+	</bean>
+
+</beans>

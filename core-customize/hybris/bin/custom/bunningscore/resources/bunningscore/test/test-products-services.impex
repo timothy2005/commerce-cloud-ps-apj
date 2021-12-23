@@ -1,0 +1,30 @@
+$pcmCatalog = BunningsPCMCatalog
+$version = Online
+$ver=Online
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$languages = en, en_AU, en_NZ
+
+# Product Bunnings Catalog
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE
+                      ; en                    ; sample      ; TRUE
+
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode)
+                            ; $pcmCatalog               ; Online                ; true  ; $languages
+                            ; $pcmCatalog               ; Staged                ; false ; $languages
+
+INSERT_UPDATE Media; code[unique = true] ; primaryAssetUrl                                                                                                       ; $catalogVersion; altText                     ; removable; mediaFormat(qualifier); mime       ; secondaryAssetUrl                                                                                                     ;
+                   ; serviceMedia1               ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/d0039d6b61e34499bea6d7a77bc82a37?v=e3e109e6            ;                ; category navigation logo 1  ; TRUE     ;                       ; image/jpeg ; https://bnau-q-002-delivery.stylelabs.cloud/api/public/content/d0039d6b61e34499bea6d7a77bc82a37?v=e3e109e6            ;
+
+
+INSERT_UPDATE Service;serviceName[lang = $languages];description[lang = $languages];serviceID[unique = true];serviceIcon(code,$catalogVersion);serviceStatus;$catalogVersion;batchCountry[unique = true, default = 'AU']
+                     ;servicename1;desciption1;serviceID1;serviceMedia1;TRUE
+                     ;servicename2;desciption2;serviceID2;serviceMedia1;TRUE
+                     ;servicename3;desciption3;serviceID3;serviceMedia1;TRUE
+

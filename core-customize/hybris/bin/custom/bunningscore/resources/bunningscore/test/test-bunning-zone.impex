@@ -1,0 +1,95 @@
+INSERT_UPDATE Country; isocode[unique = true]; name[lang = en]; active[default = true]
+                     ; AU                    ; "AU"
+                     ; NZ                    ; "NZ"
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; ACT                   ; ACT            ; AU
+                    ; NSW                   ; NSW            ; AU
+                    ; QLD                   ; QLD            ; AU
+                    ; SA                    ; SA             ; AU
+                    ; WA                    ; WA             ; AU
+                    ; TAS                   ; TAS            ; AU
+                    ; NQ                    ; FNQ            ; AU
+                    ; NT                    ; NT             ; AU
+                    ; NORTH ISLAND          ; NORTH ISLAND   ; NZ
+                    ; SOUTH ISLAND          ; SOUTH ISLAND   ; NZ
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 2            ; AU                ; ACT,NSW
+                  ; AU RZ 3            ; AU                ; ACT
+                  ; AU RZ 4            ; AU                ; SA
+                  ; AU RZ 5            ; AU                ; WA
+                  ; AU RZ 6            ; AU                ; TAS
+                  ; AU RZ 8            ; AU                ; NQ
+                  ; AU RZ 9            ; AU                ; WA
+                  ; AU RZ 10           ; AU                ; NT
+                  ; AU RZ 7 - 1        ; AU                ; VIC
+                  ; AU RZ 7 - 2        ; AU                ; NSW
+                  ; AU RZ 7 - 3        ; AU                ; QLD
+                  ; AU RZ 7 - 4        ; AU                ; SA
+                  ; AU RZ 7 - 5        ; AU                ; WA
+                  ; NZ RZ 1            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 2            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 3            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 4            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 5            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 6            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 7            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 8            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 9            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 10           ; NZ                ; SOUTH ISLAND
+                  ; NZ RZ 11           ; NZ                ; SOUTH ISLAND
+                  ; NZ RZ 12           ; NZ                ; SOUTH ISLAND
+                  ; NZ RZ 13           ; NZ                ; SOUTH ISLAND
+
+INSERT_UPDATE PricingRegion; code[unique = true]; retailZone[unique = true]; name                          ; region(isoCode)
+                           ; VICMetro           ; AU RZ 1                  ; VIC Metro                     ; VIC
+                           ; ACT                ; AU RZ 2                  ; ACT                           ; ACT
+                           ; NSWMetro           ; AU RZ 2                  ; NSW Metro                     ; NSW
+                           ; QLDMetro           ; AU RZ 3                  ; QLD Metro                     ; QLD
+                           ; SAMetro            ; AU RZ 4                  ; SA Metro                      ; SA
+                           ; WAMetro            ; AU RZ 5                  ; WA Metro                      ; WA
+                           ; TASMetro           ; AU RZ 6                  ; TAS Metro                     ; TAS
+                           ; VICRegional        ; AU RZ 7 - 1              ; VIC Regional                  ; VIC
+                           ; NSWRegional        ; AU RZ 7 - 2              ; NSW Regional                  ; NSW
+                           ; QLDRegional        ; AU RZ 7 - 3              ; QLD Regional                  ; QLD
+                           ; SARegional         ; AU RZ 7 - 4              ; SA Regional                   ; SA
+                           ; WARegional         ; AU RZ 7 - 5              ; WA Regional                   ; WA
+                           ; FNQ                ; AU RZ 8                  ; FNQ                           ; NQ
+                           ; WARemote           ; AU RZ 9                  ; WA Remote                     ; WA
+                           ; NTMetro            ; AU RZ 10                 ; NT Metro                      ; NT
+                           ; NI Zone 1          ; NZ RZ 1                  ; Auckland                      ; NORTH ISLAND
+                           ; NI Zone 2          ; NZ RZ 2                  ; Waikoto                       ; NORTH ISLAND
+                           ; NI Zone 3          ; NZ RZ 3                  ; Western Bay of Plenty         ; NORTH ISLAND
+                           ; NI Zone 4          ; NZ RZ 4                  ; Northland                     ; NORTH ISLAND
+                           ; NI Zone 5          ; NZ RZ 5                  ; Bay of Plenty & South Waikoto ; NORTH ISLAND
+                           ; NI Zone 6          ; NZ RZ 6                  ; Gisborne                      ; NORTH ISLAND
+                           ; NI Zone 7          ; NZ RZ 7                  ; Hawke's Bay                   ; NORTH ISLAND
+                           ; NI Zone 8          ; NZ RZ 8                  ; Central North Island          ; NORTH ISLAND
+                           ; NI Zone 9          ; NZ RZ 9                  ; Wellington                    ; NORTH ISLAND
+                           ; SI Zone 10         ; NZ RZ 10                 ; Christchurch                  ; SOUTH ISLAND
+                           ; SI Zone 11         ; NZ RZ 11                 ; Canterbury                    ; SOUTH ISLAND
+                           ; SI Zone 12         ; NZ RZ 12                 ; South Island (North)          ; SOUTH ISLAND
+                           ; SI Zone 13         ; NZ RZ 13                 ; Otago                         ; SOUTH ISLAND
+
+
+
+INSERT_UPDATE RegionalProductDetails; itemNumber[unique = true]; regionDetails(isoCode)[unique = true]; status  ; visible; transactable; instorePickup; availableForDelivery; isDirectDelivery; zone(code)[unique = true];batchCountry[unique=true,default='AU']
+                                    ; AUW810010                ; ACT                                  ; CSO     ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; FALSE           ; AU RZ 3;
+                                    ; AUW810011                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; FALSE               ; FALSE           ; AU RZ 3;
+                                    ; AUW810012                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; FALSE        ; TRUE                ; FALSE           ; AU RZ 3;
+                                    ; AUW810013                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; TRUE            ; AU RZ 3;
+                                    ; AUW810014                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 3;
+                                    ; AUW810015                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; FALSE        ; FALSE               ; FALSE           ; AU RZ 3;
+                                    ; AUW810016                ; ACT                                  ; Deleted ; TRUE   ; TRUE        ; TRUE         ; TRUE                ; TRUE            ; AU RZ 3;
+
+
+
+INSERT_UPDATE ItemLocationAttributes; itemNumber[unique = true]; locationCode; itemStatus; primaryBarcode; isRanged(code); inStoreLocations ;  batchCountry[unique=true, default = 'AU']
+                                    ; AUW810011                ; 9150        ; Live      ; 9312753970884 ; LOCATED        ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1 ;
+                                    ; AUW810012                ; 9150        ; Live      ; 9312753970885 ; LOCATED        ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1 ;
+                                    ; AUW810013                ; 9150        ; Live      ; 9312753970886 ; LOCATED        ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1 ;
+                                    ; AUW810014                ; 9150        ; Live      ; 9312753970887 ; LOCATED        ; Sequence-47|Aisle-12|AisleDescription-Tools - Hand Tools|Bay-1 ;

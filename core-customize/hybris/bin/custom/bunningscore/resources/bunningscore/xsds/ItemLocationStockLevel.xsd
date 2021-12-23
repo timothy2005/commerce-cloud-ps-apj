@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:api.bunnings/inventory/item/location/stock/level" elementFormDefault="qualified" xmlns="urn:api.bunnings/inventory/item/location/stock/level" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:annotation>
+    <xs:appinfo>
+      <Resorce>ItemLocationStockLevel</Resorce>
+    </xs:appinfo>
+    <xs:appinfo>
+      <Versioning>
+        <Version>2</Version>
+        <SemanticVersion>2.1.3</SemanticVersion>
+      </Versioning>
+    </xs:appinfo>
+    <xs:documentation>
+      This Resource provides the stock levels based on a location
+    </xs:documentation>
+  </xs:annotation>
+  
+  <xs:element name="ItemLocationStockLevel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ItemNumber">
+          <xs:annotation>
+            <xs:documentation>
+              The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="[0-9]{7}" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="LocationCode">
+          <xs:annotation>
+            <xs:documentation>
+              Location where the items is stocked
+            </xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="[0-9]{4}" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="StockCount" type="xs:decimal">
+          <xs:annotation>
+            <xs:documentation>
+              The approximate stock count for the item in the location
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="LevelIndicator">
+          <xs:annotation>
+            <xs:documentation>
+              Descriptive calculated value of the StockCount
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="LevelIndMinStock" minOccurs="0" nillable="false" type="xs:decimal">
+          <xs:annotation>
+            <xs:documentation>
+              The minimum stock count for the item in the location at the indicated LevelIndicator
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+		    <xs:element name="TopStockCount" minOccurs="0" nillable="true" type="xs:decimal">
+          <xs:annotation>
+            <xs:documentation>
+              The amount of stock in topstock minus anything that cannot be sold to the public
+			        eg. etos, CRC, quarentine
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+		    <xs:element name="ExpectedStockAvailable" minOccurs="0" nillable="true">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Available" minOccurs="0" maxOccurs="unbounded" type="StockLevelType" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="ItemLocationStockLevelBatch">
+    <xs:annotation>
+      <xs:documentation>
+        Used to deliver a batch of items stock levels
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BatchHeader">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RequestID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the request that is triggered during the refresh process
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="TransmissionBatchID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the Tranmission Batch that is received from Corporate System(s)
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ExtractTime" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>
+                    The time this batch was created.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Version" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The version of the schema this message is generated for. Newer version may have more fields added
+                    with additional information.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Country" type="CountryISO2CharType">
+                <xs:annotation>
+                  <xs:documentation>
+                    The country this batch of items belong to. a batch can only return items from a single
+                    country.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ID" type="xs:int">
+                <xs:annotation>
+                  <xs:documentation>ID that unquely identifies this message</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ItemLocationStockLevels">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="ItemLocationStockLevel" maxOccurs="unbounded" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+  TYPE DEFINITIONS
+  -->
+
+  <!--
+  SIMPLE
+  -->
+
+  <xs:simpleType name="CountryISO2CharType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="2" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!--
+  COMPLEX
+  -->
+  
+  <xs:complexType name="StockLevelType">
+    <xs:sequence>
+      <xs:element name="AvailableDate" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>
+            Indicates when the stock will be back in date. This will only be filled in when there is no stock available.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

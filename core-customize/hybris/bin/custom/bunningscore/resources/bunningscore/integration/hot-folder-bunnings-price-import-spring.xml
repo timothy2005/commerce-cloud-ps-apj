@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:file="http://www.springframework.org/schema/integration/file"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config/>
+
+
+    <bean id="pricingBaseDirectory" class="java.lang.String">
+        <constructor-arg value="#{baseDirectory}/${tenantId}/price"/>
+    </bean>
+
+
+    
+    <!-- Step 3: Service Activatior for Header Setup Task -->
+    <int:service-activator input-channel="batchFilesPricingProc" output-channel="batchPricingFilesHeaderInit"
+                           ref="bunningsPriceHeaderSetupTask"
+                           method="execute" />
+
+    <!-- Step 4: Service Activator for Header Init Task -->
+    <int:service-activator input-channel="batchPricingFilesHeaderInit" output-channel="bunningsPriceReconDataSetup" ref="pricingHeaderInitTask"
+                           method="execute" />
+
+    <!-- Step 4.1: Record count task -->
+    <int:service-activator input-channel="bunningsPriceReconDataSetup" output-channel="batchPriceTransform" ref="bunningsPriceReconDataSetupTask"
+                           method="execute" />
+
+    <!-- Step 5: Batch Transform Task -->
+    <int:service-activator input-channel="batchPriceTransform" output-channel="bunningsPriceBatchFilesTran" ref="priceBatchTransformerTask"
+                           method="execute" />
+
+
+    <!-- Step 6: Service Activator for Impex File Processing Task-->
+    <int:service-activator input-channel="bunningsPriceBatchFilesTran" output-channel="bunningsPriceBatchFilesImp" ref="bunningsPriceBatchRunnerTask" method="execute" />
+    <bean id="bunningsPriceBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+        <property name="sessionService" ref="sessionService" />
+        <property name="importService" ref="importService" />
+        <lookup-method name="getImportConfig" bean="importConfig" />
+    </bean>
+
+    <!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+    <int:service-activator input-channel="bunningsPriceBatchFilesImp" ref="bunningsPriceBatchCleanupTask" method="execute" />
+    <bean id="bunningsPriceBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+        <property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+    </bean>
+    
+    <bean id="bunningsPriceReconDataSetupTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+        <property name="bunningsReconService" ref="bunningsReconService"/>
+        <property name="configurationService" ref="configurationService"/>
+    </bean>
+
+    <bean id="bunningsPriceHeaderSetupTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask">
+        <property name="catalog" value="BunningsPCMCatalog" />
+        <property name="net" value="false" />
+        <property name="storeBaseDirectory" ref="pricingBaseDirectory" />
+        <property name="fileType" value="PRICE" />
+    </bean>
+
+
+
+    <bean id="pricingHeaderInitTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+        <property name="sequenceIdParser" ref="pricingBatchSequenceIdParser"/>
+        <property name="languageParser" ref="batchLanguageParser"/>
+        <property name="fallbackLanguage" value="en" />
+    </bean>
+
+    <bean id="pricingBatchSequenceIdParser" class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+        <property name="parser">
+            <bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+                <property name="regex" value="${hotfolder.common.csv.mapping.sequence.id}" />
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="priceBatchTransformerTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsImpexTransformerTask"
+          init-method="initConvertersMap">
+        <property name="fieldSeparator" value="," />
+        <property name="encoding" value="UTF-8" />
+        <property name="linesToSkip" value="1"/>
+        <property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+    </bean>
+
+    <bean id="batchPriceConverterMapping"
+          class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping"
+          p:mapping="PRICE"
+          p:converter-ref="batchPriceConverter"/>
+
+    <bean id="batchPriceConverter" class="com.bunnings.core.dataimport.convertor.impl.BunningsCountryCodeConvertor">
+        <property name="header">
+            <value># ImpEx for Importing Prices
+                $unit=unit(code)[default=each]
+                INSERT_UPDATE PriceRow[processor=com.bunnings.core.dataimport.xml.processors.BunningsPriceImportProcessor];priceId;cor[unique=true];corseq;productId[unique=true];price[translator=de.hybris.platform.acceleratorservices.dataimport.batch.converter.PriceTranslator];priority;startTime[dateformat='yyyy-MM-dd''T''HH:mm:ss.SSSXXX'];endTime[dateformat='yyyy-MM-dd''T''HH:mm:ss.SSSXXX'];locationCode[unique=true];minqtd[default=1];ug(code)[translator=com.bunnings.core.dataimport.xml.translators.BunningsUserPriceGroupTranslator];$unit;currency(isocode)[unique=true][cellDecorator='com.bunnings.core.dataimport.xml.decorators.BunningsCurrencyWithCountryDecorator'];feedLineReference
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>;{0};{+1};{2};{+5};{6};{8};{9};{10};{+11};{12};{14};;{C};{0};{C}</value>
+        </property>
+    </bean>
+</beans>

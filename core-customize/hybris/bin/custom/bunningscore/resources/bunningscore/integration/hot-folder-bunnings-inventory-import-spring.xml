@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:file="http://www.springframework.org/schema/integration/file"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="inventoryBaseDirectory" class="java.lang.String">
+        <constructor-arg value="#{baseDirectory}/${tenantId}/inventory"/>
+    </bean>
+
+    <!-- Step 3: Service Activatior for Header Setup Task -->
+    <int:service-activator input-channel="batchFilesInventoryProc" output-channel="batchInventoryFilesHeaderInit"
+                           ref="bunningsInventoryHeaderSetupTask"
+                           method="execute" />
+
+    <!-- Step 4: Service Activator for Header Init Task -->
+    <int:service-activator input-channel="batchInventoryFilesHeaderInit" output-channel="bunningsInventoryReconDataSetup" ref="inventoryHeaderInitTask"
+                           method="execute" />
+
+    <!-- Step 4.1: Record count task -->
+    <int:service-activator input-channel="bunningsInventoryReconDataSetup" output-channel="batchInventoryFilesHeader" ref="bunningsInventoryReconDataSetupTask"
+                           method="execute" />
+
+    <!-- Step 5: Batch Transform Task -->
+    <int:service-activator input-channel="batchInventoryFilesHeader" output-channel="bunningsInventoryBatchFilesTran" ref="inventoryBatchTransformerTask"
+                           method="execute" />
+
+    <!-- Step 6: Service Activator for Impex File Processing Task-->
+    <int:service-activator input-channel="bunningsInventoryBatchFilesTran" output-channel="bunningsInventoryBatchFilesImp" ref="bunningsInventoryBatchRunnerTask" method="execute" />
+    <bean id="bunningsInventoryBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+        <property name="sessionService" ref="sessionService" />
+        <property name="importService" ref="importService" />
+        <lookup-method name="getImportConfig" bean="importConfig" />
+    </bean>
+
+    <!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+    <int:service-activator input-channel="bunningsInventoryBatchFilesImp" ref="bunningsInventoryBatchCleanupTask" method="execute" />
+    <bean id="bunningsInventoryBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+        <property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+    </bean>
+
+    <!--Tasks 1 : Task for Step 3:  Header setup Task to set input file and catalog details in header -->
+    <bean id="bunningsInventoryHeaderSetupTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask">
+        <property name="catalog" value="BunningsPCMCatalog" />
+        <property name="net" value="false" />
+        <property name="storeBaseDirectory" ref="inventoryBaseDirectory" />
+        <property name="fileType" value="INVENTORY" />
+    </bean>
+
+    <!--Tasks 2 : Task for Step 4:  Header initialization Task to set sequence id and language -->
+    <bean id="inventoryHeaderInitTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+        <property name="sequenceIdParser" ref="inventoryBatchSequenceIdParser"/>
+        <property name="languageParser" ref="batchLanguageParser"/>
+        <property name="fallbackLanguage" value="en" />
+    </bean>
+
+    <!-- Parser to parse the sequence id based on the regex pattern -->
+    <bean id="inventoryBatchSequenceIdParser" class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+        <property name="parser">
+            <bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+                <property name="regex" value="${hotfolder.common.csv.mapping.sequence.id}" />
+            </bean>
+        </property>
+    </bean>
+
+    <!--Tasks 3 : Task for Step 4.1:  Records counting task -->
+    <bean id="bunningsInventoryReconDataSetupTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+        <property name="bunningsReconService" ref="bunningsReconService"/>
+        <property name="configurationService" ref="configurationService"/>
+    </bean>
+
+    <!--Tasks 5.2 : Task for Step 4:  impex transformation task -->
+    <bean id="inventoryBatchTransformerTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsImpexTransformerTask"
+          init-method="initConvertersMap">
+        <property name="fieldSeparator" value="," />
+        <property name="encoding" value="UTF-8" />
+        <property name="linesToSkip" value="1"/>
+        <property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+    </bean>
+
+    <!-- Second Converter mapping as part of step 4 , links the impex converter for input data processing-->
+    <bean id="batchInventoryStockConverterMapping"
+          class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping"
+          p:mapping="INVENTORY"
+          p:converter-ref="batchInventoryStockConverter"/>
+
+    <!-- inventory converter to create warehouse impex from input data -->
+    <bean id="batchInventoryStockConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+        <property name="header">
+            <value># ImpEx for Importing Stock levels
+                INSERT_UPDATE StockLevel[processor=com.bunnings.core.dataimport.xml.processors.BunningsLocationImportProcessor];productCode[unique=true];warehouse(code)[unique=true][cellDecorator='com.bunnings.core.dataimport.xml.decorators.BunningsWarehouseForStockDecorator'];available[translator=com.bunnings.core.dataimport.xml.translators.BunningsStockCountTranslator];inStockStatus(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];overSelling[translator=com.bunnings.core.dataimport.xml.translators.BunningsStockCountTranslator];nextDeliveryTime[dateformat='dd-MM-yyyy'];lastExtractTime[translator=com.bunnings.core.dataimport.xml.translators.BunningsTimeTranslator];feedLineReference
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>;{+0};{8}|{1};{2};{3};{5};{6};{7};{0}</value>
+        </property>
+    </bean>
+</beans>

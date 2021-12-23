@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:int="http://www.springframework.org/schema/integration"
+	   xmlns:file="http://www.springframework.org/schema/integration/file"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config/>
+
+	<bean id="baseDirectoryBunningsNzRating" class="java.lang.String">
+		<constructor-arg value="#{baseDirectory}/${tenantId}/bvratingnz" />
+	</bean>
+
+	<!-- Step 3: Service Activatior for Header Setup Task -->
+	<int:service-activator input-channel="batchFilesNzRatingProc" output-channel="bunningsBatchNzRatingFilesHeaderInit"
+						   ref="bunningsNzRatingHeaderSetupTask"
+						   method="execute" />
+
+	<!-- Step 4: Service Activatior for Header Init Task -->
+	<int:service-activator input-channel="bunningsBatchNzRatingFilesHeaderInit" output-channel="bunningsNzRatingBatchFileTransform"
+						   ref="bunningsNzRatingHeaderInitTask"
+						   method="execute" />
+
+	<!-- Step 5: Chain for XML Validation Task and XML Processing Task -->
+	<int:chain input-channel="bunningsNzRatingBatchFileTransform" output-channel="bunningsNZRatingBatchFilesTran">
+		<int:service-activator ref="bunningsNzRatingReconDataSetupTask" method="execute" />
+		<!-- to activate the xsd based validation un-comment bunningsXmlValidationTask service activator below -->
+		<int:service-activator ref="bunningsXmlValidationTask" method="execute" />
+		<int:service-activator ref="bunningsNzRatingXmlProcessingTask" method="execute" />
+	</int:chain>
+
+	<!-- Step 6: Service Activator for Impex File Processing Task-->
+	<int:service-activator input-channel="bunningsNZRatingBatchFilesTran" output-channel="bunningsNZRatingBatchFilesImp" ref="bunningsNZRatingBatchRunnerTask" method="execute" />
+	<bean id="bunningsNZRatingBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+		<property name="sessionService" ref="sessionService" />
+		<property name="importService" ref="importService" />
+		<lookup-method name="getImportConfig" bean="importConfig" />
+	</bean>
+
+	<!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+	<int:service-activator input-channel="bunningsNZRatingBatchFilesImp" ref="bunningsNZRatingBatchCleanupTask" method="execute" />
+	<bean id="bunningsNZRatingBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+		<property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+	</bean>
+
+	<bean id="bunningsNzRatingHeaderSetupTask" class="com.bunnings.core.dataimport.batch.task.BunningsGzipHeaderSetupTask">
+		<property name="catalog" value="BunningsPCMCatalog" />
+		<property name="net" value="false" />
+		<property name="storeBaseDirectory" ref="baseDirectoryBunningsNzRating" />
+		<property name="fileType" value="RATING" />
+	</bean>
+
+
+	<bean id="bunningsNzRatingHeaderInitTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+		<property name="sequenceIdParser" ref="bunningsRatingBatchSequenceIdParser"/>
+		<property name="languageParser" ref="batchLanguageParser"/>
+		<property name="fallbackLanguage" value="en" />
+	</bean>
+
+	<bean id="bunningsNzRatingReconDataSetupTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+		<property name="batchValidationEnabledKey" value="bunnings.ratings.feed.import.batch.validation.enabled"/>
+		<property name="bunningsReconSAXParserHandlerName" value="bunningsNzRatingReconSAXParserHandler"/>
+		<property name="bunningsReconService" ref="bunningsReconService"/>
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
+
+	<bean id="bunningsNzRatingReconSAXParserHandler" class="com.bunnings.core.dataimport.BunningsReconSAXParserHandler" scope="prototype">
+		<property name="primaryEntityNode" value="Product"/>
+	</bean>
+
+
+	<bean id="bunningsNzRatingXmlProcessingTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask">
+		<property name="xmlToImpexProcessManager" ref="nzRatingXMLToImpexProcessManager"/>
+	</bean>
+
+	<bean id="nzRatingXMLToImpexProcessManager"
+		  class="com.bunnings.core.dataimport.XMLtoImpexProcessManager">
+		<property name="encoding" value="UTF-8" />
+		<property name="bunningsXMLParser" ref="bunningsNzRatingXMLParser"/>
+	</bean>
+
+	<bean id="bunningsNzRatingXMLParser" class="com.bunnings.core.dataimport.impl.BunningsXMLParserImpl">
+		<property name="saxParserHandlerBeanName" value="bunningsNzRatingSAXParserHandler"/>
+	</bean>
+	<bean id = "bunningsNzRatingSAXParserHandler" class="com.bunnings.core.dataimport.BunningsSAXParserHandler" scope="prototype">
+		<!-- <property name="parentNode" value="products"/> -->
+		<property name="primaryEntityNode" value="Product"/>
+		<property name="collectionNodesKeySet" ref="ratingOtherStartEndNodes"/>
+		<property name="xmlRowValidationManager" ref="xmlNewzRatingRowValidationManager"/>
+		<property name="impexStreamManager" ref="ratingImpexStreamManager"/>
+		<property name="rowTransalationManager" ref="defaultNzRatingRowTransalationManager"/>
+	</bean>
+
+	<bean id="xmlNewzRatingRowValidationManager" class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+		<property name="validators" ref="newzRatingValidators"></property>
+	</bean>
+
+	<util:list id="newzRatingValidators">
+	</util:list>
+
+	<alias name="bunningsNzRatingLastPublishTranslator" alias="nzRatingLastPublishTranslator" />
+	<bean id="bunningsNzRatingLastPublishTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningsRatingLastPublishTranslator">
+		<property name="country" value="NZ"/>
+	</bean>
+
+	<util:list id="nzRatingRowTransalators" value-type="com.bunnings.core.dataimport.XMLRowTransalator">
+		<ref bean="nzRatingLastPublishTranslator"/>
+	</util:list>
+
+	<bean id="defaultNzRatingRowTransalationManager" class="com.bunnings.core.dataimport.impl.XMLRowTransalationManagerImpl">
+		<property name="rowTransalators" ref="nzRatingRowTransalators"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:api.bunnings/inventory/item/location" elementFormDefault="qualified" xmlns="urn:api.bunnings/inventory/item/location" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <Resorce>ItemLocation</Resorce>
+      <Versioning>
+        <Version>2</Version>
+        <SemanticVersion>2.1.2</SemanticVersion>
+      </Versioning>
+      <AvailableClaims>
+        <Claim name="InStoreLocation"></Claim>
+        <Claim name="Supplier"></Claim>
+      </AvailableClaims>
+    </xs:appinfo>
+    <xs:documentation>
+      This resource provides items ranged to a specific location.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="ItemLocation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ItemNumber" type="ItemNumberType">
+          <xs:annotation>
+            <xs:documentation>
+              The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="LocationCode" type="LocationType">
+          <xs:annotation>
+            <xs:documentation>
+              The location this location specific information relates to
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ItemStatus" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              Status of the item for the location
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="IsOnRecall" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>
+              Is the item recalled
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="IsRanged" type="IsRangedTypeEnum">
+          <xs:annotation>
+            <xs:documentation>
+              The ranging status of the item
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="PrimaryBarcode" type="BarcodeType" />
+        <xs:element name="InStoreLocations" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <Claim>InStoreLocation</Claim>
+            </xs:appinfo>
+            <xs:documentation>
+              Locations that the item can be found within the store
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="InStoreLocation" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Aisle" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Aisle id in store
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="AisleIsLabeled" minOccurs="0" type="xs:boolean" default="true">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Does the aisle have a visible label within the store.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="AisleDescription" type="xs:string" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Aisle Description in store
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Bay" type="xs:string" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Bay id in the given aisle in store
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Sequence" type="xs:string" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Sequence number for the item within the bay
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Suppliers" minOccurs="0">
+          <xs:annotation>
+            <xs:appinfo>
+              <Claim>Supplier</Claim>
+            </xs:appinfo>
+            <xs:documentation>
+              Suppliers of the product for this location
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Supplier" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SupplierCode" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          A unique identifier for this supplier a supplier code is an alphanumeric string
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="SiteCode" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Unique identifier for this purchasing site.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Priority" minOccurs="0" type="xs:integer" nillable="true">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Order priority for this item and supplier
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="StartDate" type="xs:dateTime">
+                      <xs:annotation>
+                        <xs:documentation>
+                          The date time this supplier starts in the system.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="EndDate" type="xs:dateTime" minOccurs="0" nillable="true">
+                      <xs:annotation>
+                        <xs:documentation>
+                          The data time this supplier is archived.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ItemLocationBatch">
+    <xs:annotation>
+      <xs:documentation>
+        Used to deliver a batch of items stock levels
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BatchHeader">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RequestID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the request that is triggered during the refresh process
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="TransmissionBatchID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the Tranmission Batch that is received from Corporate System(s)
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ExtractTime" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>
+                    The time this batch was created.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Version" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The version of the schema this message is generated for. Newer version may have more fields added
+                    with additional information.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Country" type="CountryISO2CharType">
+                <xs:annotation>
+                  <xs:documentation>
+                    The country this batch of items belong to. a batch can only return items from a single
+                    country.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ID" type="xs:int">
+                <xs:annotation>
+                  <xs:documentation>ID that unquely identifies this message</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ItemLocations">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="ItemLocation" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+  TYPE DEFINITIONS
+  -->
+
+  <!--
+  SIMPLE
+  -->
+
+  <xs:simpleType name="BarcodeType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="8"/>
+      <xs:maxLength value="14" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="IsRangedTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Ranged" />
+      <xs:enumeration value="SpecialOrder" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ItemNumberType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{7}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="LocationType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{4}" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="CountryISO2CharType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="2" />
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

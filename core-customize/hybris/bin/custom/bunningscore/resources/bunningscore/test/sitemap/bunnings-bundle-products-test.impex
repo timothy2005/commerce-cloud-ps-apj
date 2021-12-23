@@ -1,0 +1,48 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+# ImpEx for Importing Bundle Products
+
+#!This file should be run after sync is complete from PIM staged to PIM Online
+$pimcatalog = BunningsPCMCatalog
+$version = Online
+$versionOnline = Online
+$cv = catalogVersion(catalog(id[default=$pimcatalog]), version[default=$version])[unique=true, default=$pimcatalog:$version]
+$mediaCV = catalogVersion(catalog(id[default=$pimcatalog]), version[default=$version])[unique=true, default=$pimcatalog:$version]
+$supercategory = supercategories(code, $cv)[unique=true, mode=append]
+$approvalStatus = approvalstatus(code)[default='approved'][unique=true]
+$gally = galleryImages(qualifier, $mediaCV)
+$lang = en
+
+#BUNDLE DATA
+#BUNDLE DATA
+
+INSERT_UPDATE Country; isocode[unique = true]; name[lang = en]; active; ; ; ; ; ;
+                     ; NZ                    ; NZ             ; true  ; ; ; ; ; ;
+                     ; AU                    ; AU             ; true  ; ; ; ; ; ;
+
+
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; ACT                   ; ACT            ; AU
+                    ; Test                  ; Test           ; NZ
+                    ; NSW                   ; Test           ; AU
+                    ; QLD                   ; QLD            ; AU
+
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 3            ; AU                ; VIC
+                  ; NZ RZ 10           ; NZ                ; Test
+
+
+INSERT_UPDATE PricingRegion; code[unique = true]; retailZone[unique = true]; name      ; region(isoCode)
+                           ; VICMetro           ; AU RZ 1                  ; VIC Metro ; VIC
+                           ; ACT                ; AU RZ 2                  ; ACT       ; ACT
+
+
+
+INSERT_UPDATE BundleProduct; description[lang = $lang]                                          ; code[unique = true]; name[lang = $lang]           ; $cv; isVisibleInAllRegion; regions(code)[default = 'VICMetro']; batchCountry[default = AU]; basicBundle; disclaimer          ; fullyInstalled; bestSeller; picture(code, $mediaCV)   ; $approvalStatus; ;
+                           ; Description Part should be handled. It may be in form of HTML Tags ; 5000001            ; Wardrobe Oak Sliding Package ;    ; TRUE                ;                                  ;                           ; TRUE       ; Test the Disclaimer ; TRUE          ; FALSE     ; ;                ; 0184245_media_container_1,0184245_media_container_2,0184245_media_container_3,0184245_media_container_4,0184245_media_container_5,0184245_media_container_6,0184245_media_container_7,0047762_media_container_1,0047762_media_container_2,base-0067330_media_container_1 ,base-0067330_media_container_2,base-0067330_media_container_3,base-0067330_media_container_4,0026237_media_container_1,0026237_media_container_2

@@ -1,0 +1,412 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:api.bunnings.com.au/location/information" elementFormDefault="qualified"
+           xmlns="urn:api.bunnings.com.au/location/information"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:appinfo>
+      <Resorce>Location</Resorce>
+    </xs:appinfo>
+    <xs:appinfo>
+      <Version>1</Version>
+      <AvailableClaims>
+        <Claim name="LocationGln"></Claim>
+        <Claim name="TradeSpecialistEmail"></Claim>
+      </AvailableClaims>
+    </xs:appinfo>
+    <xs:documentation>
+      This resource can be queried by clients that have the location resource.
+      a batch of locations can only contain locations from one country.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:complexType name="GeographicalLocationType">
+    <xs:sequence>
+      <xs:element name="Latitude" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string" />
+      <xs:element name="Longitude" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AddressType">
+    <xs:sequence>
+      <xs:element name="Line1" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string" />
+      <xs:element name="Line2" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string" />
+      <xs:element name="Line3" minOccurs="1" maxOccurs="1" nillable="true" type="xs:string" />
+      <xs:element name="TownCity" minOccurs="0" maxOccurs="1" nillable="false" type="xs:string" />
+      <xs:element name="PostCode" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string" />
+      <xs:element name="State" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string" />
+      <xs:element name="Country" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ContactRecordType">
+    <xs:sequence>
+      <xs:element name="ContactName" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Name for this type of contact
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Phone" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string" />
+      <xs:element name="Email" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string" />
+      <xs:element name="Fax" minOccurs="1" maxOccurs="1" nillable="true" type="xs:string" />
+	  <xs:element name="ContactType" minOccurs="1" maxOccurs="1" nillable="false" type="ContactNameType">      
+        <xs:annotation>
+          <xs:documentation>
+            Type of this contact record
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TradingPeriodType">
+    <xs:sequence>
+      <xs:element name="Name" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Display name of the trading period
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="DaysOfWeek" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Full names of the day of the week in a csv format eg. Monday,Tuesday,Wednesday
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Open" minOccurs="1" maxOccurs="1" nillable="false" type="xs:time">
+        <xs:annotation>
+          <xs:documentation>
+            Open time of the trading period
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Close" minOccurs="1" maxOccurs="1" nillable="false" type="xs:time">
+        <xs:annotation>
+          <xs:documentation>
+            Close time of the trading period
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EffectiveStartDate" minOccurs="1" maxOccurs="1" nillable="true" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>
+            Date range in which is trading period affects - can be nillable to set stores base trading hours. Can be granular to override the trading hours for a particular date
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EffectiveEndDate" minOccurs="1" maxOccurs="1" nillable="true" type="xs:dateTime">
+        <xs:annotation>
+          <xs:documentation>
+            Date range in which is trading period affects - can be nillable to set stores base trading hours. Can be granular to override the trading hours for a particular date
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="LocationType">
+    <xs:sequence>
+      <xs:element name="LocationCode">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{4}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Name" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Store trading name
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Type" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The type of location this is e.g. WAREHOUSE, CFC, TRADECENTRE, HYBRID, DC, STORESUPPORT
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SubType" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The subtype is a deeper classification of a type of store - AEG VAN, VIRTUAL, ModelWarehouse, Small Format store, Pop up
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CreationDate" minOccurs="1" maxOccurs="1" nillable="false" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>
+            The date this location was created in the source system
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ArchiveDate" minOccurs="0" maxOccurs="1" nillable="true" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>
+            The date this location is archived in the source system
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TradingStartDate" minOccurs="0" maxOccurs="1" nillable="true" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>
+            The first day of trading for this location
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TradingEndDate" minOccurs="0" maxOccurs="1" nillable="true" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>
+            The last day of trading for this location
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Address" minOccurs="1" maxOccurs="1" nillable="false" type="AddressType" />
+      <xs:element name="Contacts" minOccurs="1" maxOccurs="1" nillable="false">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Contact" minOccurs="1" maxOccurs="unbounded" nillable="false" type="ContactRecordType" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Groups" minOccurs="1" maxOccurs="1" nillable="false">
+        <xs:annotation>
+          <xs:documentation>
+            Groups that this store is a member of.
+            e.g. such as store area.
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="RegionCode" minOccurs="0" maxOccurs="1" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  This represents a subset of a state eg. VIC / VIC EAST / VIC WEST / WA
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="RegionName" minOccurs="0" maxOccurs="1" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  Friendly name for a given region
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="AreaName" minOccurs="0" maxOccurs="1" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  Area represents a section within a region
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="RetailZone" minOccurs="0" maxOccurs="1" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  The descriptive retail zone that this store operates within
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="CostZone" minOccurs="0" maxOccurs="1" type ="xs:string">
+              <xs:annotation>
+                <xs:appinfo>
+                  <Claim>CostZone</Claim>
+                </xs:appinfo>
+                <xs:documentation>
+                  The descriptive cost zone this location is in
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="LocationGln" minOccurs="0" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <Claim>LocationGln</Claim>
+          </xs:appinfo>
+          <xs:documentation>
+            Location GLN
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TimeZone" minOccurs="1" maxOccurs="1" nillable="false" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The time region that these relate to listed in an abbreviation manner
+            https://www.timeanddate.com/time/zones/
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TradingHours" minOccurs="0" maxOccurs="1" nillable="true">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="TradingPeriod" type="TradingPeriodType" minOccurs="0" maxOccurs="unbounded" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GeoLocation" minOccurs="0" maxOccurs="1" nillable="true" type="GeographicalLocationType" />
+      <xs:element name="Services" minOccurs="0" maxOccurs="1" nillable="true">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Service" minOccurs="1" maxOccurs="unbounded" nillable="false" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  Contains a collection of services assigned to this store
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="CountryCodeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NZ">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for New Zealand Stores.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="IE">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for Ireland Stores.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="GB">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for Great Britain Stores.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="AU">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for Australian Stores. Do not use until EBS are on board and have adopted the AU enum.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ContactNameType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PRIMARY_LOCATION_CONTACT">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant PRIMARY_LOCATION_CONTACT (Website will only take in the first record )
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="RECEPTION">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for RECEPTION.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TRADE">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for TRADE.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="SPECIALORDERS">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for SPECIALORDERS.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TRADE_REP">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for TRADE_REP.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="OTHER">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for OTHER.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="PERSONAL">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for PERSONAL.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="UNKNOWN">
+        <xs:annotation>
+          <xs:documentation>
+            Messages meant for backwards compatibility.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="LocationMessage">
+    <xs:annotation>
+      <xs:documentation>
+        Message that wraps a collection of locations for delivery in a batching like manner
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Header">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="1" maxOccurs="1" name="ID" type="xs:int">
+                <xs:annotation>
+                  <xs:documentation>ID that unquely identifies this message</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="1" name="TransmissionBatchID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the Tranmission Batch that is received from Corporate System(s)
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="1" name="Version" type="xs:string" />
+              <xs:element minOccurs="0" maxOccurs="1" name="CountryCode" type="CountryCodeType" />
+              <xs:element minOccurs="1" maxOccurs="1" name="ExtractDateTime" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>Indicates the date and time when this message was extracted</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="1" name="RequestID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the request that is triggered during the refresh process
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Locations">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Location" minOccurs="0" maxOccurs="unbounded" nillable="false" type="LocationType" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

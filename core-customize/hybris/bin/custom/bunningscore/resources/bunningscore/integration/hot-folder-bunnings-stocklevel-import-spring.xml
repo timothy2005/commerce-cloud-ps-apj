@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:file="http://www.springframework.org/schema/integration/file"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="baseDirectoryBunningsStockLevel" class="java.lang.String">
+        <constructor-arg value="#{baseDirectory}/${tenantId}/stocklevel"/>
+    </bean>
+
+    <!-- Step 3: Service Activatior for Header Setup Task -->
+    <int:service-activator input-channel="batchFilesStockProc" output-channel="bunningsBatchStockFilesHeaderInit"
+                           ref="bunningsStockHeaderSetupTask"
+                           method="execute"/>
+
+    <!-- Step 4: Service Activatior for Header Init Task -->
+    <int:service-activator input-channel="bunningsBatchStockFilesHeaderInit" output-channel="bunningsStockBatchFileTransform"
+                           ref="bunningsStockLevelHeaderInitTask"
+                           method="execute"/>
+
+    <!-- Step 5: Chain for Recon Data Setup Task, XML Validation Task and XML Processing Task -->
+    <int:chain input-channel="bunningsStockBatchFileTransform" output-channel="bunningsStockBatchFilesTran">
+        <int:service-activator ref="bunningsStockLevelReconDataSetupTask" method="execute" />
+        <!-- to activate the xsd based validation un-comment bunningsXmlValidationTask service activator below -->
+        <!--  <int:service-activator ref="bunningsXmlValidationTask" method="execute" /> -->
+        <int:service-activator ref="bunningsStockXmlProcessingTask" method="execute" />
+    </int:chain>
+
+
+    <!-- Step 6: Service Activator for Impex File Processing Task-->
+    <int:service-activator input-channel="bunningsStockBatchFilesTran" output-channel="bunningsStockBatchFilesImp" ref="bunningsStockBatchRunnerTask" method="execute" />
+    <bean id="bunningsStockBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+        <property name="sessionService" ref="sessionService" />
+        <property name="importService" ref="importService" />
+        <lookup-method name="getImportConfig" bean="importConfig" />
+    </bean>
+
+    <!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+    <int:service-activator input-channel="bunningsStockBatchFilesImp" ref="bunningsStockBatchCleanupTask" method="execute" />
+    <bean id="bunningsStockBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+        <property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+    </bean>
+
+    <bean id="bunningsStockHeaderSetupTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask">
+        <property name="catalog" value="BunningsPCMCatalog"/>
+        <property name="net" value="false"/>
+        <property name="storeBaseDirectory" ref="baseDirectoryBunningsStockLevel"/>
+        <property name="fileType" value="STOCK" />
+    </bean>
+
+
+
+    <bean id="bunningsStockLevelHeaderInitTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+        <property name="sequenceIdParser" ref="bunningsStockLevelBatchSequenceIdParser"/>
+        <property name="languageParser" ref="batchLanguageParser"/>
+        <property name="fallbackLanguage" value="en"/>
+    </bean>
+
+    <bean id="bunningsStockLevelBatchSequenceIdParser"
+          class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+        <property name="parser">
+            <bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+                <property name="regex" value="${bunnings.hotfolder.sequenceId.xml.regex.name}"/>
+            </bean>
+        </property>
+    </bean>
+
+
+
+    <bean id="bunningsStockLevelReconDataSetupTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+        <property name="bunningsReconSAXParserHandler" ref="bunningsStockLevelReconSAXParserHandler"/>
+        <property name="bunningsReconService" ref="bunningsReconService"/>
+    </bean>
+
+    <bean id="bunningsStockLevelReconSAXParserHandler" class="com.bunnings.core.dataimport.BunningsReconSAXParserHandler">
+        <property name="primaryEntityNode" value="ItemLocationStockLevel"/>
+    </bean>
+
+    <bean id="bunningsStockXmlProcessingTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask">
+        <property name="xmlToImpexProcessManager" ref="stockXMLToImpexProcessManager"/>
+    </bean>
+
+    <bean id="stockXMLToImpexProcessManager"
+          class="com.bunnings.core.dataimport.XMLtoImpexProcessManager">
+        <property name="encoding" value="UTF-8" />
+        <property name="bunningsXMLParser" ref="bunningsStockLevelXMLParser"/>
+    </bean>
+
+
+    <bean id="bunningsStockLevelXMLParser" class="com.bunnings.core.dataimport.impl.BunningsXMLParserImpl">
+        <property name="saxParserHandlerBeanName" value="bunningsStockLevelSAXParserHandler"/>
+    </bean>
+
+
+
+    <util:set id="stockLevelStartEndNodes" value-type="java.lang.String">
+    </util:set>
+
+
+    <bean id = "bunningsStockLevelSAXParserHandler" class="com.bunnings.core.dataimport.BunningsSAXParserHandler" scope="prototype">
+        <!-- <property name="parentNode" value="products"/> -->
+        <property name="primaryEntityNode" value="ItemLocationStockLevel"/>
+        <property name="collectionNodesKeySet" ref="stockLevelStartEndNodes"/>
+        <property name="xmlRowValidationManager" ref="xmlStockRowValidationManager"/>
+        <property name="impexStreamManager" ref="stockLevelImpexStreamManager"/>
+        <property name="rowTransalationManager" ref="defaultStockLevelRowTransalationManager"/>
+        <property name="recordReferenceKey" value="ItemLocationStockLevel/LocationCode/"/>
+    </bean>
+
+    <bean id="xmlStockRowValidationManager" class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+        <property name="validators" ref="stockLevelValidators"></property>
+    </bean>
+
+    <util:list id="stockLevelValidators">
+    </util:list>
+
+    <alias name="bunningsStocklevelIndicatorTranslator" alias="stocklevelIndicatorTranslator" />
+    <bean id="bunningsStocklevelIndicatorTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningsStockLevelIndicatorTranslator"/>
+
+
+
+    <bean id="defaultStockLevelRowTransalationManager"
+          class="com.bunnings.core.dataimport.impl.XMLRowTransalationManagerImpl">
+        <property name="rowTransalators" ref="stockLevelRowTransalators"></property>
+    </bean>
+
+
+    <util:list id="stockLevelRowTransalators" value-type="com.bunnings.core.dataimport.XMLRowTransalator">
+        <ref bean="stocklevelIndicatorTranslator"/>
+    </util:list>
+
+
+    <bean id="stockLevelImpexStreamManager" class="com.bunnings.core.dataimport.ImpexStreamManagerImpl">
+        <property name="handlers" ref="stockLevelHandlers"/>
+    </bean>
+
+    <util:list id="stockLevelHandlers">
+        <ref bean="bunningsWarehouseStreamHandler"/>
+        <ref bean="bunningsStockLevelStreamHandler"/>
+    </util:list>
+
+
+    <bean id="bunningsWarehouseStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl"
+          scope="prototype">
+        <property name="firstValueMandatory" value="true"/>
+        <property name="header">
+            <value>#{defaultImpexProductHeader}
+                # Insert Bunnings Warehouses
+                INSERT_UPDATE Warehouse;code[unique=true];name[cellDecorator='com.bunnings.core.dataimport.xml.decorators.BunningsWarehouseNameDecorator'];default[default=false];vendor(code)[default=default];pointsOfService(locationCode);batchCountry[unique=true]
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>ItemLocationStockLevel/LocationCode/;ItemLocationStockLevel/LocationCode/;S;S;ItemLocationStockLevel/LocationCode/;ItemBatch/BatchHeader/Country/</value>
+        </property>
+        <property name="priority" value="1"/>
+    </bean>
+
+    <bean id="bunningsStockLevelStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+        <property name="firstValueMandatory" value="true"/>
+        <property name="header">
+            <value>
+                # Insert Bunnings StockLevel
+                INSERT_UPDATE StockLevel;productCode[unique=true];warehouse(code)[unique=true];available[translator=com.bunnings.core.dataimport.xml.translators.BunningsStockCountTranslator];inStockStatus(code);overSelling[translator=com.bunnings.core.dataimport.xml.translators.BunningsStockCountTranslator];nextDeliveryTime[dateformat='yyyy-MM-dd''T''HH:mm:ss']
+            </value>
+        </property>
+        <property name="impexRow">
+            <value>ItemLocationStockLevel/ItemNumberWithCountryCode/;ItemLocationStockLevel/LocationCode/;ItemLocationStockLevel/StockCount/;ItemLocationStockLevel/LevelIndicator/;ItemLocationStockLevel/TopStockCount/;ItemLocationStockLevel/ExpectedStockAvailable/Available/AvailableDate/</value>
+        </property>
+        <property name="priority" value="2"/>
+    </bean>
+</beans>

@@ -1,0 +1,3 @@
+INSERT_UPDATE Shop; id[unique = true]; name			  ; 
+                  ; 2011             ; Shop2011       ;
+                  ; 2012             ; Shop2012       ;

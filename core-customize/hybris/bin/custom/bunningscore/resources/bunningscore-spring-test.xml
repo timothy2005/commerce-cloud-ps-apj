@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--<import resource="classpath:/bin/custom/mirakl/miraklfacades/resources/miraklfacades-spring.xml"/>-->
+
+<!--
+    <alias alias="bunningsCartFacade" name="bunningsCartFacade"/>
+    <bean id="bunningsCartFacade" class="com.bunnings.facades.cart.impl.DefaultBunningsCartFacade"
+          parent="defaultCartFacade">
+        <property name="cartConverter" ref="extendedCartConverter"/>
+        <property name="commerceCartService" ref="commerceWebServicesCartService"/>
+        <property name="apigeeIntegrationService" ref="apigeeIntegrationService"/>
+        <property name="commonI18NService" ref="commonI18NService"/>
+        <property name="bunningsCartService" ref="bunningsCartService"/>
+        <property name="calculationService" ref="calculationService"/>
+        <property name="configurationService" ref="configurationService"/>
+        <property name="sessionService" ref="sessionService"/>
+        <property name="bunningsCheckoutCOSResponseConverter" ref="bunningsCheckoutCOSResponseConverter"/>
+        <property name="bunningsAjaxCOSResponseConverter" ref="bunningsAjaxCOSResponseConverter"/>
+    </bean>
+
+    <bean parent="modifyPopulatorList">
+        <property name="list" ref="extendedCartConverter"/>
+        <property name="remove" ref="b2bCartPopulator"/>
+    </bean>
+
+    <bean id="defaultBunningsCartServiceIntegrationTest"
+          class="com.bunnings.core.impl.DefaultBunningsCartServiceIntegrationTest">
+        <property name="cartService" ref="cartService"/>
+        <property name="modelService" ref="modelService"/>
+    </bean>
+
+    <bean id="testBunningsCommerceCartMergingStrategyImplIntegrationTest"
+          class="com.bunnings.core.merge.strategies.impl.BunningsCommerceCartMergingStrategyImplIntegrationTest">
+        <property name="modelService" ref="modelService"/>
+        <property name="cartService" ref="cartService"/>
+        <property name="userService" ref="userService"/>
+        <property name="guidKeyGenerator" ref="guidKeyGenerator"/>
+        <property name="baseSiteService" ref="baseSiteService"/>
+        <property name="baseStoreService" ref="baseStoreService"/>
+        <property name="sessionService" ref="sessionService"/>
+        <property name="productService" ref="productService"/>
+        <property name="catalogService" ref="catalogService"/>
+        <property name="commerceCartMergingStrategy" ref="commerceCartMergingStrategy"/>
+    </bean>
+
+    <bean id="defaultBunningsDateUtilTest" class="com.bunnings.core.util.BunningsDateUtilTest">
+    </bean>
+  -->
+
+
+</beans>

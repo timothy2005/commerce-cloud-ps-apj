@@ -1,0 +1,12 @@
+# -----------------------------------------------------------------------
+#  Copyright (c) 2020 Bunnings or an affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+# Test batch configuration
+$pcmCatalog = BunningsPCMCatalog
+$version = Staged
+$catalogVersion = catalogVersion(catalog(id[default=$pimCatalog]), version[default=$version])[unique=true, default=$pimCatalog:$version]
+
+INSERT_UPDATE Brand; brandCode[unique = true]; $catalogVersion; name
+                             ; 1028 ; ; BOYLE brand 1 ;BOYLE-brand1
+                             ; 1029 ; ; BOYLE brand 2 ;BOYLE-brand2
+                             ; 1030 ; ; BOYLE brand 3 ;BOYLE-brand3

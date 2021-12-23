@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:int="http://www.springframework.org/schema/integration"
+	   xmlns:file="http://www.springframework.org/schema/integration/file"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config/>
+
+	<bean id="baseDirectoryBunningsVisibility" class="java.lang.String">
+		<constructor-arg value="#{baseDirectory}/${tenantId}/visibility" />
+	</bean>
+
+
+	<!-- Step 3: Service Activatior for Header Setup Task -->
+	<int:service-activator input-channel="batchFilesVisibilityProc" output-channel="bunningsBatchVisibilityFilesHeaderInit"
+						   ref="bunningsVisibilityHeaderSetupTask"
+						   method="execute" />
+
+	<!-- Step 4: Service Activatior for Header Init Task -->
+	<int:service-activator input-channel="bunningsBatchVisibilityFilesHeaderInit" output-channel="bunningsVisibilityFileTransform"
+						   ref="bunningsVisibilityHeaderInitTask"
+						   method="execute" />
+
+	<!-- Step 5: Chain for Recon Data Setup Task, XML Validation Task and XML Processing Task -->
+	<int:chain input-channel="bunningsVisibilityFileTransform" output-channel="bunningsVisibilityBatchFilesTran">
+		<int:service-activator ref="bunningsVisibilityReconDataSetupTask" method="execute" />
+		<!-- to activate the xsd based validation un-comment bunningsXmlValidationTask service activator below -->
+		<!-- <int:service-activator ref="bunningsXmlValidationTask" method="execute" /> -->
+		<int:service-activator ref="bunningsVisibilityXmlProcessingTask" method="execute" />
+	</int:chain>
+
+
+	<!-- Step 6: Service Activator for Impex File Processing Task-->
+	<int:service-activator input-channel="bunningsVisibilityBatchFilesTran" output-channel="bunningsVisibilityBatchFilesImp" ref="bunningsVisibilityBatchRunnerTask" method="execute" />
+	<bean id="bunningsVisibilityBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+		<property name="sessionService" ref="sessionService" />
+		<property name="importService" ref="importService" />
+		<lookup-method name="getImportConfig" bean="importConfig" />
+	</bean>
+
+	<!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+	<int:service-activator input-channel="bunningsVisibilityBatchFilesImp" ref="bunningsVisibilityBatchCleanupTask" method="execute" />
+	<bean id="bunningsVisibilityBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+		<property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+	</bean>
+
+
+	<bean id="bunningsVisibilityHeaderSetupTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask">
+		<property name="catalog" value="BunningsPCMCatalog" />
+		<property name="net" value="false" />
+		<property name="storeBaseDirectory" ref="baseDirectoryBunningsVisibility" />
+		<property name="fileType" value="VISIBILITY" />
+	</bean>
+
+
+
+	<bean id="bunningsVisibilityHeaderInitTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+		<property name="sequenceIdParser" ref="bunningsVisibilityBatchSequenceIdParser"/>
+		<property name="languageParser" ref="batchLanguageParser"/>
+		<property name="fallbackLanguage" value="en" />
+	</bean>
+
+	<bean id="bunningsVisibilityBatchSequenceIdParser" class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+		<property name="parser">
+			<bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+				<property name="regex" value="${bunnings.hotfolder.sequenceId.xml.regex.name}" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="bunningsVisibilityReconDataSetupTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+		<property name="bunningsReconSAXParserHandler" ref="bunningsVisibilityReconSAXParserHandler"/>
+		<property name="bunningsReconService" ref="bunningsReconService"/>
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
+
+	<bean id="bunningsVisibilityReconSAXParserHandler" class="com.bunnings.core.dataimport.BunningsReconSAXParserHandler">
+		<property name="primaryEntityNode" value="Item"/>
+	</bean>
+
+	<bean id="bunningsVisibilityXmlProcessingTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask">
+		<property name="xmlToImpexProcessManager" ref="visibilityXMLToImpexProcessManager"/>
+	</bean>
+
+	<bean id="visibilityXMLToImpexProcessManager"
+		  class="com.bunnings.core.dataimport.XMLtoImpexProcessManager">
+		<property name="encoding" value="UTF-8" />
+		<property name="bunningsXMLParser" ref="bunningsVisibilityXMLParser"/>
+	</bean>
+
+	<bean id="bunningsVisibilityXMLParser" class="com.bunnings.core.dataimport.impl.BunningsXMLParserImpl">
+		<property name="saxParserHandlerBeanName" value="bunningsVisibilitySAXParserHandler"/>
+	</bean>
+	<bean id = "bunningsVisibilitySAXParserHandler" class="com.bunnings.core.dataimport.BunningsSAXParserHandler" scope="prototype">
+		<!-- <property name="parentNode" value="products"/> -->
+		<property name="primaryEntityNode" value="Item"/>
+		<property name="collectionNodesKeySet" ref="visibilityOtherStartEndNodes"/>
+		<property name="xmlRowValidationManager" ref="xmlVisibilityRowValidationManager"/>
+		<property name="impexStreamManager" ref="visibilityImpexStreamManager"/>
+		<property name="rowTransalationManager" ref="defaultVisibilityRowTransalationManager"/>
+		<property name="recordReferenceKey" value="Item/ItemNumber/"/>
+	</bean>
+
+	<bean id="xmlVisibilityRowValidationManager" class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+		<property name="validators" ref="visibilityElementValidators"></property>
+	</bean>
+
+	<util:list id="visibilityElementValidators">
+	</util:list>
+
+	<util:set id="visibilityOtherStartEndNodes" value-type="java.lang.String">
+	    <value>Item/ZoningInformation/Zone/</value>
+		<value>Item/ZoningInformation/Zone/Restrictions/Restriction/</value>
+    </util:set>
+
+	<bean id="defaultVisibilityRowTransalationManager" class="com.bunnings.core.dataimport.impl.XMLRowTransalationManagerImpl">
+		<property name="rowTransalators" ref="visibilityRowTransalators"/>
+	</bean>
+
+	<util:list id="visibilityRowTransalators" value-type="com.bunnings.core.dataimport.XMLRowTransalator">
+		<ref bean="regionalProductDetailCodeTranslator"/>
+	</util:list>
+
+
+
+	<bean id="visibilityImpexStreamManager" class="com.bunnings.core.dataimport.ImpexStreamManagerImpl">
+		<property name="handlers" ref="visibilityHandlers"/>
+	</bean>
+
+	<util:list id="visibilityHandlers">
+		<ref bean="bunningsVisibilityZoneStreamHandler"/>
+	</util:list>
+
+
+	<bean id="bunningsVisibilityZoneStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+				# Insert Bunnings Products
+				INSERT_UPDATE RegionalProductDetails;itemNumber[unique=true];regionDetails(isoCode)[unique=true];restrictedLocations;isTradeOnly;status;visible;transactable;instorePickup;availableForDelivery;zone(code)[unique=true];feedLineReference
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>Item/ItemNumber/;Item/ZoningInformation/Zone$/Region/;Item/ZoningInformation/Zone$/Locations/Location/;Item/ZoningInformation/Zone$/IsTradeOnly/;Item/ZoningInformation/Zone$/Status/;Item/ZoningInformation/Zone$/WebCommerceAttributes/Visible/;Item/ZoningInformation/Zone$/WebCommerceAttributes/Transactable/;Item/ZoningInformation/Zone$/WebCommerceAttributes/InstorePickup/;Item/ZoningInformation/Zone$/WebCommerceAttributes/AvailableForDelivery/;Item/ZoningInformation/Zone$/RetailZone/;Item/ItemNumber/</value>
+		</property>
+		<property name="priority" value="1"/>
+	</bean>
+
+</beans>

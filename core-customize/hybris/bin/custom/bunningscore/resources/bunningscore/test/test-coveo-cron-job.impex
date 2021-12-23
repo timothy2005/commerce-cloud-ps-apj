@@ -1,0 +1,166 @@
+$AUSite = AUBaseSite
+$NZSite = NZBaseSite
+$pcmCatalog = BunningsPCMCatalog
+$net = false
+$languages = en
+$defaultLanguage = en
+$orderProcessCode = order-process
+$pickupInStoreMode = BUY_AND_COLLECT
+$customerAllowedToIgnoreSuggestions = true
+$paymentProvider = Mockup
+$checkoutFlowGroup = defaultCheckoutGroup
+
+$currenciesNZ = NZD
+$storeNZUid = BunnningsStoreNZ
+$defaultCurrencyNZ = NZD
+$deliveryCountriesNZ = NZ
+$billingCountriesNZ = NZ
+
+$currenciesAU = AUD
+$storeAUUid = BunnningsStoreAU
+$defaultCurrencyAU = AUD
+$deliveryCountriesAU = AU
+$billingCountriesAU = AU
+$australianHours = australian-standard-hours
+$newzealandwellingtonHours = newzealand-standard-hours
+
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+#
+# Import the Product Bunning Catalog
+#
+$pcmCatalog = BunningsPCMCatalog
+$classificationCatalog = BunningsClassification
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default='Staged'])[unique=true, default=$pcmCatalog:Staged]
+$lang = en, en_AU, en_NZ
+
+# Languages
+INSERT_UPDATE Language; isocode[unique = true]; fallbackLanguages(isocode); active[default = true]
+                      ; en                    ;                           ; ;
+
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active; fallbackLanguages(isoCode)
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE  ; en
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE  ; en
+
+# Product Bunnings Catalog
+INSERT_UPDATE Catalog; id[unique = true]; name
+                     ; $pcmCatalog      ; Bunnings PCM
+
+#Product Bunnings CatalogVersion
+INSERT_UPDATE CatalogVersion; catalog(id)[unique = true]; version[unique = true]; active; languages(isoCode); readPrincipals(uid)
+                            ; $pcmCatalog               ; Online                ; true  ; $lang             ;
+                            ; $pcmCatalog               ; Staged                ; false ; $lang             ;
+
+# Bunnings Classification catalog
+INSERT_UPDATE ClassificationSystem; id[unique = true]
+                                  ; $classificationCatalog
+
+# Currencies
+INSERT_UPDATE Currency; isoCode[unique = true]; name              ; active; symbol
+                      ; AUD                   ; AUSTRALIAN DOLLAR ; TRUE  ; $
+                      ; NZD                   ; NEWZEALAND DOLLAR ; TRUE  ; $
+                      ; USD                   ; AMERICAN DOLLAR   ; TRUE  ; $
+
+INSERT_UPDATE Country; isocode[unique = true]; name[lang = en]; active[default = true]
+                     ; AU                    ; "AU"
+                     ; NZ                    ; "NZ"
+
+# Base Store
+INSERT_UPDATE BaseStore; uid[unique = true]; name                           ; catalogs(id); currencies(isocode); net  ; storelocatorDistanceUnit(code); defaultCurrency(isocode); languages(isocode); defaultLanguage(isocode); deliveryCountries(isocode); billingCountries(isocode); pickupInStoreMode(code);
+                       ; $storeAUUid       ; BaseBunnings Australia Store   ; $pcmCatalog ; $currenciesAU      ; $net ; km                            ; $defaultCurrencyAU      ; $languages        ; $defaultLanguage        ; $deliveryCountriesAU      ; $billingCountriesAU      ; $pickupInStoreMode
+                       ; $storeNZUid       ; BaseBunnings New Zealand Store ; $pcmCatalog ; $currenciesNZ      ; $net ; km                            ; $defaultCurrencyNZ      ; $languages        ; $defaultLanguage        ; $deliveryCountriesNZ      ; $billingCountriesNZ      ; $pickupInStoreMode
+
+
+INSERT_UPDATE CMSSite; uid[unique = true]; active; defaultLanguage(isocode); stores(uid) ;
+                     ; $AUSite           ; true  ; en                      ; $storeAUUid ;
+                     ; $NZSite           ; true  ; en                      ; $storeNZUid ;
+
+
+INSERT_UPDATE ServicelayerJob; code[unique = true]         ; springId[unique = true]
+                             ; coveoProductIndexingCronJob ; coveoProductIndexingCronJob
+
+#Update openinng scheduled time for store of Australia/New Zealand
+INSERT_UPDATE OpeningSchedule; code[unique = true]
+                             ; $australianHours
+                             ; $newzealandwellingtonHours
+
+#Opening Day week name and time
+INSERT_UPDATE WeekdayOpeningDay; openingSchedule(code)[unique = true]; dayOfWeek(code)[unique = true]; openingTime[dateformat = hh:mm]; closingTime[dateformat = hh:mm]; name                      ; effectiveStartDate[dateFormat = dd/MM/yyyy]; effectiveEndDate[dateFormat = dd/MM/yyyy];
+                               ; $australianHours                    ; MONDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; TUESDAY                       ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; WEDNESDAY                     ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/07/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; THURSDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/08/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; FRIDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/09/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SATURDAY                      ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $australianHours                    ; SUNDAY                        ; 6:00                           ; 21:00                          ; Trading from 6 AM to 9 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; MONDAY                        ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; TUESDAY                       ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/05/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; WEDNESDAY                     ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/07/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; THURSDAY                      ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/08/2020                                 ; 25/12/2024                               ;
+                               ; $newzealandwellingtonHours          ; FRIDAY                        ; 06:00                          ; 17:00                          ; Trading from 6 AM to 5 PM ; 12/09/2020                                 ; 25/12/2024                               ;
+
+INSERT_UPDATE Region; isoCode[unique = true]; name[lang = en]; country(isoCode)
+                    ; VIC                   ; VIC            ; AU
+                    ; ACT                   ; ACT            ; AU
+                    ; NSW                   ; NSW            ; AU
+                    ; QLD                   ; QLD            ; AU
+                    ; SA                    ; SA             ; AU
+                    ; WA                    ; WA             ; AU
+                    ; TAS                   ; TAS            ; AU
+                    ; NQ                    ; FNQ            ; AU
+                    ; NT                    ; NT             ; AU
+                    ; NORTH ISLAND          ; NORTH ISLAND   ; NZ
+                    ; SOUTH ISLAND          ; SOUTH ISLAND   ; NZ
+
+#Bunnings ZOne
+INSERT_UPDATE Zone; code[unique = true]; countries(isoCode); regions(isoCode);
+                  ; AU RZ 1            ; AU                ; VIC
+                  ; AU RZ 2            ; AU                ; ACT,NSW
+                  ; AU RZ 3            ; AU                ; QLD
+                  ; AU RZ 4            ; AU                ; SA
+                  ; AU RZ 5            ; AU                ; WA
+                  ; AU RZ 6            ; AU                ; TAS
+                  ; AU RZ 8            ; AU                ; NQ
+                  ; AU RZ 9            ; AU                ; WA
+                  ; NZ RZ 1            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 2            ; NZ                ; NORTH ISLAND
+                  ; NZ RZ 3            ; NZ                ; NORTH ISLAND
+
+# Vendor
+INSERT_UPDATE Vendor;code[unique=true];name
+                    ;default;Default Vendor
+
+#NEW DATA
+INSERT_UPDATE Warehouse; code[unique = true]; name                    ; vendor(code)[default = default, forceWrite = true]; default[default = true, forceWrite = true]
+                       ; 9150               ; Moorabbin Warehouse     ;                                                   ;
+                       ; 9151               ; Keysborough Warehouse   ;                                                   ;
+                       ; 9152               ; Springvale Warehouse    ;                                                   ;
+                       ; 9153               ; Notting Hill Warehouse  ;                                                   ;
+                       ; 9154               ; Chadstone Warehouse     ;                                                   ;
+                       ; 9155               ; Box Hill Warehouse      ;                                                   ;
+                       ; 9156               ; Nunawading Warehouse    ;                                                   ;
+                       ; 9157               ; Ringwood Warehouse      ;                                                   ;
+                       ; 9158               ; Vermont South Warehouse ;                                                   ;
+                       ; 1159               ; Belconnen Warehouse     ;                                                   ;
+                       ; 9159               ; Avondale Warehouse      ;                                                   ;
+                       ; 9160               ; East Tamaki Warehouse   ;                                                   ;
+                       ; 9161               ; Silverdale Warehouse    ;                                                   ;
+
+#bunnings point of service data
+INSERT_UPDATE PointOfService; name[unique = true]; subType       ; region(isoCode); tradingStartDate[dateFormat = yyyy-MM-dd]; tradingEndDate[dateFormat = yyyy-MM-dd]; creationDate[dateFormat = yyyy-MM-dd]; archiveDate[dateFormat = yyyy-MM-dd]; zone(code); timeZone; displayName   ; warehouses(code); latitude    ; longitude   ; type(code)[default = SF]; openingSchedule(code); basestore(uid)[default = $storeAUUid]; isTrading[default=true]; batchCountry[unique=true, default=AU]
+#VIC
+                            ; 9150               ; 9429000063630 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Moorabbin     ; 9150            ; -37.9455102 ; 145.009818  ;                       ; $australianHours     ;
+                            ; 9151               ; 9429000063631 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Keysborough   ; 9151            ; -37.9898532 ; 145.0767063 ;                       ; $australianHours     ;
+                            ; 9152               ; 9429000063632 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Springvale    ; 9152            ; -37.9325495 ; 145.0829277 ;                       ; $australianHours     ;
+                            ; 9153               ; 9429000063633 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Notting Hill  ; 9153            ; -37.9006842 ; 145.0573034 ;                       ; $australianHours     ;
+                            ; 9154               ; 9429000063634 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Chadstone     ; 9154            ; -37.877324  ; 145.0225472 ;                       ; $australianHours     ;
+                            ; 9155               ; 9429000063635 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Box Hill      ; 9155            ; -37.8364803 ; 145.0630674 ;                       ; $australianHours     ;
+                            ; 9156               ; 9429000063636 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Nunawading    ; 9156            ; -37.8193229 ; 145.0972078 ;                       ; $australianHours     ;
+                            ; 9157               ; 9429000063637 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Ringwood      ; 9157            ; -37.8154658 ; 145.1530951 ;                       ; $australianHours     ;
+                            ; 9158               ; 9429000063638 ; VIC            ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; AU RZ 1   ; AEST    ; Vermont South ; 9158            ; -37.8600358 ; 145.12691   ;                       ; $australianHours     ;
+
+INSERT_UPDATE PointOfService; name[unique = true]; subType       ; region(isoCode); tradingStartDate[dateFormat = yyyy-MM-dd]; tradingEndDate[dateFormat = yyyy-MM-dd]; creationDate[dateFormat = yyyy-MM-dd]; archiveDate[dateFormat = yyyy-MM-dd]; zone(code); timeZone; displayName              ; warehouses(code); latitude    ; longitude   ; type(code)[default = SF]; openingSchedule(code)      ; basestore(uid)[default = $storeNZUid]; isTrading[default=true]; batchCountry[unique=true, default=NZ]
+                            ; 9159               ; 9429000063656 ; NORTH ISLAND   ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; NZ RZ 1   ; NZDT    ; Avondale Trade Centre    ; 9159            ; -36.8801334 ; 174.600779  ;                       ; $newzealandwellingtonHours ;
+                            ; 9160               ; 9429000063657 ; NORTH ISLAND   ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; NZ RZ 1   ; NZDT    ; East Tamaki Trade Centre ; 9160            ; -36.9307279 ; 174.8218617 ;                       ; $newzealandwellingtonHours ;
+                            ; 9161               ; 9429000063658 ; NORTH ISLAND   ; 2020-05-01                               ; 2030-05-01                             ; 2020-01-01                           ; 2030-01-01                          ; NZ RZ 1   ; NZDT    ; Silverdale Trade Centre  ; 9161            ; -36.6218852 ; 174.6065337 ;                       ; $newzealandwellingtonHours ;

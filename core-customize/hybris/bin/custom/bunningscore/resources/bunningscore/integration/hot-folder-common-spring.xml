@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:int="http://www.springframework.org/schema/integration"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:file="http://www.springframework.org/schema/integration/file"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config/>
+
+	<!-- Common feed file processing task include Step 6 and Step 7 -->
+	<!-- Step 6: Service Activator for Impex File Processing Task-->
+	<int:service-activator input-channel="bunningsBatchFilesTran" output-channel="bunningsBatchFilesImp" ref="bunningsBatchRunnerTask" method="execute" />
+	<bean id="bunningsBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+		<property name="sessionService" ref="sessionService" />
+		<property name="importService" ref="importService" />
+		<lookup-method name="getImportConfig" bean="importConfig" />
+	</bean>
+
+	<!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+	<int:service-activator input-channel="bunningsBatchFilesImp" ref="bunningsBatchCleanupTask" method="execute" />
+	<bean id="bunningsBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+		<property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+	</bean>
+
+
+
+	<util:map id="bunningsXSDFileMap" key-type="java.lang.String" value-type="java.lang.String">
+		<entry key="ITEM" value="Item.xsd"/>
+		<entry key="ITEMLOCATION" value="ItemLocation.xsd"/>
+		<entry key="STOCK" value="ItemLocationStockLevel.xsd"/>
+		<entry key="SUPPLIER" value="Supplier.xsd"/>
+		<entry key="LOCATION" value="Location.xsd"/>
+		<entry key="VISIBILITY" value="ItemVisibility.xsd"/>
+		<entry key="RATING" value="bv_standard_format.xsd"/>
+	</util:map>
+
+	<!-- Transformer converters mappings -->
+	<bean id="batchMediaConverterMapping"
+		  class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping"
+		  p:mapping="media"
+		  p:converter-ref="batchMediaConverter"/>
+
+	<bean id="batchMediaContainerConverterMapping"
+		  class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping"
+		  p:mapping="media"
+		  p:converter-ref="batchMediaContainerConverter"/>
+
+	<bean id="batchMediaProductConverterMapping"
+		  class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping"
+		  p:mapping="media"
+		  p:converter-ref="batchMediaProductConverter"/>
+
+	<!-- Converters -->
+	<bean id="batchMediaConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>#{defaultImpexProductHeader}
+				# Import media from filesystem
+				$importFolder=file:$BASE_SOURCE_DIR$/images
+				INSERT_UPDATE Media;mediaFormat(qualifier);code[unique=true];mime[default='image/jpeg'];$mediaCV;folder(qualifier)[default=images];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator]
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;1200Wx1200H;/1200Wx1200H/{+1};;;;{+1};$importFolder/1200Wx1200H/{+1}
+				;515Wx515H;/515Wx515H/{+1};;;;{+1};$importFolder/515Wx515H/{+1}
+				;300Wx300H;/300Wx300H/{+1};;;;{+1};$importFolder/300Wx300H/{+1}
+				;96Wx96H;/96Wx96H/{+1};;;;{+1};$importFolder/96Wx96H/{+1}
+				;65Wx65H;/65Wx65H/{+1};;;;{+1};$importFolder/65Wx65H/{+1}
+				;30Wx30H;/30Wx30H/{+1};;;;{+1};$importFolder/30Wx30H/{+1}</value>
+		</property>
+	</bean>
+	<bean id="batchMediaContainerConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>#{defaultImpexProductHeader}
+				# Import media container
+				INSERT_UPDATE MediaContainer;qualifier[unique=true];medias(code, $mediaCV);$mediaCV
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;{1};/1200Wx1200H/{1},/515Wx515H/{1},/300Wx300H/{1},/96Wx96H/{1},/65Wx65H/{1},/30Wx30H/{1}</value>
+		</property>
+	</bean>
+	<bean id="batchMediaProductConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>#{defaultImpexProductHeader}
+				$thumbnail=thumbnail(code, $catalogVersion)
+				$thumbnails=thumbnails(code, $catalogVersion)
+				$picture=picture(code, $catalogVersion)
+				$detail=detail(code, $catalogVersion)
+				$normal=normal(code, $catalogVersion)
+				$others=others(code, $catalogVersion)
+				$galleryImages=galleryImages(qualifier, $catalogVersion)
+				# Import product media
+				UPDATE Product;code[unique=true];$picture;$thumbnail;$detail;$others;$normal;$thumbnails;$galleryImages;sequenceId[translator=de.hybris.platform.acceleratorservices.dataimport.batch.converter.GreaterSequenceIdTranslator];$catalogVersion
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;{+0};/300Wx300H/{1};/96Wx96H/{1};/1200Wx1200H/{1};/515Wx515H/{1},/96Wx96H/{1},/30Wx30H/{1};/300Wx300H/{1};/96Wx96H/{1};{1};{S}</value>
+		</property>
+	</bean>
+
+	<!-- General setup -->
+	<alias name="bunningsErrorHandler" alias="errorHandler"/>
+	<bean id="bunningsErrorHandler" class="com.bunnings.core.dataimport.error.handler.BunningsErrorHandler">
+		<property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+	</bean>
+
+
+
+	<bean id="bunningsCleanupHelper" class="com.bunnings.core.dataimport.BunningsCleanupHelper">
+		<property name="timeStampFormat" value="yyyyMMddHHmmssSSS" />
+		<property name="configurationService" ref="configurationService" />
+	</bean>
+
+
+	<bean id="impexStreamManager" class="com.bunnings.core.dataimport.ImpexStreamManagerImpl"/>
+
+	<bean id="xmlElementValidationManager" class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+
+	</bean>
+
+	<!-- fix the order of import of files -->
+	<bean id="bunningFileOrderComparator" class="com.bunnings.core.dataimport.BunningsFileOrderComparator">
+		<property name="splitRegex" value="-"/>
+		<property name="dateFormat" value="yyyyMMdd"/>
+	</bean>
+
+
+	<bean id="defaultImpexProductBrandHeader" class="java.lang.String">
+		<constructor-arg>
+			<value># ImpEx for importing data into $CATALOG$
+				$catalogVersion=catalogversion(catalog(id[default=$CATALOG$]),version[default='Staged'])[unique=true]
+				$approved=approvalstatus(code)[default='check']
+				$lang=$LANGUAGE$
+			</value>
+		</constructor-arg>
+	</bean>
+
+
+	<bean id="defaultImpexGenericVariantProductHeader" class="java.lang.String">
+		<constructor-arg>
+			<value># ImpEx for importing data into $CATALOG$
+                $catalogVersion=catalogversion(catalog(id[default=$CATALOG$]),version[default='Staged'])[unique=true]
+                $approved=approvalstatus(code)[default='check']
+                $defaultBaseProduct=baseProduct(code,$catalogVersion)[default='Default_Base_Product']
+
+                $country=NZ
+                #$curDate = 2008-03-07 12:12:12
+                $lang=$LANGUAGE$
+                $superCategories = supercategories(code, $catalogVersion)[unique=true,default=size_volume]
+                $bmieItemType=bmieItemType(code)[default='RETAIL',cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator']
+                $mediaCV=catalogversion(catalog(id[default=$CATALOG$]),version[default='Staged'])[unique=true]
+
+
+            </value>
+		</constructor-arg>
+	</bean>
+
+	<bean id="bunningsXmlValidationTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsXmlValidationTask">
+		<property name="xsdFileMap" ref="bunningsXSDFileMap"/>
+	</bean>
+
+
+	<alias name="bunningsExceptionHandlerAspect" alias="exceptionHandlerAspect"></alias>
+	<bean id="bunningsExceptionHandlerAspect" class="com.bunnings.core.dataimport.batch.aop.exceptions.BunningsExceptionHandlerAspect" >
+		<property name="bunningsImportDataUtils" ref="bunningsImportDataUtils"/>
+	</bean>
+
+
+	<aop:config>
+		<aop:aspect ref="batchHeaderAspectBean" id="bunningsFileBatchHeaderAspect">
+			<aop:around method="aroundFileSetup"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask.execute(..)) and args(file)"/>
+			<aop:around method="aroundInit"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask.execute(..)) and args(header)"/>
+			<aop:around method="aroundInit"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask.execute(..)) and args(header)"/>
+			<aop:around method="aroundTransform"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask.execute(..)) and args(header)"/>
+			<aop:around method="aroundTransform"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.BunningsImpexTransformerTask.execute(..)) and args(header)"/>
+			<aop:around method="aroundExecute"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask.execute(..)) and args(header)"/>
+			<aop:around method="aroundCleanup"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.BunningsCleanupTask.execute(..)) and args(header)"/>
+		</aop:aspect>
+		<aop:aspect ref="batchHeaderAspectBean" id="bunningsZipFileBatchHeaderAspect">
+			<aop:around method="aroundFileSetup"
+						pointcut="execution(* com.bunnings.core.dataimport.batch.task.BunningsGzipHeaderSetupTask.execute(..)) and args(file)"/>
+		</aop:aspect>
+
+	</aop:config>
+
+</beans>

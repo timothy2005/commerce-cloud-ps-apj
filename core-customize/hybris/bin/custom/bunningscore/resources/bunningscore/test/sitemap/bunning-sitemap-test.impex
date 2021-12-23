@@ -1,0 +1,50 @@
+$productCatalog=BunningsPCMCatalog
+#$defaultLanguageAu=en_AU
+#$defaultLanguageNz=en_Nz
+$AuStoreUid=BunnningsStoreAU
+$AuSiteUid=AUBaseSite
+$NzStoreUid=BunnningsStoreNZ
+$NzSiteUid=NZBaseSite
+$webServiceSiteUid=$AuSiteUidWS
+$siteMapUrlLimitPerFile=50000
+$jarResource=jar:com.bunnings.core.setup.CoreSystemSetup&/bunningscore/import/common/
+$siteMapLangCurAu=enAUD
+$siteMapLangCurNz=enNZD
+$siteMapPage=Product,Category
+
+# SiteMap Configuration
+INSERT_UPDATE SiteMapLanguageCurrency;&siteMapLanguageCurrency;language(isoCode)[unique=true];currency(isocode)[unique=true];
+                                     ;enAUD;en;AUD
+                                     ;enNZD;en;NZD
+
+INSERT_UPDATE CatalogUnawareMedia;&siteMapMediaId;code[unique=true];realfilename;@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='text/plain']
+                                 ;$AuSiteUid-siteMapMedia;$AuSiteUid-siteMapMedia;siteMapTemplate.vm;$jarResource/site-siteMapTemplate.vm;
+                                 ;$NzSiteUid-siteMapMedia;$NzSiteUid-siteMapMedia;siteMapTemplate.vm;$jarResource/site-siteMapTemplate.vm;
+
+INSERT_UPDATE RendererTemplate;&siteMapRenderer;code[unique=true];content(&siteMapMediaId);contextClass;rendererType(code)[default='velocity'];
+                              ;$AuSiteUid-siteMapTemplate;$AuSiteUid-siteMapTemplate;$AuSiteUid-siteMapMedia;de.hybris.platform.acceleratorservices.sitemap.renderer.SiteMapContext;
+                              ;$NzSiteUid-siteMapTemplate;$NzSiteUid-siteMapTemplate;$NzSiteUid-siteMapMedia;de.hybris.platform.acceleratorservices.sitemap.renderer.SiteMapContext;
+
+INSERT_UPDATE SiteMapPage;&siteMapPage;code(code)[unique=true];frequency(code)[unique=true];priority[unique=true];active[default=true]
+                         ;Product;Product;weekly;0.6;;
+                         ;Category;Category;daily;0.8;;
+
+
+
+INSERT_UPDATE SiteMapConfig;&siteMapConfigId;configId[unique=true];siteMapLanguageCurrencies(&siteMapLanguageCurrency);siteMapPages(&siteMapPage);siteMapTemplate(&siteMapRenderer)[unique=true];
+                           ;$AuSiteUidSiteMapConfig;$AuSiteUidSiteMapConfig;$siteMapLangCurAu;$siteMapPage;$AuSiteUid-siteMapTemplate
+                           ;$NzSiteUidSiteMapConfig;$NzSiteUidSiteMapConfig;$siteMapLangCurNz;$siteMapPage;$NzSiteUid-siteMapTemplate
+
+
+INSERT_UPDATE CMSSite;uid[unique=true];stores(uid);defaultCatalog(id);siteMapConfig(&siteMapConfigId);active;
+                     ;$AuSiteUid;$AuStoreUid;$productCatalog;$AuSiteUidSiteMapConfig;true
+                     ;$NzSiteUid;$NzStoreUid;$productCatalog;$NzSiteUidSiteMapConfig;true
+
+# Sitemap Generation CronJobs
+
+INSERT_UPDATE ServicelayerJob;code[unique=true];springId[unique=true]
+                             ;siteMapMediaJob;siteMapMediaJob
+
+INSERT_UPDATE SiteMapMediaCronJob;code[unique=true];job(code)[default=siteMapMediaJob];contentSite(uid);sessionLanguage(isoCode)[default=en];siteMapUrlLimitPerFile;
+                                 ;$AuSiteUid-SiteMapMediaJob;;$AuSiteUid;;$siteMapUrlLimitPerFile;
+                                 ;$NzSiteUid-SiteMapMediaJob;;$NzSiteUid;;$siteMapUrlLimitPerFile;

@@ -1,0 +1,15 @@
+<SingleTransmissionSummaryMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:transmissionsummary.bunnings.com.au">
+    <Header>
+        <Version>1.0</Version>
+        <RequestID>b18dcacc-c135-42ca-b379-49094d2f1197</RequestID>
+        <TransmissionBatchID>20210212</TransmissionBatchID>
+        <CountryCode>AU</CountryCode>
+        <Id>622331bb-1f3f-cff0-e053-051b17ac9ca6</Id>
+        <ExtractDateTime>2021-02-13T12:25:09.9928850+00:00</ExtractDateTime>
+    </Header>
+    <TransmissionSummary>
+        <TransmissionID>20210212</TransmissionID>
+        <DataType>LOCATION</DataType>
+        <TotalCount>24</TotalCount>
+    </TransmissionSummary>
+</SingleTransmissionSummaryMessage>

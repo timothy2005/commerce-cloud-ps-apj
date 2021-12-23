@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:api.bunnings/inventory/supplier" elementFormDefault="qualified" xmlns="urn:api.bunnings/inventory/supplier" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <Resource>Supplier</Resource>
+      <Versioning>
+        <Version>2</Version>
+        <SemanticVersion>2.1.2</SemanticVersion>
+      </Versioning>
+      <AvailableClaims>
+        <Claim name="SupplierPurchaseSite"/>
+        <Claim name="SupplierPaySite" />
+      </AvailableClaims>
+    </xs:appinfo>
+    <xs:documentation>
+      This resource can be queried by clients that have the supplier resource.
+      a batch of suppliers can only contain suppliers from one country.
+    </xs:documentation>
+  </xs:annotation>
+  
+  <xs:element name="Supplier">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SupplierCode" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              A unique identifier for this supplier a supplier code is an alphanumeric string
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="Name" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>
+              The name of the supplier.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="StartDate" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              The date time this supplier starts in the system.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="EndDate" type="xs:dateTime" minOccurs="0" maxOccurs="1" nillable="true">
+          <xs:annotation>
+            <xs:documentation>
+              The data time this supplier is archived.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="PurchasingSites" minOccurs="0" maxOccurs="1">
+          <xs:annotation>
+            <xs:appinfo>
+              <Claim>SupplierPurchaseSite</Claim>
+            </xs:appinfo>
+            <xs:documentation>
+              The sites this supplier has for ordering the product from.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PurchasingSite" minOccurs="1" maxOccurs="unbounded" >
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SiteCode" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          unequeue identifier for this purchasing site.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="Name" type="xs:string" />
+                    <xs:element name="Address" type="AddressType"/>
+                    <xs:element name="Contacts" type="ContactsType"/>
+                    <xs:element name="PaySiteCode" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string" >
+                      <xs:annotation>
+                        <xs:appinfo>
+                          <Claim>SupplierPaySite</Claim>
+                        </xs:appinfo>
+                        <xs:documentation>
+                          Reference to the pay site for this purchase site. If this site doesn't have a pay site
+                          e.g. it's a DC purchase site then this node will not exists or if the client access
+                          token doesn't have the supplierpaysite Claim.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="DcLocation" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Only present for a DC supplier.
+                          If the supplier is a DC then each individual DC location is a
+                          purchasing site. This site will have a Bunnings location code.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="PaySites" minOccurs="0" maxOccurs="1">
+          <xs:annotation>
+            <xs:appinfo>
+              <Claim>SupplierPaySite</Claim>
+            </xs:appinfo>
+            <xs:documentation>
+              The sites this supplier has for paying for the product.
+              This node will not be present if the client access token
+              doesn't have the supplierpaysite Claim
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PaySite" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SiteCode" type="xs:string" />
+                    <xs:element name="Name" type="xs:string" />
+                    <xs:element name="Address" type="AddressType" />
+                    <xs:element name="Contacts" type="ContactsType" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="SupplierBatch">
+    <xs:annotation>
+      <xs:documentation>
+        Used to deliver a batch of suppliers
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BatchHeader">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RequestID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the request that is triggered during the refresh process
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="TransmissionBatchID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    ID that uniquely identifies the Tranmission Batch that is received from Corporate System(s)
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ExtractTime" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>
+                    The time this batch was created.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Version" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The version of the schema this message is generated for. Newer version may have more fields added
+                    with additional information.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Country" type="CountryISO2CharType">
+                <xs:annotation>
+                  <xs:documentation>
+                    The country this batch of items belong to. a batch can only return items from a single
+                    country.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ID" type="xs:int">
+                <xs:annotation>
+                  <xs:documentation>ID that unquely identifies this message</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Suppliers">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Supplier" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <!--
+  TYPE DEFINITIONS
+  -->
+
+  <!--
+  SIMPLE
+  -->
+
+  <xs:simpleType name="CountryISO2CharType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="2" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!--
+  COMPLEX
+  -->
+  
+  <xs:complexType name="AddressType">
+    <xs:sequence>
+      <xs:element name="Line1" type="xs:string" />
+      <xs:element name="Line2" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="Line3" minOccurs="0" maxOccurs="1" type="xs:string" />
+      <xs:element name="TownCity" minOccurs="0" type="xs:string" />
+      <xs:element name="PostCode" minOccurs="0" type="xs:string" />
+      <xs:element name="State" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string" />
+      <xs:element name="Country" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ContactsType">
+    <xs:sequence>
+      <xs:element name="Contact" minOccurs="1" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Name" type="xs:string"/>
+            <xs:element name="Description" minOccurs="0" maxOccurs="1" type="xs:string" />
+            <xs:element name="Phone" minOccurs="0" maxOccurs="1" nillable="true">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:pattern value="[0-9]+"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="EMail" minOccurs="0" maxOccurs="1" nillable="true" type="xs:string"/>
+            <xs:element name="Fax" minOccurs="0" maxOccurs="1" nillable="true">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:pattern value="[0-9]+" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

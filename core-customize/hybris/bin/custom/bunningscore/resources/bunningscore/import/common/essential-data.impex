@@ -1,0 +1,189 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+# Import essential data for the Accelerator
+#
+# Includes:
+# * Languages
+# * Currencies
+# * Titles
+# * Vendors
+# * Warehouses
+# * Supported Credit/Debit cards
+# * User Groups
+# * DistanceUnits for Storelocator
+# * MediaFolders
+# * MediaFormats                               s
+# * Tax & Tax Groups
+# * Jobs
+$site_AU_Id = AUBaseSite
+# Languages
+INSERT_UPDATE Language; isoCode[unique = true]; name        ; active ; fallbackLanguages(isoCode)
+                      ; en_AU                 ; AUSTRALIAN  ; TRUE   ; en
+                      ; en_NZ                 ; NEW ZEALAND ; TRUE   ; en
+                      ; de                    ; GERMAN      ; TRUE   ; en
+
+# Currencies
+INSERT_UPDATE Currency; isoCode[unique = true]; name              ; active; symbol
+                      ; AUD                   ; AUSTRALIAN DOLLAR ; TRUE  ; $
+                      ; NZD                   ; NEWZEALAND DOLLAR ; TRUE  ; $
+                      ; USD                   ; USA DOLLAR        ; TRUE  ; $
+
+# Languages
+INSERT_UPDATE Language; isocode[unique = true]; fallbackLanguages(isocode); active[default = true]
+                      ; en                    ;                           ; ;
+
+
+# Vendor
+INSERT_UPDATE Vendor; code[unique = true]; name
+                    ; default            ; Default Vendor
+
+
+# Titles
+INSERT_UPDATE Title; code[unique = true]
+                   ; mr
+                   ; mrs
+                   ; miss
+                   ; ms
+                   ; dr
+                   ; rev
+
+# Media Folders
+INSERT_UPDATE MediaFolder; qualifier[unique = true]; path[unique = true]
+                         ; images                  ; images
+                         ; email-body              ; email-body
+                         ; email-attachments       ; email-attachments
+                         ; documents               ; documents
+                         ; videos                  ; videoImages
+
+# Media formats
+INSERT_UPDATE MediaFormat; qualifier[unique = true]
+                         ; 1200Wx1200H
+                         ; 515Wx515H
+                         ; 365Wx246H
+                         ; 300Wx300H
+                         ; 96Wx96H
+                         ; 65Wx65H
+                         ; 30Wx30H
+                         ; mobile
+                         ; tablet
+                         ; desktop
+                         ; widescreen
+INSERT_UPDATE ReportGenerationJob; code[unique = true]   ; job(code)             ;  sessionLanguage(isoCode[default = en]); nodegroup;countryCode
+                                 ; reportGenerationCronJobAU ; reportGenerationJob   ;  en  									    			;integration;AU
+                                 ; reportGenerationCronJobNZ ; reportGenerationJob   ;  en  									    			;integration;NZ
+
+
+INSERT_UPDATE ServicelayerJob; code[unique = true]                ; springId[unique = true]
+                             ; cartRemovalJob                     ; cartRemovalJob
+                             ; siteMapMediaJob                    ; siteMapMediaJob
+                             ; quoteToExpireSoonJobPerformable    ; quoteToExpireSoonJobPerformable
+                             ; quoteExpiredJobPerformable         ; quoteExpiredJobPerformable
+                             ; coveoProductUploadJob              ; coveoProductUploadJob
+                             ; coveoStoreUploadJob                ; coveoStoreUploadJob
+                             ; productExportToBmieJob             ; productExportToBmieJob
+                             ; bunningsProductExportToBVJob       ; bunningsProductExportToBVJob
+                             ; priceCleanupJob                    ; priceCleanupJob
+                             ; coveoDocumentsUploadJob            ; coveoDocumentsUploadJob
+                             ; bunningsInactiveLocationRefreshJob ; bunningsInactiveLocationRefreshJob
+                             ; bunningsInactiveSupplierRefreshJob ; bunningsInactiveSupplierRefreshJob
+                             ; bunningsPostIngestionVerification  ; bunningsPostIngestionVerification
+                             ; bunningsPreVerification            ; bunningsPreVerification
+                             ; workflowCleanUpJob                 ; workflowCleanUpJob
+                             ; activeProductJob                    ;activeProductJob
+                             ; cleanupItemSyncTimestampsPerformable ; cleanupItemSyncTimestampsPerformable
+                             ; cleanupSavedValueEntryPerformable    ; cleanupSavedValueEntryPerformable   
+                             ; extCleanupSavedValuesPerformable	    ; extCleanupSavedValuesPerformable
+                             ; reportGenerationJob	              ; reportGenerationJob
+
+
+# Deactivate Frontend Restriction on category by default for perfomance purposes
+UPDATE SearchRestriction; code[unique = true]; active[default = false]
+                        ; Frontend_RestrictedCategory
+
+#User Price Group
+INSERT_UPDATE UserPriceGroup; code[unique = true]            ; name
+                            ; Commercial Builder             ; Commercial Builder
+                            ; Government                     ; Government
+                            ; Manufacturing                  ; Manufacturing
+                            ; Mining                         ; Mining
+                            ; Renovator                      ; Renovator
+                            ; Owner Builder                  ; Owner Builder
+                            ; Residential Builder            ; Residential Builder
+                            ; School                         ; School
+                            ; Landscaper                     ; Landscaper
+                            ; Logistics                      ; Logistics
+                            ; Mechanic                       ; Mechanic
+                            ; Plumber                        ; Plumber
+                            ; Refrigeration/Air Conditioning ; Refrigeration/Air Conditioning
+                            ; Roofer                         ; Roofer
+                            ; Painter                        ; Painter
+                            ; Plasterer                      ; Plasterer
+                            ; Sign Writer                    ; Sign Writer
+                            ; Tiler                          ; Tiler
+                            ; Brick Layer                    ; Brick Layer
+                            ; Cabinet Maker                  ; Cabinet Maker
+                            ; Carpenter                      ; Carpenter
+                            ; Concreter/Form Worker          ; Concreter/Form Worker
+                            ; Electrician                    ; Electrician
+                            ; Fencer                         ; Fencer
+                            ; Flooring                       ; Flooring
+                            ; Glazier                        ; Glazier
+                            ; Insulation                     ; Insulation
+                            ; Handyman                       ; Handyman
+                            ; Childcare                      ; Childcare
+                            ; Cleaner                        ; Cleaner
+                            ; Primary Producer/Rural         ; Primary Producer/Rural
+                            ; Medical/Aged Care              ; Medical/Aged Care
+                            ; Insurance                      ; Insurance
+                            ; Supporting Association         ; Supporting Association
+                            ; Tourism/Hospitality            ; Tourism/Hospitality
+                            ; Export                         ; Export
+                            ; Facilities Management          ; Facilities Management
+                            ; TM:Team                        ; TM:Team
+
+INSERT_UPDATE Carrier; code[unique = true]; name     ;
+                     ; Bunnings           ; Bunnings ;
+                     ; Direct             ; Direct   ;
+
+INSERT_UPDATE DynamicMaintenanceCleanupJob; code[unique = true]          ; sessionUser(uid); sessionLanguage(isoCode); springid                          ; searchScript                                                                                                                                   ; processscript                       ;
+                                          ; cleanupJobConsignmentEntries ; admin           ; en                      ; dynamicallyMaintenancePerformable ; "new
+  FlexibleSearchQuery(""SELECT {PK} FROM {ConsignmentEntry} where {Consignment} IS NULL AND {OrderEntry} IS NULL OR {Consignment} IS NULL"");" ; "modelService.removeAll(elements);" ;
+
+INSERT_UPDATE BunningsProductExportJob; code[unique = true]       			; job(code)              ; sessionLanguage(isoCode[default = en_AU]);fullExport[default=false] ;nodegroup    ;active[default=true];targetSystem(code)
+                                      ;productAUExportToBMIEJobFull			; productExportJob       ;en_AU                                     ;true                      ; integration ;true				  ;BMIE
+                                      ;productNZExportToBMIEJobFull			; productExportJob       ;en_NZ                                     ;true                      ; integration ;true				  ;BMIE
+
+                                      ;productAUExportToPDBJobFull			; productExportJob       ;en_AU                                     ;true                      ; integration ;true				  ;PDB
+                                      ;productNZExportToPDBJobFull			; productExportJob       ;en_NZ                                     ;true                      ; integration ;true				  ;PDB
+                                      ;productAUExportToPDBJobIncremental   ; productExportJob       ;en_AU                                     ;false 					   ; integration ;true                ;PDB
+                                      ;productNZExportToPDBJobIncremental   ; productExportJob       ;en_NZ                                     ;false 					   ; integration ;true                ;PDB
+
+                                      ;productAUExportToSFMCJobFull			; productExportJob       ;en_AU                                     ;true                      ; integration ;true                ;SFMC
+                                      ;productNZExportToSFMCJobFull			; productExportJob       ;en_NZ                                     ;true                      ; integration ;true                ;SFMC
+                                      ;productAUExportToSFMCJobIncremental  ; productExportJob       ;en_AU                                     ;false 					   ; integration ;true                ;SFMC
+                                      ;productNZExportToSFMCJobIncremental  ; productExportJob       ;en_NZ                                     ;false 					   ; integration ;true                ;SFMC
+
+
+INSERT_UPDATE CronJob; code[unique = true]             ; job(code)                    ; singleExecutable; sessionLanguage(isocode); nodeGroup   ; active
+                     ; Cleanup Cronjob ConsigmnetEntry ; cleanupJobConsignmentEntries ; false           ; en                      ; integration ; false
+
+INSERT_UPDATE SearchRestriction; code[unique = true]              ; principal(uid); query                                                                                            ; restrictedType(code)   ; active; generate
+                               ; variant_product_code_restriction ; customergroup ; {item.batchCountry} = ?session.country                                                           ; Product                ; true  ; true ;
+                               ; brand_status_restriction         ; customergroup ; {item.brandStatus} IN ({{Select {pk} from {BrandStatusEnum as bs} where {bs.code }='APPROVED'}}) ; Brand                  ; true  ; true ;
+                               ; rpd_visbility_restriction        ; customergroup ; {item:visible} = 1                                                                               ; RegionalProductDetails ; true  ; true ;
+
+#Removal of OOTB POS Types
+REMOVE PointOfServiceTypeEnum;code[unique=true]
+;STORE
+;WAREHOUSE
+;POS
+
+REMOVE Employee;UID[unique=true]
+;cmsmanager
+;cmseditor
+;cmspublisher
+;cmsreviewer
+;cmstranslator
+;cmstranslator-Annette
+;cmstranslator-Seb

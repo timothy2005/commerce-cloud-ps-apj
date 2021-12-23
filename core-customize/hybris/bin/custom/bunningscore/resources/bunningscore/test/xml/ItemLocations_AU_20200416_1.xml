@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ItemLocationBatch xmlns="urn:api.bunnings/inventory/item/location" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BatchHeader>
+    <RequestID>bdefe191-c033-4888-95c8-8c59760f8ea7</RequestID>
+    <TransmissionBatchID>20200416</TransmissionBatchID>
+    <ExtractTime>2020-04-16T00:00:00</ExtractTime>
+    <Version>2</Version>
+    <Country>AU</Country>
+    <ID>13</ID>
+  </BatchHeader>
+  <ItemLocations>
+    <ItemLocation>
+      <ItemNumber>1670054</ItemNumber>
+      <LocationCode>2010</LocationCode>
+      <ItemStatus>Archived</ItemStatus>
+      <IsOnRecall>false</IsOnRecall>
+      <IsRanged>Ranged</IsRanged>
+      <PrimaryBarcode>4711414022668</PrimaryBarcode>
+      <Suppliers>
+        <Supplier>
+          <SupplierCode>OVE001</SupplierCode>
+          <SiteCode>NSW.ROSEHILL</SiteCode>
+          <Priority>1</Priority>
+          <StartDate>2007-01-29T00:00:00</StartDate>
+        </Supplier>
+        <Supplier>
+          <SupplierCode>OVE001</SupplierCode>
+          <SiteCode>QLD.HEMMANT</SiteCode>
+          <Priority>1</Priority>
+          <StartDate>2007-01-29T00:00:00</StartDate>
+        </Supplier>
+      </Suppliers>
+    </ItemLocation>
+  </ItemLocations>
+</ItemLocationBatch>

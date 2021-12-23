@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TransmissionSummaryEnvelope>
+  <TransmissionSummaryEnvelopeRow>
+    <Header>
+      <Header_ROW num="123">
+        <Version></Version>
+        <RequestID></RequestID>
+        <TransmissionBatchID>20200411</TransmissionBatchID>
+        <CountryCode>AUS</CountryCode>
+        <StoreType>WAREHOUSE</StoreType>
+        <LocationList>ALL</LocationList>
+      </Header_ROW>
+    </Header>
+    <TransmissionSummary>
+      <TransmissionSummary_ROW num="123">
+        <Id>123</Id>
+        <ExtractDateTime>2012-12-13T12:12:12</ExtractDateTime>
+        <TransmissionSummaryDetail>
+          <TransmissionSummaryDetail_ROW>
+            <TransmissionID>20200410</TransmissionID>
+            <DataType>ITEM</DataType>
+            <TotalCount>10</TotalCount>
+            <AdditionalDetails></AdditionalDetails>
+            <RefreshDataType></RefreshDataType>
+          </TransmissionSummaryDetail_ROW>
+        </TransmissionSummaryDetail>
+      </TransmissionSummary_ROW>
+    </TransmissionSummary>
+  </TransmissionSummaryEnvelopeRow>
+</TransmissionSummaryEnvelope>

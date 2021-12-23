@@ -1,0 +1,461 @@
+## Client provided this impex to run manually to update description on stores.$END_USERRIGHTS
+## refer to story: BUDP-14484
+UPDATE PointOfService; name[unique = true];description
+                     ;2010;Balcatta
+                     ;2015;Bibra Lake
+                     ;2016;Harrisdale
+                     ;2022;Esperance
+                     ;2024;Cannington
+                     ;2045;Neerabup
+                     ;2052;Belmont WA
+                     ;2063;Busselton
+                     ;2094;Kalamunda
+                     ;2130;Maddington
+                     ;2152;Mandurah
+                     ;2157;Melville
+                     ;2160;Cockburn Central
+                     ;2163;Rockingham
+                     ;2170;Mindarie
+                     ;2174;Ellenbrook
+                     ;2179;Bunbury
+                     ;2180;Midland
+                     ;2181;Albany
+                     ;2182;Northam
+                     ;2206;Willetton
+                     ;2210;Broome
+                     ;2260;Homebase
+                     ;2272;Albany
+                     ;2315;Palmerston
+                     ;2320;Darwin
+                     ;2325;Alice Springs
+                     ;2328;Palmerston
+                     ;2355;Geraldton
+                     ;2390;Kalgoorlie
+                     ;2400;Whitfords
+                     ;2402;O'Connor
+                     ;2404;Innaloo
+                     ;2405;Morley
+                     ;2406;Malaga
+                     ;2431;Port Kennedy Trade Centre
+                     ;2432;Armadale
+                     ;2433;Claremont
+                     ;2435;Joondalup
+                     ;2437;East Victoria Park
+                     ;2438;Cannington
+                     ;2440;Midland
+                     ;2441;Hazelmere Trade Centre
+                     ;2442;Baldivis
+                     ;2443;Wangara
+                     ;2444;Mandurah
+                     ;2445;Bayswater WA
+                     ;2620;Inglewood
+                     ;2651;Supply and Install
+                     ;2680;Welshpool Trade Centre
+                     ;2681;Bunbury Trade Centre
+                     ;2685;Port Kennedy
+                     ;2703;Margaret River
+                     ;2704;Cottesloe
+                     ;2706;Australind
+                     ;2707;Halls Head
+                     ;2708;Osborne Park
+                     ;2997;WA Support Centre Cafe
+                     ;4025;Tuggeranong
+                     ;4040;Belconnen
+                     ;4056;Fyshwick
+                     ;4058;Canberra Airport
+                     ;4059;Gungahlin
+                     ;4060;Mitchell Trade Centre
+                     ;4061;Delivery trial
+                     ;4422;Kings Meadows
+                     ;4450;Mornington Trade Centre
+                     ;4453;Burnie
+                     ;4455;Glenorchy
+                     ;4457;Kingston
+                     ;4466;North Launceston
+                     ;4467;Mornington TAS
+                     ;4468;Devonport
+                     ;5024;Kent Town
+                     ;5026;Mt Barker
+                     ;5028;Murray Bridge
+                     ;5060;Cavan Trade Centre
+                     ;5068;Woodville
+                     ;5095;Marion
+                     ;5118;Noarlunga
+                     ;5121;Mile End
+                     ;5150;Reynella
+                     ;5160;Parafield
+                     ;5163;Seaford Trade Centre
+                     ;5181;Gawler
+                     ;5210;Modbury
+                     ;5211;Seaford
+                     ;5212;Prospect
+                     ;5213;Gepps Cross Trade
+                     ;5214;Victor Harbor
+                     ;5215;Port Lincoln
+                     ;5220;Windsor Gardens
+                     ;5222;Berri
+                     ;5224;Munno Para West
+                     ;5226;Adelaide Airport
+                     ;5227;Mt Gambier
+                     ;5228;Edwardstown
+                     ;5651;Supply and Install
+                     ;6011;Scoresby
+                     ;6035;Box Hill
+                     ;6037;Eltham
+                     ;6042;Port Melbourne
+                     ;6061;Wodonga Trade Centre
+                     ;6075;Rosebud
+                     ;6083;Sunshine
+                     ;6090;Melton
+                     ;6118;Croydon
+                     ;6126;Broadmeadows
+                     ;6130;Fountain Gate
+                     ;6140;Nunawading
+                     ;6156;Mildura
+                     ;6160;Morwell
+                     ;6174;Bendigo
+                     ;6177;Echuca
+                     ;6180;Mornington VIC
+                     ;6185;Waurn Ponds
+                     ;6194;Taylors Lakes
+                     ;6196;Geelong North
+                     ;6201;Cranbourne
+                     ;6202;Hastings
+                     ;6209;Oakleigh South
+                     ;6215;Ballarat
+                     ;6221;Frankston
+                     ;6222;Somerton Trade Centre
+                     ;6224;Maribyrnong
+                     ;6225;Warrnambool
+                     ;6227;Pakenham
+                     ;6228;Bayswater
+                     ;6230;Vermont South
+                     ;6240;Keysborough
+                     ;6245;Dandenong
+                     ;6246;Mill Park
+                     ;6247;Bairnsdale
+                     ;6249;West Footscray
+                     ;6299;Hawthorn
+                     ;6300;Wangaratta
+                     ;6308;Northland
+                     ;6310;Coburg
+                     ;6335;Albury Young Street
+                     ;6359;Notting Hill
+                     ;6363;Moorabbin
+                     ;6382;Pakenham Trade Centre
+                     ;6383;Breakwater Trade Centre
+                     ;6384;Ballarat Trade Centre
+                     ;6385;Craigieburn
+                     ;6386;Caroline Springs
+                     ;6387;Bayswater Trade
+                     ;6388;Torquay
+                     ;6390;Thomastown
+                     ;6395;Hoppers Crossing
+                     ;6396;Wonthaggi
+                     ;6399;Traralgon
+                     ;6400;Mentone
+                     ;6401;Epping
+                     ;6403;Springvale
+                     ;6404;Altona
+                     ;6409;Bendigo
+                     ;6411;Sunbury
+                     ;6412;Shepparton
+                     ;6415;Werribee
+                     ;6418;Warragul
+                     ;6419;Sale
+                     ;6420;Horsham
+                     ;6422;Mernda
+                     ;6423;Swan Hill
+                     ;6425;Collingwood
+                     ;6426;Brunswick
+                     ;6427;Carrum Downs
+                     ;6428;Chadstone
+                     ;6429;Colac
+                     ;6430;Yarrawonga
+                     ;6431;Leopold
+                     ;6432;Ringwood
+                     ;6433;East Pakenham
+                     ;6435;Lilydale
+                     ;6436;Albury
+                     ;6437;Clyde North
+                     ;6438;Oakleigh
+                     ;6439;Dandenong
+                     ;6442;Delacombe
+                     ;6443;Fairfield
+                     ;6446;Seymour
+                     ;6449;Warragul
+                     ;6450;Melton East
+                     ;6452;Hamilton
+                     ;6454;Kitchen Collective
+                     ;6650;Supply and Install
+                     ;6724;House
+                     ;6975;Wodonga
+                     ;6997;Auburn road café
+                     ;6998;Cato street café
+                     ;7016;Minchinbury
+                     ;7021;Mittagong
+                     ;7024;Belmont NSW
+                     ;7040;Orange
+                     ;7054;Warrawong
+                     ;7063;North Penrith
+                     ;7065;Port Macquarie
+                     ;7071;Rockdale
+                     ;7076;Bathurst
+                     ;7078;Coffs Harbour Trade Centre
+                     ;7079;Pentrith Trade Centre
+                     ;7080;Dubbo
+                     ;7082;Dural
+                     ;7086;Bankstown Airport
+                     ;7088;Maitland
+                     ;7090;Nowra
+                     ;7091;Mudgee
+                     ;7092;Grafton
+                     ;7094;Taree
+                     ;7096;McGraths Hill
+                     ;7098;Lake Haven
+                     ;7118;Erina North
+                     ;7121;Glendale
+                     ;7122;Kotara
+                     ;7130;Warringah Mall
+                     ;7132;Carlingford
+                     ;7134;Gordon
+                     ;7138;Batemans Bay
+                     ;7145;North Wollongong
+                     ;7146;Shellharbour
+                     ;7148;Tuggerah
+                     ;7151;Penrith
+                     ;7152;Thornleigh
+                     ;7159;Narrabeen
+                     ;7161;Valley Heights
+                     ;7168;Belrose
+                     ;7169;Caringbah
+                     ;7170;Mascot
+                     ;7173;Lidcombe
+                     ;7174;Artarmon
+                     ;7175;Ashfield
+                     ;7176;Bonnyrigg
+                     ;7177;Campbelltown
+                     ;7178;North Parramatta Warehouse
+                     ;7179;Villawood
+                     ;7181;Crossroads
+                     ;7196;Griffith
+                     ;7200;Forster
+                     ;7202;Kempsey North
+                     ;7211;Hoxton
+                     ;7212;Seven Hills
+                     ;7213;Kirrawee
+                     ;7214;Narellan
+                     ;7215;Cameron Park Trade Centre
+                     ;7216;Chatswood
+                     ;7217;Ulladulla
+                     ;7219;Caringbah
+                     ;7220;Nowra
+                     ;7301;Randwick
+                     ;7302;Morisset
+                     ;7303;Armidale
+                     ;7304;Balgowlah
+                     ;7305;Unanderra Trade Centre
+                     ;7306;Wagga Wagga
+                     ;7309;Port Stephens
+                     ;7310;Rouse Hill
+                     ;7312;Tamworth
+                     ;7313;Alexandria
+                     ;7314;Castle Hill
+                     ;7315;Greenacre
+                     ;7316;Eastgardens
+                     ;7318;Marsden Park
+                     ;7319;Kingsgrove
+                     ;7320;Tuggerah Trade Centre
+                     ;7321;West Gosford
+                     ;7323;Wallsend
+                     ;7325;Cowra
+                     ;7328;Cromer Trade Centre
+                     ;7329;Lithgow
+                     ;7332;Cessnock
+                     ;7333;Rydalmere
+                     ;7334;Gladesville
+                     ;7335;Singleton
+                     ;7336;Goulburn
+                     ;7337;Inverell
+                     ;7341;Forbes
+                     ;7342;Blacktown
+                     ;7343;Coffs Harbour
+                     ;7344;Umina Beach
+                     ;7345;Glendale
+                     ;7347;Orange
+                     ;7348;Port Macquarie
+                     ;7349;Batemans Bay
+                     ;7351;Padstow
+                     ;7352;Nowra Warehouse -190-198 Princes
+                     ;7356;Young
+                     ;7361;Katoomba
+                     ;7363;Lake Haven
+                     ;7364;Bonnyrigg
+                     ;7365;Kembla Grange
+                     ;7368;Bellambi
+                     ;7369;Smithfield NSW
+                     ;7374;Rose Bay
+                     ;7375;Caringbah
+                     ;7376;Hoxton Park
+                     ;7377;Shellharbour
+                     ;7379;Gregory Hills
+                     ;7380;Bennetts Green
+                     ;7382;Greystanes Trade Centre
+                     ;7384;Northmead
+                     ;7385;Heatherbrae
+                     ;7650;Supply and
+                     ;8017;Toowoomba West
+                     ;8018;Carseldine
+                     ;8026;Cannon Hill
+                     ;8027;Noosaville
+                     ;8035;Southport
+                     ;8041;Gladstone
+                     ;8042;Morayfield
+                     ;8043;Lawnton
+                     ;8053;Underwood
+                     ;8056;Stafford
+                     ;8057;Keperra
+                     ;8066;Browns Plains
+                     ;8072;Hervey Bay
+                     ;8073;Hervey Bay Trade Centre
+                     ;8076;Rothwell
+                     ;8079;Caloundra
+                     ;8085;Victoria Point
+                     ;8087;Rocklea
+                     ;8092;Narangba Trade Centre
+                     ;8101;Capalaba
+                     ;8103;Mt Gravatt
+                     ;8106;Oxley
+                     ;8108;Compton Road Warehouse
+                     ;8117;Albion
+                     ;8118;Lawnton
+                     ;8125;Warwick
+                     ;8129;South Tweed Heads
+                     ;8139;Lismore
+                     ;8140;Nerang
+                     ;8150;Toowoomba Trade Centre
+                     ;8152;Maryborough
+                     ;8153;Ballina
+                     ;8154;Bundaberg
+                     ;8157;Warwick
+                     ;8158;Arundel
+                     ;8159;West Ipswich
+                     ;8160;Gaven Trade Centre
+                     ;8161;Newstead
+                     ;8164;Manly West
+                     ;8166;Raceview Trade
+                     ;8168;Maroochydore Trade Centre
+                     ;8169;Oxenford
+                     ;8170;Byron Bay
+                     ;8171;Bethania
+                     ;8172;Burleigh Waters
+                     ;8175;Virginia
+                     ;8176;Maroochydore
+                     ;8178;Bundaberg Trade Centre
+                     ;8179;Dalby
+                     ;8180;North Lakes
+                     ;8181;Bundamba
+                     ;8182;Springfield Central
+                     ;8183;Service on site
+                     ;8190;Gympie
+                     ;8191;Brendale
+                     ;8195;Toowoomba North
+                     ;8196;Acacia Ridge
+                     ;8197;Indooroopilly
+                     ;8199;Logan Road Mt Gravatt
+                     ;8200;Toombul
+                     ;8201;Loganholme
+                     ;8203;Kawana
+                     ;8204;Mermaid Waters
+                     ;8205;Kingaroy
+                     ;8210;Underwood Compton Road
+                     ;8211;Robina
+                     ;8212;Lawnton
+                     ;8215;Pimpama
+                     ;8219;Plainland
+                     ;8380;Direct Exports
+                     ;8385;Commercial Joinery
+                     ;8436;Townsville Trade Centre
+                     ;8437;Townsville
+                     ;8440;Fairfield Waters
+                     ;8447;Mackay Trade Centre
+                     ;8449;Rockhampton
+                     ;8451;Mackay North
+                     ;8457;Mt Isa
+                     ;8462;Paget Mackay
+                     ;8466;Smithfield QLD
+                     ;8467;Airlie Beach
+                     ;8468;Rockhampton Trade Centre
+                     ;8469;Townsville North
+                     ;8470;Atherton
+                     ;8471;Cairns
+                     ;8474;Innisfail
+                     ;8475;Yeppoon
+                     ;8477;Rockhampton
+                     ;8650;Supply and
+                     ;9148;NZ Support office
+                     ;9410;Henderson
+                     ;9411;Kaikohe
+                     ;9414;Pukekohe
+                     ;9415;Silverdale Trade Centre
+                     ;9419;Cambridge
+                     ;9421;Gisborne Trade Centre
+                     ;9423;Paeroa
+                     ;9424;Putaruru
+                     ;9426;Taupo
+                     ;9428;Te Aroha Store
+                     ;9430;Te Puke Trade Centre
+                     ;9432;Tokoroa
+                     ;9434;Whangamata
+                     ;9439;Feilding
+                     ;9441;Hastings Central
+                     ;9445;New Plymouth Trade Centre
+                     ;9448;Waikanae
+                     ;9449;Whanganui
+                     ;9451;Whangarei
+                     ;9452;Rotorua
+                     ;9453;Botany
+                     ;9454;Mt Maunganui
+                     ;9460;AEG Event
+                     ;9461;Home Show
+                     ;9470;North Shore
+                     ;9471;Manukau
+                     ;9473;Naenae Trade Centre
+                     ;9474;Te Rapa
+                     ;9476;Riccarton
+                     ;9477;Porirua
+                     ;9479;Nelson
+                     ;9480;Palmerston North
+                     ;9481;Whakatane
+                     ;9482;Shirley
+                     ;9483;Takanini
+                     ;9484;Blenheim
+                     ;9486;Gisborne
+                     ;9489;Lyall Bay
+                     ;9491;Glenfield
+                     ;9492;East Tamaki Trade Centre
+                     ;9493;Mt Wellington
+                     ;9495;Te Awamutu Store
+                     ;9496;Wellington Central
+                     ;9497;Silverdale
+                     ;9498;Hawera
+                     ;9500;Ashburton
+                     ;9502;New Lynn
+                     ;9503;Kerikeri
+                     ;9504;New Plymouth
+                     ;9510;Mt Roskill
+                     ;9515;Dunedin
+                     ;9518;Grey Lynn
+                     ;9519;Hornby Trade Centre
+                     ;9521;Westgate
+                     ;9523;Direct Exports
+                     ;9524;Avondale Trade Centre
+                     ;9525;Hornby Trade Centre
+                     ;9526;Petone
+                     ;9527;Hamilton South
+                     ;9528;Taupo
+                     ;9529;Hastings Central
+                     ;9530;Hastings Trade Centre
+                     ;9531;Queenstown
+                     ;9532;Christchurch Airport
+                     ;9533;Rangiora

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:api.bunnings/inventory/item/visibility" elementFormDefault="qualified" xmlns="urn:api.bunnings/inventory/item/visibility" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:annotation>
+    <xs:appinfo>
+      <Resource>ItemVisibility</Resource>
+      <Version>3</Version>
+      <AvailableClaims>
+        <Claim name="WebAttributes"></Claim>
+      </AvailableClaims>
+    </xs:appinfo>
+    <xs:documentation>
+      1.0  CMcCleay    Initial Build
+    </xs:documentation>
+    <xs:documentation>
+      Item Visibility message (WebAttributes) for NRT Product Data (a subset of the bunnings/inventory/item/ schema).
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="ItemVisibilityMessage">
+    <xs:annotation>
+      <xs:documentation>
+        One Message for ItemVisibility - contains 1 Header and one Item.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Header">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ExtractionDateTime" type="xs:dateTime" />
+              <xs:element name="Version" type="xs:unsignedByte" />
+              <xs:element name="CountryCode" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Item">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ItemNumber" nillable="false" type="ItemNumberType">
+                <xs:annotation>
+                  <xs:documentation>
+                    The Bunnings unique identifier for this Item. This is a 7 numerical character string.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ZoningInformation" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Zone" type="ZoneDetails" maxOccurs="unbounded"></xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- 
+  TYPE DEFINITIONS
+  -->
+
+  <xs:simpleType name="LocationType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{4}" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="ItemNumberType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{7}" />
+    </xs:restriction>
+  </xs:simpleType>
+        
+  <xs:simpleType name="RestrictionTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="RESTRICTED">
+        <xs:annotation>
+          <xs:documentation>
+            Item is for sale at restricted locations however is visible to all locations
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="EXCLUSIVE">
+        <xs:annotation>
+          <xs:documentation>
+            Item is for exclusive sale at restricted locations (e.g. Trade Centre only items), all other locations are unable to see or sell this product
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+        
+  <xs:complexType name="RestrictionType">
+    <xs:annotation>
+      <xs:documentation>
+        Any restrictions to the item within the RetailZone/Region
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Type" type="RestrictionTypeEnum" />
+      <xs:element name="Locations" minOccurs="0" nillable="true">
+        <xs:annotation>
+          <xs:documentation>
+            List of locations that are applicable from this restriction. if this list in empty then no locations are applicable from this restriction.
+            e.g. Type = 'EXCLUSIVE' Locations list is empty then no locations can trade this item within this zone
+          </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Location" type="LocationType" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="WebCommerceAttributeType">
+    <xs:annotation>
+      <xs:appinfo>
+        <Claim>WebAttributes</Claim>
+      </xs:appinfo>
+      <xs:documentation>
+        List of attributes specifically associated to website data presentation
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Visible" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item visible on the web
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Transactable" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item transactable on the web
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="InstorePickup" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item available for in-store pickup
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="AvailableForDelivery" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Is the item available for delivery
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Comment" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Comment on the item that is web applicable.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+    <xs:complexType name="ZoneDetails">
+    <xs:annotation>
+      <xs:documentation>
+        A Zone represents the intersection of a RetailZone and a Region.  The most practical example of this is where
+        * RetailZone = RZ 1
+        but has two geographic regions
+        * Region = NSW Metro
+        * Region = ACT
+        Prices are the highest within the RetailZone/Region
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="RetailZone" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Collection of stores that have the same base price/attributes
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Region" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Geographic Region for applicable data, this is not equivalent to political regions
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Status" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Status of the item
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Restrictions" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Restriction" type="RestrictionType" minOccurs="1" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>
+                  At most there can only be one restriction of each type see RestrictionTypeEnum.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WebCommerceAttributes" type="WebCommerceAttributeType" minOccurs="0">
+        <xs:annotation>
+          <xs:appinfo>
+            <Claim>WebAttributes</Claim>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+       
+</xs:schema>

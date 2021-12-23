@@ -1,0 +1,15 @@
+# -----------------------------------------------------------------------
+#  Copyright (c) 2020 Bunnings or an affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+# Test batch configuration
+#
+$pcmCatalog = BunningsPCMCatalog
+$version = Staged
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+$approvalStatus = approvalstatus(code)[default='approved'][unique=true]
+$variantType = variantType(code)[default='GenericVariantProduct']
+
+INSERT_UPDATE Product; name[lang = en] ; code[unique = true]; $variantType; $approvalStatus; $catalogVersion;
+                     ;timber product 1 ; 0035360; ;   ;
+                     ;timber product 2 ;0035361; ;   ;
+                     

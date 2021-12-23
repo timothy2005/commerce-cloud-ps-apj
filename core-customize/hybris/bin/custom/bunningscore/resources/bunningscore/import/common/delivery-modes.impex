@@ -1,0 +1,26 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+#
+# Import Delivery Modes / Zones
+#
+#% impex.setLocale(Locale.GERMAN)
+
+# Currencies
+$ukCurrency=GBP
+$jpCurrency=JPY
+$usCurrency=USD
+$europeCurrency=EUR
+
+# Zone Delivery Modes
+INSERT_UPDATE ZoneDeliveryMode      ; code[unique=true]               ; net                                                                                                                                             ; active[default=true]
+                                    ; premium-net                     ; true
+                                    ; standard-net                    ; true
+                                    ; premium-gross                   ; false
+                                    ; standard-gross                  ; false
+                                    ; free-standard-shipping          ; true                                                                                                                                            ; false                          ;
+
+# Pickup Delivery Mode
+INSERT_UPDATE PickUpDeliveryMode    ; code[unique=true]               ; active[default=true]                                                                                                                            ; supportedMode(code)
+                                    ; pickup                          ;                                                                                                                                                 ; BUY_AND_COLLECT
+

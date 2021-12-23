@@ -1,0 +1,176 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+######### Item Cleanup CronJobs START #########
+$pcmCatalog = BunningsPCMCatalog
+$PCMSourceStaged = sourceVersion(catalog(id[default=$pcmCatalog]), version[default='Staged'])[unique=true, default=$pcmCatalog:Staged]
+$PCMTargetOnline = targetVersion(catalog(id[default=$pcmCatalog]), version[default='Online'])[unique=true, default=$pcmCatalog:Online]
+
+$languages = en
+
+
+INSERT_UPDATE CronJob; code[unique = true]                    ; job(code)                             ; sessionLanguage(isoCode)[default = en]; nodeGroup   ; active[default = true]
+                      ; bunningsAUExportToBV                   ; bunningsProductExportToBVJob          ; en_AU                                 ; integration ;
+                     ; bunningsNZExportToBV                   ; bunningsProductExportToBVJob          ; en_NZ                                 ; integration ; false
+                     ; bunningsPriceCleanupJob                ; priceCleanupJob                       ;                                       ; integration
+                     ; bunningsImpexImportLogsCleanupCronJob  ; bunningsImpexImportLogsCleanupJob     ;                                       ; integration
+                     ; bunningsInactiveLocationRefreshCronJob ; bunningsInactiveLocationRefreshJob    ;                                       ; integration
+                     ; bunningsInactiveSupplierRefreshCronJob ; bunningsInactiveSupplierRefreshJob    ;                                       ; integration
+                     ; bunningsPostIngestionVerification      ; bunningsPostIngestionVerification     ;                                       ; integration
+                     ; bunningsWorkflowCleanUpJob             ; workflowCleanUpJob                    ;                                       ; integration
+                     ; bunningsActiveProductJob               ; activeProductJob                      ;                                       ; integration
+                     ; bunningsCoveoIndexAuditCleanupCronJob  ; bunningsCoveoIndexAuditCleanupJob ; en                                    ; integration ; false
+
+INSERT_UPDATE PreVerificationJob; code[unique = true]                    ; job(code)                             ; sessionLanguage(isoCode)[default = en]; nodeGroup   ; active[default = true];origin(code)
+                                ; bunningsPreVerificationForNon-Ml                ; bunningsPreVerification               ;                                       ; integration ; ;OPERATOR
+                                ; bunningsPreVerificationForMl                ; bunningsPreVerification               ;                                       ; integration ; ;MARKETPLACE
+
+INSERT_UPDATE CoveoMaintenanceCleanupJob; code[unique = true]                   ; springId                              ; sessionLanguage(isocode); threshold; status(code)
+                                        ; bunningsCoveoIndexAuditCleanupJob ; bunningsCoveoIndexAuditCleanupCronJob ; en                      ; 15       ; INPROGRESS
+
+INSERT_UPDATE CronJob ;code[unique=true]                       ;job(code)                            ;nodeGroup          ;singleExecutable ;sessionLanguage(isocode) ;active ;logsDaysOld    
+                	  ; cleanupItemSyncTimestampsPerformableJob; cleanupItemSyncTimestampsPerformable;integration	     ;false            ;en          	 ;true   ;30
+					  ; cleanupSavedValueEntryPerformableJob   ; cleanupSavedValueEntryPerformable   ;integration	     ;false            ;en               ;true   ;30
+                      ; extCleanupSavedValuesPerformablejob	   ; extCleanupSavedValuesPerformable 	 ;integration	     ;false            ;en               ;true   ;30
+
+INSERT_UPDATE MaintenanceCleanupJob; code[unique = true]               ; springId[unique = true]           ; threshold; logToFile[default = false]; active[default = true]; nodeGroup
+                                   ; bunningsImpexImportLogsCleanupJob ; bunningsImpexImportLogsCleanupJob ; 14       ; false                     ;                       ; integration
+
+INSERT_UPDATE Trigger; cronJob(code)[unique = true]           ; cronExpression   ; relative[default = false]; active[default = false]; maxAcceptableDelay[default = -1]
+                     ; bunningsImpexImportLogsCleanupCronJob  ; 0 0 15 ? * * *    ;                          ; true                   ;
+                     ; bunningsInactiveLocationRefreshCronJob ; 0 2 13 ? * * *    ;                          ; true                   ;
+                     ; bunningsPostIngestionVerification      ; 0 5/30 0,1,2,3,4,5,6,7,8,9,10,11,18,19,20,21,22,23 ? * * * ;                          ; true                  ;
+                     ; bunningsWorkflowCleanUpJob             ; 0 10 13/12 ? * * * ;                          ; true                   ;
+                     ; bunningsActiveProductJob               ; 0 0/30 0,1,2,3,4,5,6,7,8,9,10,11,18,19,20,21,22,23 ? * * *  ;                          ; true                    ;
+                     ; bunningsAUExportToBV                   ; 0 0 16 ? * * * ; ; true ;
+                     ; bunningsNZExportToBV                   ; 0 0 16 ? * * * ; ; true ;
+                     ; bunningsPriceCleanupJob                ; 0 0 14 ? * * * ; ; true ;
+
+UPDATE CronJob[batchmode = true]; itemtype(code)[unique = true]; nodeGroup
+                                ; CronJob                      ; integration
+
+UPDATE ServicelayerJob[batchmode = true]; itemtype(code)[unique = true]; nodeGroup
+                                        ; ServicelayerJob              ; integration
+
+UPDATE CompareCatalogVersionsJob[batchmode = true]; itemtype(code)[unique = true]; nodeGroup
+                                                  ; CompareCatalogVersionsJob    ; integration
+
+UPDATE ImpExExportJob[batchmode = true]; itemtype(code)[unique = true]; nodeGroup
+                                       ; ImpExExportJob               ; integration
+
+UPDATE ImpExImportJob[batchmode = true]; itemtype(code)[unique = true]; nodeGroup
+                                       ; ImpExImportJob               ; integration
+
+UPDATE RemoveCatalogVersionJob[batchmode = true]; itemtype(code)[unique = true]; nodeGroup
+                                                ; RemoveCatalogVersionJob      ; integration
+
+Remove CronJob; code[unique = true]                    ; job(code)                          ; sessionLanguage(isoCode)[default = en]; nodegroup
+              ; customersWithOrdersRetentionCronJob    ; customersWithOrdersRetentionJob    ;                                       ; integration
+              ; customersWithoutOrdersRetentionCronJob ; customersWithoutOrdersRetentionJob ;                                       ; integration
+              ; ordersRetentionCronJob                 ; ordersRetentionJob                 ;                                       ; integration
+              ; ticketsRetentionCronJob                ; ticketsRetentionJob                ;                                       ; integration
+              ; ticketsStagnationJob                   ; ticketsFSStagnationJob             ;                                       ; integration
+              ; auditReportDataRetentionCronJob        ; auditReportDataRetentionJob        ;                                       ; integration
+              ; integrationApiMediaCleanupCronJob      ; integrationApiMediaCleanupJob      ;                                       ; integration
+              ; inboundRequestCleanupCronJob           ; inboundRequestCleanupJob           ;                                       ; integration
+              ; inboundRequestMediaCleanupCronJob      ; inboundRequestMediaCleanupJob      ;                                       ; integration
+              ; outboundRequestCleanupCronJob          ; outboundRequestCleanupJob          ;                                       ; integration
+              ; outboundRequestMediaCleanupCronJob     ; outboundRequestMediaCleanupJob     ;                                       ; integration
+              ; sessionEventsRemovalJob                ; sessionEventsRemovalJob            ;                                       ; integration
+
+
+#----------------Run this Script manually with enable code check in impex import---------------------------------
+"#% import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+    flexibleSearchService = Registry.getApplicationContext().getBean(""flexibleSearchService"");"
+UPDATE Job[batchmode = true]; code[unique = true]; nodegroup(code)[default = 'integration']
+"#% query = ""SELECT {pk} FROM {Job} WHERE {nodegroup} IS NULL "";
+    flexibleSearchQuery = new FlexibleSearchQuery(query);
+    resultIterator = flexibleSearchService.search(flexibleSearchQuery).getResult().iterator();
+    while (resultIterator.hasNext()) {
+      currentLine = new HashMap();
+      currentLine.put(Integer.valueOf(1), resultIterator.next().getCode());
+      impex.insertLine(currentLine);
+    }
+"
+
+$defaultLanguage = en
+INSERT_UPDATE ServicelayerJob; code[unique = true]        ; springId[unique = true]    ; nodeID
+                             ; publicUrlFetchJob          ; publicUrlFetchJob          ; 0
+                             ; sendAssetsToDAMJob         ; sendAssetsToDAMJob         ; 0
+
+REMOVE Job; code[unique = true]
+          ; geocodeAddressesJob
+
+INSERT_UPDATE PublicUrlFetchJob; code[unique = true]; job(code)         ; singleExecutable; sessionLanguage(isocode); active
+                               ; publicUrlFetchJob  ; publicUrlFetchJob ; false           ; $defaultLanguage        ; true
+                               
+INSERT_UPDATE SendAssetsToDAMJob; code[unique = true]; job(code)         ; singleExecutable; sessionLanguage(isocode); active
+                               ; sendAssetsToDAMJobAU  ; sendAssetsToDAMJob ; false           ; en_AU        ; true
+                               ; sendAssetsToDAMJobNZ  ; sendAssetsToDAMJob ; false           ; en_NZ        ; true
+
+
+
+INSERT_UPDATE MaintenanceCleanupJob; code[unique = true]                      ; springId                             ; sessionLanguage(isocode);threshold
+                                   ; cleanUpMonitorHistorySuccessfulJob   ; cleanUpMonitorHistorySuccessfulJob   ; en;15
+                                   ; cleanUpMonitorHistoryUnsuccessfulJob ; cleanUpMonitorHistoryUnsuccessfulJob ; en;15
+
+# Create a cron job for cleaning up deleted files
+INSERT_UPDATE CronJob; code[unique = true]                      ; job(code)                            ; sessionLanguage(isocode)
+                     ; cleanUpMonitorHistorySuccessfulCronJob   ; cleanUpMonitorHistorySuccessfulJob   ; en
+                     ; cleanUpMonitorHistoryUnsuccessfulCronJob ; cleanUpMonitorHistoryUnsuccessfulJob ; en
+
+
+# Trigger the given cronjobs every hour
+INSERT_UPDATE Trigger; cronJob(code)[unique = true]             ; cronExpression
+                     ; cleanUpMonitorHistorySuccessfulCronJob   ; 0 0 13 * * ?
+                     ; cleanUpMonitorHistoryUnsuccessfulCronJob ; 0 0 14 * * ?
+                     ; publicUrlFetchJob ; 0 0 4/12 ? * * *
+
+INSERT_UPDATE MaintenanceCleanupJob; code[unique = true]                      ; springId                             ; sessionLanguage(isocode);threshold
+                                   ; bunningsCleanupCronJobsPerformable   ; bunningsCleanupCronJobsPerformable   ; en;15
+
+
+# Create a cron job for cleaning up deleted files
+INSERT_UPDATE CronJob; code[unique = true]                      ; job(code)                            ; sessionLanguage(isocode)
+                     ; cleanupCronJobs   ; bunningsCleanupCronJobsPerformable   ; en
+
+INSERT_UPDATE MaintenanceCleanupJob; code[unique = true]                      ; springId                             ; sessionLanguage(isocode);threshold;searchType(code)
+                                   ; bunningsCleanupFeedImportMetaDataPerformable   ; bunningsCleanupFeedImportMetaDataPerformable   ; en;15;FeedImportMetaData
+
+
+# Create a cron job for cleaning up deleted files
+INSERT_UPDATE CronJob; code[unique = true]                      ; job(code)                            ; sessionLanguage(isocode)
+                     ; bunningsCleanupFeedImportMetaDataCronJob   ; bunningsCleanupFeedImportMetaDataPerformable   ; en
+
+
+INSERT_UPDATE MaintenanceCleanupJob; code[unique = true]                      ; springId                             ; sessionLanguage(isocode);threshold;searchType(code)
+                                   ; bunningsCleanupCronJobHistoryPerformable   ; bunningsCleanupCronJobHistoryPerformable   ; en;7;CronJobHistory
+
+
+# Create a cron job for cleaning up deleted files
+INSERT_UPDATE CronJob; code[unique = true]                      ; job(code)                            ; sessionLanguage(isocode)
+                     ; bunningsCleanupCronJobHistoryCronJob   ; bunningsCleanupCronJobHistoryPerformable   ; en
+
+
+
+# Trigger the given cronjobs every hour
+INSERT_UPDATE Trigger; cronJob(code)[unique = true]             ; cronExpression
+                     ; cleanupCronJobs   ; 0 15 13 * * ?
+                     ; bunningsCleanupCronJobHistoryCronJob ; 0 0 17 * * ?
+                     ; bunningsCleanupFeedImportMetaDataCronJob ; 0 45 13 * * ?
+
+INSERT_UPDATE ServicelayerJob; code[unique = true]                ; springId[unique = true]
+                             ; coveoProductChangesTrackingJob                     ; coveoProductChangesTrackingJob
+INSERT_UPDATE CoveoProductUploadJob; code[unique = true]   ; job(code)             ;  sessionLanguage(isoCode[default = en]); baseSites(uid);nodegroup
+                                   ; coveoProductChangesTrackingCronJob ; coveoProductChangesTrackingJob   ;  en  									  ; AUBaseSite   			;integration
+# Trigger the given cronjobs every hour
+INSERT_UPDATE Trigger; cronJob(code)[unique = true]             ; cronExpression
+                     ; coveoProductChangesTrackingCronJob   ; 0 0 12 * * ?
+
+INSERT_UPDATE ServicelayerJob; code[unique = true]            ; springId[unique = true]
+                             ; bunningsStoreWorkingScheduleCleanupJob ; bunningsStoreWorkingScheduleCleanupJob
+INSERT_UPDATE CleanUpCronJob; code[unique = true]                    ; job(code)                              ; sessionLanguage(isoCode)[default = en]; nodeGroup   ; active[default = true];xDaysOld
+                            ; bunningsStoreWorkingScheduleCleanupJob ; bunningsStoreWorkingScheduleCleanupJob ;en           ; integration;;30
+
+INSERT_UPDATE Trigger; cronJob(code)[unique = true]                      ; cronExpression                                              ; relative[default = false]; active[default = false]; maxAcceptableDelay[default = -1]
+                     ; bunningsStoreWorkingScheduleCleanupJob ; 0 0 0 ? * 1 *                                               ;                          ; false                  ;

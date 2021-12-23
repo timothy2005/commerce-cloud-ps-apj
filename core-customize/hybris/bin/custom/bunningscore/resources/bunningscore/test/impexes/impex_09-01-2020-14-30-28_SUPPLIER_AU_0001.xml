@@ -1,0 +1,41 @@
+
+				$catalogVersion=catalogVersion(catalog(id[default=BunningsPCMCatalog]),version[default='Staged'])[unique=true,default='BunningsPCMCatalog:Staged']
+				$approved=approvalstatus(code)[default='check']
+				$defaultBaseProduct=baseProduct(code,batchCountry,$catalogVersion)
+				$bmieItemType=bmieItemType(code)[default='RETAIL',cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator']
+				# Insert Category
+				INSERT_UPDATE FamilyTreeCategory;code[unique=true];name[lang=en];navLevel(code);familyTreeNodeType(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];@familyTreeSuperCategories[translator=com.bunnings.core.dataimport.xml.translators.FamilyTreeSuperCategoryTranslator];feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE FamilyTreeSubClass;code[unique=true];name;@treeCategory[translator=com.bunnings.core.dataimport.xml.translators.FamilyTreeSuperCategoryTranslator];feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE Brand;brandCode[unique=true];name;isLeadingBrand[default=FALSE];isTradeBrand[default=FALSE];isMarketPlaceBrand[default=FALSE];$catalogVersion;feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE SupplierBrand;supplierCode[unique=true];brandCode[unique=true];feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE GenericVariantProduct;code[unique=true];batchCountry[unique=true];$catalogVersion;$defaultBaseProduct;lastUpdate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];$bmieItemType;startDate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];supercategories[translator=com.bunnings.core.dataimport.xml.translators.BunningsProductSuperCategoriesTranslator];bmieSectionDescription;bmieProductDescription;UnspscCode;productOffer(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];manufacturerName;feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE Unit;code[unique=true];name;unitType;feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE Unit;code[unique=true];name;unitType;feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE Unit;code[unique=true];name;unitType;feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE Unit;code[unique=true];name;unitType;feedLineReference
+			
+				# Insert Packaging Details
+				INSERT_UPDATE PackagingDetails;code[unique=true];part;dimensionUOM(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];volumeUOM(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];weightUOM(code)[cellDecorator='com.bunnings.core.dataimport.xml.decorators.EnumsHandlingCellDecorator'];dimensionLength;dimensionHeight;dimensionWidth;netWeight;grossWeight;volume;barCodeNumber[unique=true];variant(code,batchCountry,$catalogVersion);feedLineReference
+			
+				# Insert Bunnings Products
+				INSERT_UPDATE SupplierDetails;itemNumber[unique=true];supplierCode[unique=true];batchCountry[unique=true];startDate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];endDate[dateformat='yyyy-MM-dd''T''HH:mm:ss.sssssssXXX'];packUom;packQty;feedLineReference
+		
+				# Insert Bunnings Products
+				INSERT_UPDATE RegionalProductDetails;itemNumber[unique=true];regionDetails(isoCode)[unique=true];restrictedLocations[translator='com.bunnings.core.dataimport.xml.translators.BunningsRestrictedLocationsTranslator'];isTradeOnly;status;visible;transactable;instorePickup;availableForDelivery;isDirectDelivery;supplierDispatch;supplierToBunnings;supplierToCustomer;bunningsDispatch;zone(code)[unique=true];feedLineReference;
+			

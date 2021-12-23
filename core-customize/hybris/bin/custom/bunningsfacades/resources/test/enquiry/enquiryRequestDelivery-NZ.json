@@ -1,0 +1,65 @@
+{
+    "options": {
+        "saveAddress": true,
+        "saveAddressAsDefault": true
+    },
+    "customerOrderReferences": {
+        "jobNo": "1234",
+        "orderNo":"W2112"
+    },
+    "totalsForLines": {
+        "lineNumber": 1,
+        "lineType": "ITEM",
+        "subtotal": 13.27,
+        "discount": 0,
+        "total": 13.27,
+        "tax": 1.73
+    },
+    "fulfilments": {
+        "lines": [
+            {
+                "lineNumber": 1,
+                "itemNumber": "AU810010",
+                "lineTotal": 10,
+                "lineType": "ITEM",
+                "class": "powerpass",
+                "price": "S1:AU:16911c50-ad1b-4e6a-b937-763a52a15cec",
+                "units": [
+                    {
+                        "quantity": 2
+                    }
+                ]
+            }
+        ],
+        "fulfilmentType": "DELIVERYTOCUSTOMER",
+        "preferredContactMethod": "EMAIL",
+        "contactName": "Test Name",
+        "contact": {
+            "mobilePhoneNumber": "0412345678",
+            "email": "test@test.com"
+        },
+        "instructions": "this is a test delivery",
+        "delivery": {
+            "address": {
+                "streetNumber": "43",
+                "streetName": "Mailer Street",
+                "suburb": "Mornington",
+                "label": "",
+                "saveThisBillingAddress": false,
+                "postCode": "9011",
+                "state":"",
+                "isPoBoxAddress": false,
+                "coords": {
+                    "lat": -45.8878467,
+                    "lng": 170.5049384
+                },
+                "visibleInAddressBook": false,
+                "primaryBilling": false,
+                "country": "NZ",
+                "town": "Mornington"
+            },
+            "deliveryDate": "2021-11-22",
+            "deliveryType": "DIRECT"
+        }
+    }
+}

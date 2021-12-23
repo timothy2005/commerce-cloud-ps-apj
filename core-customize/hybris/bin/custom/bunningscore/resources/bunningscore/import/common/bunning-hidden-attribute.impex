@@ -1,0 +1,29 @@
+#Dropping  non using attribute for Admin Cockpit - Admin User
+INSERT_UPDATE AttributeDescriptor;qualifier[unique=true];enclosingType(code)[unique=true];hiddenForUI
+                                 ;endLineNumber;Product;TRUE
+                                 ;erpGroupBuyer;Product;TRUE
+                                 ;erpGroupSupplier;Product;TRUE
+                                 ;isDAMSyncRequired;Product;FALSE
+                                 ;isDAMSyncRequired;Media;FALSE
+                                 ;isDAMSyncRequired;Category;FALSE
+                                 ;isDAMSyncRequired;Brand;TRUE
+                                 ;isDAMSyncRequired;Service;TRUE
+                                 ;isDefaultVariant;GenericVariantProduct;FALSE
+                                 ;isDeleted;GenericVariantProduct;TRUE
+                                 ;isNationalPricing;GenericVariantProduct;TRUE
+                                 ;isTradingRestricted;GenericVariantProduct;TRUE
+                                 ;nationalPrice;GenericVariantProduct;TRUE
+                                 ;notRecommendedCount;GenericVariantProduct;FALSE
+                                 ;sealed;Item;TRUE
+                                 ;startLineNumber;Product;TRUE
+
+
+UPDATE AttributeDescriptor;qualifier[unique=true];enclosingType(code)[unique=true];hiddenForUI
+                          ;keywords;Product;TRUE
+                          ;assignedCockpitItemTemplates;Product;TRUE
+                          ;Europe1PriceFactory_PDG;Product;TRUE
+                          ;Europe1PriceFactory_PPG;Product;TRUE
+                          ;Europe1PriceFactory_PTG;Product;TRUE
+
+
+

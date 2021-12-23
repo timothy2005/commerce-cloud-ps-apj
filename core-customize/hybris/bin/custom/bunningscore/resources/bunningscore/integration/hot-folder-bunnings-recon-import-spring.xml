@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:file="http://www.springframework.org/schema/integration/file"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="baseDirectoryBunningsRecon" class="java.lang.String">
+        <constructor-arg value="#{baseDirectory}/${tenantId}/reconciliation"/>
+    </bean>
+
+    <!-- Step 1 : Receive file from cloud chanel to local channel -->
+    <file:outbound-gateway request-channel="batchFilesBunningsRecon" reply-channel="batchFilesReconProc"
+                           directory="#{baseDirectoryBunningsRecon}/processing" delete-source-files="true"/>
+
+    <!-- Step 2 : Performs the reconciliation task -->
+    <int:service-activator input-channel="batchFilesReconProc" ref="bunningsReconProcessingTask"
+                           method="execute"/>
+
+
+    <bean id="bunningsReconProcessingTask"
+          class="com.bunnings.core.dataimport.batch.task.BunningsReconProcessingTask">
+        <property name="bunningsReconService" ref="bunningsReconService"/>
+    </bean>
+
+</beans>

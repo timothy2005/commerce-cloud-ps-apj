@@ -1,0 +1,11 @@
+# -----------------------------------------------------------------------
+#  Copyright (c) 2020 Bunnings or an affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+# Test batch configuration
+$pcmCatalog = BunningsPCMCatalog
+$version = Staged
+$catalogVersion = catalogVersion(catalog(id[default=$pcmCatalog]), version[default=$version])[unique=true, default=$pcmCatalog:$version]
+
+INSERT_UPDATE Supplier;supplierCode[unique = true]; startDate; name[lang = en]; endDate
+                      ;BunningSupplier001 ;2020-07-02 00:50:09.0; Bunning Supplier 001;2020-07-20 00:50:09.0
+                      ;BunningSupplier002 ;2020-07-02 00:50:09.0; Bunning Supplier 001;2020-07-20 00:50:09.0

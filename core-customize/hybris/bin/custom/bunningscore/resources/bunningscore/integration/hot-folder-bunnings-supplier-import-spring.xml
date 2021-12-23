@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:int="http://www.springframework.org/schema/integration"
+	   xmlns:file="http://www.springframework.org/schema/integration/file"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/integration
+	http://www.springframework.org/schema/integration/spring-integration.xsd
+	http://www.springframework.org/schema/integration/file
+	http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:annotation-config/>
+
+	<bean id="baseDirectorySupplier" class="java.lang.String">
+		<constructor-arg value="#{baseDirectory}/${tenantId}/supplier" />
+	</bean>
+
+
+   	<!-- Step 3: Service Activatior for Header Setup Task -->
+	<int:service-activator input-channel="batchFilesSupplierProc" output-channel="bunningsBatchSupplierFilesHeaderInit"
+						   ref="bunningsSupplierHeaderSetupTask"
+						   method="execute" />
+
+	<!-- Step 4: Service Activatior for Header Init Task -->
+	<int:service-activator input-channel="bunningsBatchSupplierFilesHeaderInit" output-channel="bunningsSupplierFileTransform"
+						   ref="bunningsHeaderInitTask"
+						   method="execute" />
+
+	<!-- Step 5: Chain for Recon Data Setup Task, XML Validation Task and XML Processing Task -->
+	<int:chain input-channel="bunningsSupplierFileTransform" output-channel="bunningsSupplierBatchFilesTran">
+		<int:service-activator ref="bunningsSupplierReconDataSetupTask" method="execute" />
+		<!--<int:service-activator ref="bunningsXmlValidationTask" method="execute" /> -->
+		<int:service-activator ref="bunningsSupplierXmlProcessingTask" method="execute" />
+	</int:chain>
+
+	<!-- Step 6: Service Activator for Impex File Processing Task-->
+	<int:service-activator input-channel="bunningsSupplierBatchFilesTran" output-channel="bunningsSupplierBatchFilesImp" ref="bunningsSupplierBatchRunnerTask" method="execute" />
+	<bean id="bunningsSupplierBatchRunnerTask" class="com.bunnings.core.dataimport.batch.task.AbstractBunningsImpexRunnerTask" >
+		<property name="sessionService" ref="sessionService" />
+		<property name="importService" ref="importService" />
+		<lookup-method name="getImportConfig" bean="importConfig" />
+	</bean>
+
+	<!-- Step 7: Service Activator for CleanUp Task, this is the last step of feed file processing -->
+	<int:service-activator input-channel="bunningsSupplierBatchFilesImp" ref="bunningsSupplierBatchCleanupTask" method="execute" />
+	<bean id="bunningsSupplierBatchCleanupTask" class="com.bunnings.core.dataimport.batch.task.BunningsCleanupTask">
+		<property name="bunningsCleanupHelper" ref="bunningsCleanupHelper" />
+	</bean>
+
+	<bean id="bunningsSupplierHeaderSetupTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderSetupTask">
+		<property name="catalog" value="BunningsPCMCatalog" />
+		<property name="net" value="false" />
+		<property name="storeBaseDirectory" ref="baseDirectorySupplier" />
+		<property name="fileType" value="SUPPLIER" />
+	</bean>
+
+
+	<bean id="bunningsHeaderInitTask" class="com.bunnings.core.dataimport.batch.task.BunningsHeaderInitTask">
+		<property name="sequenceIdParser" ref="bunningsSupplierBatchSequenceIdParser"/>
+		<property name="languageParser" ref="batchLanguageParser"/>
+		<property name="fallbackLanguage" value="en" />
+	</bean>
+
+	<bean id="bunningsSupplierBatchSequenceIdParser" class="de.hybris.platform.acceleratorservices.dataimport.batch.util.SequenceIdParser">
+		<property name="parser">
+			<bean class="de.hybris.platform.acceleratorservices.util.RegexParser">
+				<property name="regex" value="${bunnings.hotfolder.sequenceId.xml.regex.name}" />
+			</bean>
+		</property>
+	</bean>
+
+
+
+	<bean id="bunningsSupplierReconDataSetupTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsReconDataSetupTask">
+		<property name="batchValidationEnabledKey" value="bunnings.supplier.feed.import.batch.validation.enabled"/>
+		<property name="bunningsReconSAXParserHandlerName" value="bunningsSupplierReconSAXParserHandler"/>
+		<property name="bunningsReconService" ref="bunningsReconService"/>
+		<property name="configurationService" ref="configurationService"/>
+	</bean>
+
+	<bean id="bunningsSupplierReconSAXParserHandler" class="com.bunnings.core.dataimport.BunningsReconSAXParserHandler" scope="prototype">
+		<property name="primaryEntityNode" value="Supplier"/>
+	</bean>
+
+	<bean id="bunningsSupplierXmlProcessingTask"
+		  class="com.bunnings.core.dataimport.batch.task.BunningsXmlProcessingTask">
+		<property name="xmlToImpexProcessManager" ref="supplierXMLToImpexProcessManager"/>
+	</bean>
+
+	<bean id="supplierXMLToImpexProcessManager"
+		  class="com.bunnings.core.dataimport.XMLtoImpexProcessManager">
+		<property name="encoding" value="UTF-8" />
+		<property name="bunningsXMLParser" ref="bunningsSupplierXMLParser"/>
+	</bean>
+
+	
+	<bean id="bunningsSupplierXMLParser" class="com.bunnings.core.dataimport.impl.BunningsXMLParserImpl">
+		<property name="saxParserHandlerBeanName" value="bunningsSupplierSAXParserHandler"/>
+	</bean>
+	
+	 <util:set id="supplierStartEndNodes" value-type="java.lang.String">
+    </util:set>
+
+
+	<bean id = "bunningsSupplierSAXParserHandler" class="com.bunnings.core.dataimport.BunningsSAXParserHandler" scope="prototype">
+		<!-- <property name="parentNode" value="products"/> -->
+		<property name="primaryEntityNode" value="Supplier"/>
+		<property name="collectionNodesKeySet" ref="supplierStartEndNodes"/>
+		<property name="xmlRowValidationManager" ref="xmlSupplierRowValidationManager"/>
+		<property name="impexStreamManager" ref="supplierImpexStreamManager"/>
+		<property name="rowTransalationManager" ref="defaultSupplierRowTransalationManager"/>
+		<property name="recordReferenceKey" value="Supplier/SupplierCode/"/>
+	</bean>
+
+  <bean id="xmlSupplierRowValidationManager" class="com.bunnings.core.dataimport.xml.validators.XmlElementValidationManagerImpl">
+		<property name="validators" ref="supplierValidators"></property>
+	</bean>
+	
+	<util:list id="supplierValidators">
+		<ref bean="supplierCodeXmlNodeMandatoryElementValidator"/>
+		<ref bean="supplierNameXmlNodeMandatoryElementValidator"/>
+		<ref bean="supplierDateXmlNodeMandatoryElementValidator"/>
+    </util:list>
+
+	<bean id="supplierCodeXmlNodeMandatoryElementValidator" class="com.bunnings.core.dataimport.xml.validators.XmlNodeManadatoryElementValidator">
+		<property name="key" value="Supplier/SupplierCode/" />
+	</bean>
+
+	<bean id="supplierNameXmlNodeMandatoryElementValidator" class="com.bunnings.core.dataimport.xml.validators.XmlNodeManadatoryElementValidator">
+		<property name="key" value="Supplier/Name/" />
+	</bean>
+
+	<bean id="supplierDateXmlNodeMandatoryElementValidator" class="com.bunnings.core.dataimport.xml.validators.XmlNodeManadatoryElementValidator">
+		<property name="key" value="Supplier/StartDate/" />
+	</bean>
+
+	<alias name="bunningsSupplierEndDateTranslator" alias="supplierEndDateTranslator"/>
+	<bean id="bunningsSupplierEndDateTranslator" class="com.bunnings.core.dataimport.xml.translators.BunningsSupplierEndDateTranslator"/>
+
+	<util:list id="supplierRowTransalators" value-type="com.bunnings.core.dataimport.XMLRowTransalator">
+		<ref bean="supplierEndDateTranslator" />
+	</util:list>
+
+	<bean id="defaultSupplierRowTransalationManager" class="com.bunnings.core.dataimport.impl.XMLRowTransalationManagerImpl">
+		<property name="rowTransalators" ref="supplierRowTransalators"/>
+	</bean>
+	
+
+	<bean id="supplierImpexStreamManager" class="com.bunnings.core.dataimport.ImpexStreamManagerImpl">
+		<property name="handlers" ref="supplierHandlers"/>
+	</bean>
+
+	<util:list id="supplierHandlers">
+		<ref bean="bunningsSupplierNodeStreamHandler"/>
+		<ref bean="bunningsSupplierUserNodeStreamHandler"/>
+	</util:list>
+
+
+	<bean id="bunningsSupplierNodeStreamHandler"
+          class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Supplier
+                INSERT_UPDATE Supplier;supplierCode[unique=true];name;startDate[dateformat='yyyy-MM-dd''T''HH:mm:ss'];endDate[dateformat='yyyy-MM-dd''T''HH:mm:ss'];@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator];feedLineReference
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Supplier/SupplierCode/;Supplier/Name/;Supplier/StartDate/;Supplier/EndDate/;SupplierBatch/BatchHeader/ExtractTime/;Supplier/SupplierCode/</value>
+		</property>
+		<property name="priority" value="1"/>
+	</bean>
+	
+		<bean id="bunningsSupplierUserNodeStreamHandler"
+              class="com.bunnings.core.dataimport.xml.handlers.BunningsXmlMultiNodesStreamHandlerImpl" scope="prototype">
+		<property name="firstValueMandatory" value="true"/>
+		<property name="header">
+			<value>
+                # Insert Bunnings Supplier
+                INSERT_UPDATE SupplierUser;UID[unique = true]; name; status(code);loginDisabled; groups(uid)[default=bunningssuppliergroup];description;email[default=supplier@bunnings.co.au];password[default=Bunnings@123];suppliers(supplierCode);@sequenceId[translator=com.bunnings.core.dataimport.xml.translators.BunningsSequenceCheckTranslator]
+            </value>
+		</property>
+		<property name="impexRow">
+			<value>Supplier/UserUid/;Supplier/Name/;Supplier/ActiveStatus/;Supplier/LoginDisabled/;S;S;S;S;Supplier/SupplierCode/;SupplierBatch/BatchHeader/ExtractTime/</value>
+		</property>
+		<property name="priority" value="2"/>
+	</bean>	
+
+</beans>

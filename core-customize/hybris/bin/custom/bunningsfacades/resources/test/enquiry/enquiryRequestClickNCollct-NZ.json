@@ -1,0 +1,44 @@
+{
+  "options": {
+    "saveAddress": true,
+    "saveAddressAsDefault": true
+  },
+  "customerOrderReferences": {
+    "jobNo": "12345"
+  },
+  "totalsForLines": {
+    "lineNumber": 1,
+    "lineType": "ITEM",
+    "subtotal": 9.98,
+    "discount": 0,
+    "total": 9.98,
+    "tax": 0.91
+  },
+  "fulfilments": {
+    "lines": [
+      {
+        "lineNumber": 1,
+        "itemNumber": "AU810010",
+        "lineTotal": 10,
+        "lineType": "ITEM",
+        "class": "powerpass",
+        "units": [
+          {
+            "quantity": 1
+          }
+        ]
+      }
+    ],
+    "fulfilmentType": "CUSTOMERTOCOLLECT",
+    "preferredContactMethod": "EMAIL",
+    "contactName": " IAN FISCHER",
+    "contact": {
+      "mobilePhoneNumber": "0418556371",
+      "email": "ianfischer1@bigpond.com"
+    },
+    "instructions": "collect on store",
+    "collection": {
+      "collectionDate": "21-11-2021"
+    }
+  }
+}

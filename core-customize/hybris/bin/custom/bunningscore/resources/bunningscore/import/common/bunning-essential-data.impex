@@ -1,0 +1,95 @@
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+# Import essential data for the Accelerator
+#
+# Includes:
+# * Languages
+# * Currencies
+# * Titles
+# * Vendors
+# * Warehouses
+# * Supported Credit/Debit cards
+# * User Groups
+# * DistanceUnits for Storelocator
+# * MediaFolders
+# * MediaFormats
+# * Tax & Tax Groups
+# * Jobs
+$pcmCatalog = BunningsPCMCatalog
+$currencies = USD, AUD, NZD
+$net = false
+$storeUid = BaseBunnningsStore
+$siteId = BunningsBaseSite
+$defaultCurrency = AUD
+$languages = en
+$defaultLanguage = en
+$deliveryCountries = AU, NZ
+$billingCountries = AU, NZ
+$orderProcessCode = order-process
+$pickupInStoreMode = BUY_AND_COLLECT
+$customerAllowedToIgnoreSuggestions = true
+$paymentProvider = Mockup
+$checkoutFlowGroup = defaultCheckoutGroup
+
+
+# Product Unit
+INSERT_UPDATE UNIT; code[unique = true]; name           ; unitType   ; conversion
+                  ; TON                ; Tonne          ; TON        ; 1
+                  ; M2                 ; Square Metre   ; M2         ; 1
+                  ; PLT                ; Pallet     	; PLT        ; 1
+                  ; PCK                ; Pack       	; PCK        ; 1
+                  ; MTR                ; Metre          ; MTR        ; 1
+                  ; KG                 ; Kilogram       ; KG         ; 1
+                  ; M3                 ; Cubic Metre    ; M3         ; 1
+                  ; each               ; each           ; each       ; 1
+                  ; L/M                ; 1 Linear Metre ; L/M        ; 1
+                  ; LEN                ; 1 Length       ; LEN        ; 1
+                  ; pieces             ; Pieces         ; Pieces     ; 1
+                  ; G                  ; Grams          ; G          ; 1
+                  ; EA                 ; EA             ; EA         ; 1
+                  ; MM                 ; mm             ; mm         ; 1
+                  ; Yes/No             ; Yes/No         ; Yes/No     ; 1
+                  ; CTN                ; Carton     	; CTN		 ; 1
+                  ; SQM                ; Square Metre   ; SQM        ; 1
+                  ; ROL                ; ROL            ; ROL        ; 1
+
+
+# Vendor
+INSERT_UPDATE Vendor; code[unique = true]; name
+                    ; default            ; Default Vendor
+
+$passwordEncoding = md5
+$defaultPassword = password
+$setPassword = @password[translator=de.hybris.platform.impex.jalo.translators.ConvertPlaintextToEncodedUserPasswordTranslator][default='$passwordEncoding:$defaultPassword']
+
+
+INSERT_UPDATE Employee; UID[unique = true]          ; $setPassword; description                 ; name                    ; groups(uid)[mode = append]; sessionLanguage(isocode);
+                      ; s0-au-catalog-sync-job-user ;             ; AU catalog sync user stage1 ; S0 AU catalog sync user ;                           ; en                      ;
+                      ; s1-au-catalog-sync-job-user ;             ; AU catalog sync user stage1 ; S1 AU catalog sync user ;                           ; en                      ;
+                      ; s2-au-catalog-sync-job-user ;             ; AU catalog sync user stage2 ; S2 AU catalog sync user ;                           ; en                      ;
+                      ; s3-au-catalog-sync-job-user ;             ; AU catalog sync user stage3 ; S3 AU catalog sync user ;                           ; en                      ;
+                      ; s0-nz-catalog-sync-job-user ;             ; NZ catalog sync user stage1 ; S0 NZ catalog sync user ;                           ; en                      ;
+                      ; s1-nz-catalog-sync-job-user ;             ; NZ catalog sync user stage1 ; S1 NZ catalog sync user ;                           ; en                      ;
+                      ; s2-nz-catalog-sync-job-user ;             ; NZ catalog sync user stage2 ; S2 NZ catalog sync user ;                           ; en                      ;
+                      ; s3-nz-catalog-sync-job-user ;             ; NZ catalog sync user stage3 ; S3 NZ catalog sync user ;                           ; en                      ;
+
+INSERT_UPDATE ServicelayerJob; code[unique = true]    ; springId[unique = true];
+                             ; orderRetryCosCronJob   ; orderRetryCosCronJob   ;
+                             ; enquiryRetryCosCronJob ; enquiryRetryCosCronJob ;
+
+INSERT_UPDATE OrderRetryCosCronJob; code[unique = true]    ; job(code)              ; sessionLanguage(isoCode)[default = en]; nodeGroup   ; count; queryCount
+                                  ; orderRetryCosCronJob   ; orderRetryCosCronJob   ;                                       ; integration ; 3    ; 1000
+                                  ; enquiryRetryCosCronJob ; enquiryRetryCosCronJob ;                                       ; integration ; 3    ; 1000
+
+INSERT_UPDATE Trigger; cronJob(code)[unique = true]; cronExpression  ; active
+                     ; orderRetryCosCronJob        ; 0 0 * ? * * * ; false
+                     ; enquiryRetryCosCronJob      ; 0 0 * ? * * * ; true
+
+UPDATE DistanceUnit; code[unique = true]; name[lang = en_AU]
+                   ; km                 ; "km"
+                   ; miles              ; "miles"
+
+UPDATE DistanceUnit; code[unique = true]; name[lang = en_NZ]
+                   ; km                 ; "km"
+                   ; miles              ; "miles"
