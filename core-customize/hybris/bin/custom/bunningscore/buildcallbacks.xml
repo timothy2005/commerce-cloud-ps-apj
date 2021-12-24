@@ -62,7 +62,7 @@
 <project name="bunningscore_buildcallbacks">
 
 
-    <macrodef name="bunningscore_before_clean">
+    <macrodef name="bunningscore_after_build">
         <sequential>
             <if>
                 <available file="${ext.core.path}/lib/log4j-core-2.9.1.jar"/>
