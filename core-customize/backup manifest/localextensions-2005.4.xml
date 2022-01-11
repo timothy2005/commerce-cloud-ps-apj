@@ -70,9 +70,7 @@
     <extension name='kymaintegrationbackoffice' />
     <extension name='personalizationaddon' />
 
-		<!-- CCv2 specific extensions -->
-		<extension name="cloudmediaconversion" />
-		<extension name="mediaconversionbackoffice" />
+
 
   </extensions>
 </hybrisconfig>
