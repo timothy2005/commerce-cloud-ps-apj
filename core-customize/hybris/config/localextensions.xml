@@ -7,7 +7,7 @@
     <path dir='${HYBRIS_BIN_DIR}' autoload='false' />
     <extension name='adaptivesearchsolr' />
     <extension name='adaptivesearchbackoffice' />
-    <extension name='adaptivesearchsamplesaddon' />
+    <!-- <extension name='adaptivesearchsamplesaddon' /> -->
     <extension name='adaptivesearchwebservices' />
     <extension name='commerceservicesbackoffice' />
     <extension name='solrfacetsearchbackoffice' />
@@ -24,13 +24,13 @@
     <extension name='orderselfserviceaddon' />
     <extension name='customersupportbackoffice' />
     <extension name='customerticketingaddon' />
-    <extension name='commerceorgsamplesaddon' />
+    <!-- <extension name='commerceorgsamplesaddon' /> -->
     <extension name='rulebuilderbackoffice' />
     <extension name='couponbackoffice' />
     <extension name='droolsruleengineservices' />
     <extension name='couponfacades' />
     <extension name='couponservices' />
-    <extension name='promotionenginesamplesaddon' />
+    <!-- <extension name='promotionenginesamplesaddon' /> -->
     <extension name='cmswebservices' />
     <extension name='smarteditwebservices' />
     <extension name='cmssmarteditwebservices' />
@@ -59,7 +59,7 @@
     <extension name='textfieldconfiguratortemplateaddon' />
     <extension name='assistedservicestorefront' />
     <extension name='assistedservicepromotionaddon' />
-    <extension name='pcmbackofficesamplesaddon' />
+    <!-- <extension name='pcmbackofficesamplesaddon' /> -->
     <extension name='cisavs' />
     <extension name='cisclient' />
     <extension name='cisclienttest' />
