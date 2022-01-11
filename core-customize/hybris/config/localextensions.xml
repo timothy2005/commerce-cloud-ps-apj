@@ -35,12 +35,13 @@
     <extension name='smarteditwebservices' />
     <extension name='cmssmarteditwebservices' />
     <extension name='permissionswebservices' />
+    <extension name='previewwebservices' />
     <extension name='smarteditaddon' />
     <extension name='cmssmartedit' />
     <extension name='cmsoccaddon' />
     <extension name='cmsbackoffice' />
-    <extension name='previewpersonalizationweb' />
-    <extension name='personalizationcmsweb' />
+    <!-- <extension name='previewpersonalizationweb' /> -->
+    <!-- <extension name='personalizationcmsweb' />
     <extension name='personalizationsmartedit' />
     <extension name='personalizationpromotionssmartedit' />
     <extension name='personalizationsampledataaddon' />
@@ -53,7 +54,7 @@
     <extension name='personalizationsearchbackoffice' />
     <extension name='personalizationsearchsmartedit' />
     <extension name='personalizationsearchweb' />
-    <extension name='personalizationsearchsamplesaddon' />
+    <extension name='personalizationsearchsamplesaddon' /> -->
     <extension name='textfieldconfiguratortemplatebackoffice' />
     <extension name='textfieldconfiguratortemplateaddon' />
     <extension name='assistedservicestorefront' />
@@ -68,7 +69,7 @@
     <extension name='odata2webservices' />
     <extension name='odata2webservicesfeaturetests' />
     <extension name='kymaintegrationbackoffice' />
-    <extension name='personalizationaddon' />
+    <!-- <extension name='personalizationaddon' /> -->
 
 		<!-- CCv2 specific extensions -->
 		<extension name="cloudmediaconversion" />
