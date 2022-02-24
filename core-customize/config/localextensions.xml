@@ -177,6 +177,9 @@
 
         <!-- Spatacus extension -->
         <extension name='spartacussampledataaddon'/>
+        
+        <!--fix cannot find spring bean [productAllYFormDefinitions] configured for dynamic attribute [ApparelProduct.allYFormDefinitions] from extension [xyformsservices]-->
+        <extension name='xyformsservices'/>
 
 
 
