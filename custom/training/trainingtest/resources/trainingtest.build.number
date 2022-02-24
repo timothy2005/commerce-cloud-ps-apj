@@ -1,0 +1,11 @@
+#Ant properties
+#Wed Jan 12 16:29:57 CET 2022
+version.api=2011
+vendor=hybris
+group.id=de.hybris.platform
+name=trainingtest
+description=trainingtest
+builddate=20220112 1626
+releasedate=20201119 1630
+version=2011.16
+module.name=platform-module

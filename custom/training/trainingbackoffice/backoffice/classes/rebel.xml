@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://www.zeroturnaround.com">
+  <classpath>
+    <dir name="/Users/I542496/Downloads/hybris-commerce-suite-2011.16/hybris/bin/custom/training/trainingbackoffice/backoffice/classes" />
+  </classpath>
+</application>
