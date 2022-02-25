@@ -928,8 +928,8 @@
         
         <sequential>
             <echo>aaaaaaaaaaaaaaaaaaaaa</echo>
-            <echo>${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties</echo>  
-            <echo>bbbbbbbbbbbbbbbbbbbbb</echo>          			
+            <echo message="cccccccccccccccccccc  @{ext.b2b-accelerator.path}"/>
+            
             <if>
                 <available file="${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties"/>
                 <then>
@@ -938,6 +938,7 @@
                     <copy file="${ext.trainingb2bstorefront.path}/resources/project.properties" tofile="${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties"/>
                 </then>
             </if>
+            <echo>bbbbbbbbbbbbbbbbbbbbb</echo> 
 
             <echo message="trainingb2bstorefront_before_build"/>
                         			
