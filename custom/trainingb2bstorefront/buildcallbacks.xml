@@ -720,19 +720,8 @@
                 		
         
         <sequential>
-            <echo>aaaaaaaaaaaaaaaaaaaaa</echo>
             
-            
-            <if>
-                <available file="${ext.b2bacceleratoraddon.path}/project.properties"/>
-                <then>
-                    <echo>###### !!!! Replacing project.properties.</echo>
-                    <delete file="${ext.b2bacceleratoraddon.path}/project.properties"/>
-                    <copy file="${ext.trainingb2bstorefront.path}/resources/project.properties" tofile="${ext.b2bacceleratoraddon.path}/project.properties"/>
-                </then>
-            </if>
-            <echo>bbbbbbbbbbbbbbbbbbbbb</echo> 
-                        			
+
             
             <echo message="trainingb2bstorefront_after_build"/>
                         			
@@ -939,7 +928,18 @@
                 		
         
         <sequential>
+            <echo>cccccccccccccccccccccccc</echo>
             
+            
+            <if>
+                <available file="${ext.b2bacceleratoraddon.path}/project.properties.template"/>
+                <then>
+                    <echo>###### !!!! Replacing project.properties.</echo>
+                    <!-- <delete file="${ext.b2bacceleratoraddon.path}/project.properties"/> -->
+                    <copy file="${ext.trainingb2bstorefront.path}/resources/project.properties" tofile="${ext.b2bacceleratoraddon.path}/project.properties"/>
+                </then>
+            </if>
+            <echo>ddddddddddddddddddddddddddddddddd</echo> 
 
             <echo message="trainingb2bstorefront_before_build"/>
                         			
