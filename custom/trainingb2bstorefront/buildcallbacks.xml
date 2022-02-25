@@ -928,14 +928,14 @@
         
         <sequential>
             <echo>aaaaaaaaaaaaaaaaaaaaa</echo>
-            <echo message="cccccccccccccccccccc  @{ext.b2b-accelerator.path}"/>
+            
             
             <if>
-                <available file="${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties"/>
+                <available file="${ext.b2bacceleratoraddon.path}/project.properties"/>
                 <then>
                     <echo>###### !!!! Replacing project.properties.</echo>
-                    <delete file="${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties"/>
-                    <copy file="${ext.trainingb2bstorefront.path}/resources/project.properties" tofile="${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties"/>
+                    <delete file="${ext.b2bacceleratoraddon.path}/project.properties"/>
+                    <copy file="${ext.trainingb2bstorefront.path}/resources/project.properties" tofile="${ext.b2bacceleratoraddon.path}/project.properties"/>
                 </then>
             </if>
             <echo>bbbbbbbbbbbbbbbbbbbbb</echo> 
