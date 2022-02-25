@@ -927,7 +927,9 @@
                 		
         
         <sequential>
-            <echo>aaaaaaaaaaaaaaaaaaaaa</echo>            			
+            <echo>aaaaaaaaaaaaaaaaaaaaa</echo>
+            <echo>${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties</echo>  
+            <echo>bbbbbbbbbbbbbbbbbbbbb</echo>          			
             <if>
                 <available file="${ext.b2b-accelerator.path}/b2bacceleratoraddon/project.properties"/>
                 <then>
