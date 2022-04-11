@@ -27,6 +27,9 @@
                 "persona": "production"
             },
             {
+                "location": "hybris/config/lcoal.properties"
+             },
+            {
                 "location": "hybris/config/environments/common.properties"
              },
              {
