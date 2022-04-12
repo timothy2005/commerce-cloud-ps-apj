@@ -1,6 +1,7 @@
 # folders/files to always ignore
 .metadata
 **/gensrc
+**/.DS_Store
 
 #IDE files
 .gradle
